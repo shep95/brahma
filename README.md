@@ -200,8 +200,8 @@ every screenshot here is the real app at work on public-domain art, rendered off
 brahma is free and stays free. it has no account, no sign-up and no server of its own. if you want AI
 features, bring your own API key: edit › preferences › AI integrations takes a key for anthropic,
 openai, google AI or any openai-compatible endpoint (a local server works too). the keys are saved
-only on your device, in brahma's preferences file (`localStorage` in the browser), and are sent to
-no one but the provider you pick. `ai.status` tells scripts and agents whether a provider is ready
+only on your device, in brahma's preferences file (owner-only on linux and macos; `localStorage` in
+the browser), and are sent to no one but the provider you pick. `ai.status` tells scripts and agents whether a provider is ready
 without ever showing the key.
 
 ## PSD without compromise

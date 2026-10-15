@@ -3851,3 +3851,5 @@ curves	Smooth	スムーズ
 # View › Guides › right-click a guide
 	Edit Selected Guides	選択したガイドを編集
 	Clear Selected Guides	選択したガイドを消去
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	自分のAIを持ち込む。APIキーはこのデバイスのbrahma環境設定にのみ保存され、選んだプロバイダーにだけ送信されます。アカウントも登録も不要です。
+	Not a web link: {url}	ウェブリンクではありません: {url}

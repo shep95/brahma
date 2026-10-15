@@ -3177,3 +3177,5 @@ curves	Smooth	Glätten
 # View › Guides › right-click a guide
 	Edit Selected Guides	Ausgewählte Hilfslinien bearbeiten
 	Clear Selected Guides	Ausgewählte Hilfslinien löschen
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Eigene KI mitbringen. Ihre API-Schlüssel werden nur auf diesem Gerät in den Einstellungen von brahma gespeichert und nur an den gewählten Anbieter gesendet. Kein Konto, keine Registrierung.
+	Not a web link: {url}	Kein Weblink: {url}

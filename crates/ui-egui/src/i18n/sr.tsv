@@ -4248,3 +4248,5 @@ shape	Appearance	Izgled
 # View › Guides › right-click a guide
 	Edit Selected Guides	Uredi izabrane vodilje
 	Clear Selected Guides	Ukloni izabrane vodilje
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Donesite svoj AI. Vaši API ključevi čuvaju se samo na ovom uređaju, u podešavanjima brahma, i šalju se samo provajderu koji izaberete. Bez naloga, bez registracije.
+	Not a web link: {url}	Nije veb veza: {url}

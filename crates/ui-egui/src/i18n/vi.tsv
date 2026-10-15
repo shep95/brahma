@@ -3661,3 +3661,5 @@ curves	Smooth	Làm mượt
 # View › Guides › right-click a guide
 	Edit Selected Guides	Sửa đường căn đã chọn
 	Clear Selected Guides	Xóa đường căn đã chọn
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Mang AI của riêng bạn. Khóa API của bạn chỉ được lưu trên thiết bị này, trong tùy chọn của brahma, và chỉ được gửi tới nhà cung cấp bạn chọn. Không tài khoản, không đăng ký.
+	Not a web link: {url}	Không phải liên kết web: {url}

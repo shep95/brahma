@@ -3783,3 +3783,5 @@ navigator	Zoom	Zvětšení
 # View › Guides › right-click a guide
 	Edit Selected Guides	Upravit vybraná vodítka
 	Clear Selected Guides	Vymazat vybraná vodítka
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Přineste si vlastní AI. Vaše klíče API se ukládají pouze v tomto zařízení, v předvolbách brahma, a odesílají se jen poskytovateli, kterého zvolíte. Žádný účet, žádná registrace.
+	Not a web link: {url}	Není webový odkaz: {url}

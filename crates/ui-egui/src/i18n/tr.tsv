@@ -3905,3 +3905,5 @@ cameraData	Lens	Lens
 # View › Guides › right-click a guide
 	Edit Selected Guides	Seçili Kılavuzları Düzenle
 	Clear Selected Guides	Seçili Kılavuzları Temizle
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Kendi yapay zekânızı getirin. API anahtarlarınız yalnızca bu cihazda, brahma tercihlerinde saklanır ve yalnızca seçtiğiniz sağlayıcıya gönderilir. Hesap yok, kayıt yok.
+	Not a web link: {url}	Web bağlantısı değil: {url}

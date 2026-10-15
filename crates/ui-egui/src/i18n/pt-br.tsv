@@ -3965,3 +3965,5 @@ layerLabel	No Color	Sem cor
 # View › Guides › right-click a guide
 	Edit Selected Guides	Editar guias selecionadas
 	Clear Selected Guides	Limpar guias selecionadas
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Traga sua própria IA. Suas chaves de API ficam salvas apenas neste dispositivo, nas preferências do brahma, e são enviadas somente ao provedor que você escolher. Sem conta, sem cadastro.
+	Not a web link: {url}	Não é um link da web: {url}

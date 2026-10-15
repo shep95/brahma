@@ -3935,3 +3935,5 @@ curves	Smooth	Vloeiend maken
 # View › Guides › right-click a guide
 	Edit Selected Guides	Geselecteerde hulplijnen bewerken
 	Clear Selected Guides	Geselecteerde hulplijnen wissen
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Breng je eigen AI mee. Je API-sleutels worden alleen op dit apparaat bewaard, in de voorkeuren van brahma, en alleen naar de gekozen aanbieder gestuurd. Geen account, geen registratie.
+	Not a web link: {url}	Geen weblink: {url}

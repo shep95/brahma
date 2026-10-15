@@ -27,6 +27,7 @@ pub use system::system_lang;
 
 use std::cell::Cell;
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Mutex, OnceLock};
 
 use catalog::Catalog;
@@ -397,6 +398,23 @@ pub fn has(lang: Lang, s: &str) -> bool {
 /// upper-case letter is returned as is; others are lower-cased once and kept for the life of
 /// the process, which bounds the work to the set of distinct UI strings.
 pub fn lower(s: &str) -> &str {
+    if !LOWERCASE.load(Ordering::Relaxed) {
+        return s;
+    }
+    lower_always(s)
+}
+
+/// Turn the lower-case display style on or off. The shipped apps (`apps/brahma`,
+/// `apps/brahma-web`) turn it on at start-up; it is off by default so that the UI tests, which
+/// find widgets by the labels written in the code, keep reading them as written.
+pub fn set_lowercase(on: bool) {
+    LOWERCASE.store(on, Ordering::Relaxed);
+}
+
+static LOWERCASE: AtomicBool = AtomicBool::new(false);
+
+/// [`lower`] regardless of the switch.
+pub fn lower_always(s: &str) -> &str {
     if !s.chars().any(char::is_uppercase) {
         return s;
     }
@@ -448,6 +466,17 @@ pub fn trn(lang: Lang, n: u64, one: &str, other: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn the_lower_case_style_lowers_every_language_and_keeps_placeholders() {
+        assert_eq!(super::lower_always("New Layer…"), "new layer…");
+        assert_eq!(super::lower_always("Opened {url}"), "opened {url}");
+        assert_eq!(super::lower_always("Ebene Löschen"), "ebene löschen");
+        assert_eq!(super::lower_always("レイヤー"), "レイヤー");
+        let a = super::lower_always("Delete") as *const str;
+        let b = super::lower_always("Delete") as *const str;
+        assert_eq!(a, b, "lower-cased once and cached");
+    }
+
     use super::catalog::{parse_entries, placeholders};
     use super::*;
 

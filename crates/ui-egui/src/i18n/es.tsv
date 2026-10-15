@@ -4137,3 +4137,5 @@ navigator	Zoom	Zoom
 # View › Guides › right-click a guide
 	Edit Selected Guides	Editar guías seleccionadas
 	Clear Selected Guides	Borrar guías seleccionadas
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Trae tu propia IA. Tus claves API se guardan solo en este dispositivo, en las preferencias de brahma, y se envían solo al proveedor que elijas. Sin cuenta ni registro.
+	Not a web link: {url}	No es un enlace web: {url}

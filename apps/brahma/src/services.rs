@@ -222,6 +222,19 @@ fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), String> {
     brahma_format::atomic_write(path, bytes).map_err(|e| e.to_string())
 }
 
+/// The preferences file holds the user's own AI API keys (Preferences › AI Integrations), so on
+/// Unix it is readable by its owner only (mode 0600), like an SSH key; the atomic write keeps the
+/// old file until the new one is complete.
+fn write_prefs_private(path: &Path, bytes: &[u8]) -> Result<(), String> {
+    write_atomic(path, bytes)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 /// [`write_atomic`] reporting the fraction written (a background save's progress, #3389).
 fn write_atomic_progress(path: &Path, bytes: &[u8], progress: &dyn Fn(f32)) -> Result<(), String> {
     brahma_format::atomic_write_progress(path, bytes, progress).map_err(|e| e.to_string())
@@ -483,7 +496,7 @@ pub fn native(automation: Option<brahma_automation::AuthorizedWorkspace>) -> Ser
         }),
         load_prefs: Some(Box::new(|| std::fs::read_to_string(prefs_file()?).ok())),
         photoshop_shortcuts: Some(Box::new(|| crate::photoshop_settings::live_keyboard_shortcuts(&|k| std::env::var_os(k)))),
-        save_prefs: Some(Box::new(|text: &str| write_atomic(&prefs_file().ok_or("no config directory")?, text.as_bytes()))),
+        save_prefs: Some(Box::new(|text: &str| write_prefs_private(&prefs_file().ok_or("no config directory")?, text.as_bytes()))),
         system_theme: crate::appearance::service(),
         append_text: Some(Box::new(|path: &str, text: &str| {
             use std::io::Write;
@@ -578,6 +591,18 @@ pub fn export_flat(doc: &Document, path: &str) -> Result<Vec<u8>, String> {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(unix)]
+    #[test]
+    fn the_preferences_file_is_private_to_its_owner() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = std::env::temp_dir().join(format!("brahma-prefs-perm-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("preferences.json");
+        super::write_prefs_private(&path, b"{}").unwrap();
+        assert_eq!(std::fs::metadata(&path).unwrap().permissions().mode() & 0o777, 0o600);
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
     use super::*;
     use brahma_engine::Session;
     use brahma_format::list_recovery;

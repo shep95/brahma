@@ -4296,3 +4296,5 @@ shape	Appearance	Aspetto
 # View › Guides › right-click a guide
 	Edit Selected Guides	Modifica guide selezionate
 	Clear Selected Guides	Cancella guide selezionate
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Porta la tua IA. Le chiavi API vengono salvate solo su questo dispositivo, nelle preferenze di brahma, e inviate solo al fornitore che scegli. Nessun account, nessuna registrazione.
+	Not a web link: {url}	Non è un collegamento web: {url}

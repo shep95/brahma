@@ -2775,3 +2775,5 @@ curves	Smooth	平滑
 # View › Guides › right-click a guide
 	Edit Selected Guides	編輯所選參考線
 	Clear Selected Guides	清除所選參考線
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	自備 AI。您的 API 金鑰只儲存在本裝置的 brahma 偏好設定中，只會傳送給您選擇的服務商。無需帳戶，無需註冊。
+	Not a web link: {url}	不是網頁連結：{url}

@@ -3179,3 +3179,5 @@ curves	Smooth	Lisser
 # View › Guides › right-click a guide
 	Edit Selected Guides	Modifier les repères sélectionnés
 	Clear Selected Guides	Effacer les repères sélectionnés
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Apportez votre propre IA. Vos clés API sont enregistrées uniquement sur cet appareil, dans les préférences de brahma, et envoyées seulement au fournisseur choisi. Ni compte ni inscription.
+	Not a web link: {url}	Pas un lien web : {url}

@@ -166,6 +166,8 @@ mod control_port_tests {
 }
 
 fn main() -> eframe::Result {
+    // brahma's house style: every interface string in lower case (see `i18n::lower`).
+    brahma_ui_egui::i18n::set_lowercase(true);
     // First, so the panic hook and every start-up warning are recorded (`logging`).
     let logger = logging::install();
     crash_guard::install_hook();

@@ -27,6 +27,8 @@ mod web;
 
 #[cfg(target_arch = "wasm32")]
 fn main() {
+    // brahma's house style: every interface string in lower case (see `i18n::lower`).
+    brahma_ui_egui::i18n::set_lowercase(true);
     web::start();
 }
 

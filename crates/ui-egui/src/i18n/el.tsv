@@ -3875,3 +3875,5 @@ curves	Smooth	Εξομάλυνση
 # View › Guides › right-click a guide
 	Edit Selected Guides	Επεξεργασία επιλεγμένων οδηγών
 	Clear Selected Guides	Απαλοιφή επιλεγμένων οδηγών
+	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Φέρτε τη δική σας AI. Τα κλειδιά API αποθηκεύονται μόνο σε αυτή τη συσκευή, στις προτιμήσεις του brahma, και στέλνονται μόνο στον πάροχο που επιλέγετε. Χωρίς λογαριασμό, χωρίς εγγραφή.
+	Not a web link: {url}	Δεν είναι σύνδεσμος ιστού: {url}
