@@ -1,5 +1,5 @@
 //! The window's own title bar on Windows and Linux, where the window has no OS decorations
-//! ([`PhotocraftApp::custom_titlebar`]): the app's top bar (`panels::title_bar`) is the title bar,
+//! ([`BrahmaApp::custom_titlebar`]): the app's top bar (`panels::title_bar`) is the title bar,
 //! as in Photoshop on Windows. The free gap between its menus and controls drags the window and a
 //! double-click there maximizes it (`panels::title_bar`, on every platform); caption buttons
 //! minimize, maximize/restore and close, and thin invisible zones along the window's edges resize
@@ -13,7 +13,7 @@
 use egui::{Color32, CursorIcon, Id, LayerId, Order, PointerButton, Pos2, Rect, ResizeDirection, Sense, Stroke, Ui, ViewportCommand, pos2, vec2};
 use serde_json::json;
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::theme::Tokens;
 
 /// One Windows caption button: as wide as the native ones.
@@ -186,19 +186,19 @@ impl CaptionStyle {
 }
 
 /// The caption style the platform reports, or Windows' when it reports none.
-fn style(app: &PhotocraftApp, ctx: &egui::Context) -> CaptionStyle {
+fn style(app: &BrahmaApp, ctx: &egui::Context) -> CaptionStyle {
     app.services.caption_style.as_ref().map(|read| read(ctx)).unwrap_or_default()
 }
 
 /// The title bar's height: `base`, or with GNOME's buttons at least libadwaita's header bar
 /// (46 pt, plus the bar's 1 pt separator), so the bar is as tall as its neighbours' title bars.
-pub fn bar_height(app: &PhotocraftApp, ctx: &egui::Context, base: f32) -> f32 {
+pub fn bar_height(app: &BrahmaApp, ctx: &egui::Context, base: f32) -> f32 {
     if app.custom_titlebar && style(app, ctx).family == CaptionFamily::Adwaita { base.max(47.0) } else { base }
 }
 
 /// The width the caption buttons take at the bar's (left, right) end: zero for a side without
 /// buttons, and for both without the custom title bar.
-pub fn reserved(app: &PhotocraftApp, ctx: &egui::Context) -> (f32, f32) {
+pub fn reserved(app: &BrahmaApp, ctx: &egui::Context) -> (f32, f32) {
     if !app.custom_titlebar {
         return (0.0, 0.0);
     }
@@ -256,7 +256,7 @@ fn toggle_maximize(ctx: &egui::Context) {
 /// with the window's edges (even if the bar's contents run wider) so a maximized window's corner
 /// hits the outermost one. Close runs File › Exit, which asks about unsaved documents first. On
 /// Linux the buttons drag the window too, as GTK's and KDE's do.
-pub fn caption_buttons(app: &mut PhotocraftApp, ui: &mut Ui, bar: Rect) {
+pub fn caption_buttons(app: &mut BrahmaApp, ui: &mut Ui, bar: Rect) {
     let t = Tokens::get(ui.ctx());
     let s = style(app, ui.ctx());
     let max = maximized(ui.ctx());
@@ -536,12 +536,12 @@ pub fn resize_zones(ui: &mut Ui) {
 mod tests {
     use super::*;
     use egui::{Event, Pos2, RawInput, ViewportId};
-    use photocraft_engine::Session;
+    use brahma_engine::Session;
 
     /// A headless window `width` pt wide showing the title bar and the resize zones.
     struct Win {
         ctx: egui::Context,
-        app: PhotocraftApp,
+        app: BrahmaApp,
         width: f32,
         time: f64,
         maximized: bool,
@@ -550,8 +550,8 @@ mod tests {
     impl Win {
         fn new(width: f32) -> Self {
             let ctx = egui::Context::default();
-            PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
-            let mut app = PhotocraftApp::new(Session::new(), crate::Services::default());
+            BrahmaApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
+            let mut app = BrahmaApp::new(Session::new(), crate::Services::default());
             app.custom_titlebar = true;
             Self { ctx, app, width, time: 0.0, maximized: false }
         }
@@ -567,7 +567,7 @@ mod tests {
             if let Some(v) = input.viewports.get_mut(&ViewportId::ROOT) {
                 v.maximized = Some(self.maximized);
             }
-            // What `PhotocraftApp::raw_input_hook` does.
+            // What `BrahmaApp::raw_input_hook` does.
             release_after_os_resize(&self.ctx, &mut input);
             let app = &mut self.app;
             let mut out = self.ctx.run_ui(input, |ui| {
@@ -663,12 +663,12 @@ mod tests {
     #[test]
     fn the_title_bar_promotes_no_community_chat() {
         // Issue #1726: only the always-visible title-bar button is removed. The start-screen
-        // and About buttons and Help › Discord remain available.
+        // and About buttons and Help › #houseofasher community remain available.
         for width in [760.0, 1100.0, 1440.0] {
             let mut w = Win::new(width);
             w.frame(vec![]);
             let out = w.frame(vec![]);
-            assert!(!texts(&out).iter().any(|(t, _)| t.contains("Discord")), "no Discord in the bar at {width}");
+            assert!(!texts(&out).iter().any(|(t, _)| t.contains("#houseofasher community")), "no #houseofasher community in the bar at {width}");
         }
     }
 

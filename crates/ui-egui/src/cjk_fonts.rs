@@ -8,26 +8,26 @@
 //! appended at the lowest priority to every family, so Latin text keeps Inter.
 //!
 //! Other scripts the bundled fonts lack (Thai, Arabic, Hebrew, Devanagari and the other Indic
-//! scripts, ...: [`photocraft_text::scripts`]) work the same way, each with its own attempt state,
+//! scripts, ...: [`brahma_text::scripts`]) work the same way, each with its own attempt state,
 //! independent of the CJK order: the first installed candidate file whose character map really
 //! has the missing character is registered, once per script. egui shapes each font run with
 //! HarfRust, so Thai marks and Arabic joining come from the font; it has no bidi reordering yet.
 //!
-//! Script order follows the UI locale ([`photocraft_text::cjk::script_order`]): Kana prefers a
+//! Script order follows the UI locale ([`brahma_text::cjk::script_order`]): Kana prefers a
 //! Japanese font, Hangul a Korean one, Bopomofo a Traditional Chinese one, and Han the
 //! locale's script (Japanese forms only for a Japanese locale). At most one font is read per
 //! frame, each file at most once, and once every script has been tried the scan stops.
 //!
 //! Builds made with the optional craft-fonts input (`CRAFT_FONTS_DIR`,
-//! [`photocraft_text::craft_fonts`]) carry Japanese fonts (BIZ UDPGothic first): they are tried
+//! [`brahma_text::craft_fonts`]) carry Japanese fonts (BIZ UDPGothic first): they are tried
 //! before the system Japanese fonts, in the Japanese slot of the same locale order. Without
 //! craft-fonts (and on the web, which never embeds them) nothing changes.
 
 use egui::epaint::text::{FontInsert, FontPriority, InsertFontFamily};
 use egui::{FontData, FontFamily, FontId, Shape};
-use photocraft_text::cjk::{self, CjkChar, CjkScript, FontFile};
-use photocraft_text::craft_fonts::{self, CraftFont};
-use photocraft_text::scripts::{self, Script};
+use brahma_text::cjk::{self, CjkChar, CjkScript, FontFile};
+use brahma_text::craft_fonts::{self, CraftFont};
+use brahma_text::scripts::{self, Script};
 use std::path::PathBuf;
 
 /// Skip absurdly large files (a corrupt or non-font path must not eat memory).
@@ -374,7 +374,7 @@ pub struct CjkFontPlugin(pub CjkFallback);
 
 impl egui::Plugin for CjkFontPlugin {
     fn debug_name(&self) -> &'static str {
-        "photocraft-cjk-fonts"
+        "brahma-cjk-fonts"
     }
 
     fn output_hook(&mut self, ctx: &egui::Context, output: &mut egui::FullOutput) {
@@ -430,13 +430,13 @@ mod tests {
 
     #[test]
     fn lazy_fallbacks_follow_ui_font_size_and_survive_size_changes() {
-        use photocraft_engine::prefs::UiFontSize;
+        use brahma_engine::prefs::UiFontSize;
         let ctx = egui::Context::default();
         crate::theme::install_fonts(&ctx);
         ctx.run_ui(Default::default(), |_| {}).textures_delta.clear();
         crate::theme::set_ui_font_size(&ctx, UiFontSize::Large);
         let name = "test-lazy-fallback".to_string();
-        add_to_all_families(&ctx, name.clone(), FontData::from_static(photocraft_text::fonts::INTER_REGULAR.as_slice()));
+        add_to_all_families(&ctx, name.clone(), FontData::from_static(brahma_text::fonts::INTER_REGULAR.as_slice()));
         for (size, scale) in [(UiFontSize::Large, 16.0 / 12.0), (UiFontSize::Tiny, 10.0 / 12.0), (UiFontSize::Small, 1.0)] {
             crate::theme::set_ui_font_size(&ctx, size);
             for _ in 0..2 {
@@ -501,7 +501,7 @@ mod tests {
         assert_eq!(regular_weight(&fvar_font(&[(b"wght", 500.0, 600.0, 900.0)], false), 0), Some(500.0), "Regular clamped into the axis");
         assert_eq!(regular_weight(&fvar_font(&[(b"wght", 100.0, 400.0, 900.0)], false), 0), None, "already Regular");
         assert_eq!(regular_weight(&fvar_font(&[(b"wdth", 75.0, 100.0, 100.0)], false), 0), None, "no weight axis");
-        assert_eq!(regular_weight(photocraft_text::fonts::INTER_REGULAR.as_slice(), 0), None, "static font");
+        assert_eq!(regular_weight(brahma_text::fonts::INTER_REGULAR.as_slice(), 0), None, "static font");
         for bad in [&thin[..thin.len() - 9], &thin[..30], &b"ttcf"[..], &[][..]] {
             assert_eq!(regular_weight(bad, 1), None);
         }
@@ -509,7 +509,7 @@ mod tests {
         let ctx = egui::Context::default();
         crate::theme::install_fonts(&ctx);
         ctx.run_ui(Default::default(), |_| {}).textures_delta.clear();
-        add_to_all_families(&ctx, "test-static".into(), FontData::from_static(photocraft_text::fonts::INTER_REGULAR.as_slice()));
+        add_to_all_families(&ctx, "test-static".into(), FontData::from_static(brahma_text::fonts::INTER_REGULAR.as_slice()));
         ctx.run_ui(Default::default(), |_| {}).textures_delta.clear();
         let fonts = ctx.fonts(|f| f.definitions().clone());
         assert_eq!(fonts.font_data.get("test-static").map(|d| d.tweak.coords.clone()), Some(Default::default()));
@@ -542,7 +542,7 @@ mod tests {
     fn fake_dir() -> PathBuf {
         let mut g = DIR.lock().unwrap();
         g.get_or_insert_with(|| {
-            let dir = std::env::temp_dir().join(format!("photocraft-cjk-{}", std::process::id()));
+            let dir = std::env::temp_dir().join(format!("brahma-cjk-{}", std::process::id()));
             std::fs::create_dir_all(&dir).unwrap();
             std::fs::write(dir.join("font.ttf"), include_bytes!("../../../assets/fonts/Inter-Regular.ttf")).unwrap();
             std::fs::write(dir.join("empty.ttf"), b"").unwrap();

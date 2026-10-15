@@ -1,18 +1,18 @@
-# Building
+# building
 
-PhotoCraft uses the Rust workspace at the repository root. Install the stable Rust toolchain, clone the repository, and run commands from that root.
+brahma uses the rust workspace at the repository root. install the stable rust toolchain, clone the repository, and run commands from that root.
 
-On Linux, install the windowing, GL and GTK development packages first. The development guide's
-[Prerequisites](https://github.com/storytold/photocraft/blob/main/docs/development.md#prerequisites)
-list them for Debian/Ubuntu, Fedora, Arch and openSUSE.
+on linux, install the windowing, gl and GTK development packages first. the development guide's
+[prerequisites](https://github.com/shep95/brahma/blob/main/docs/development.md#prerequisites)
+list them for debian/ubuntu, fedora, arch and opensuse.
 
 ```sh
 cargo build --workspace
-cargo run --release -p photocraft -- image.psd
-cargo run -p photocraft-cli -- --help
+cargo run --release -p brahma -- image.psd
+cargo run -p brahma-cli -- --help
 ```
 
-The standard repository gates are:
+the standard repository gates are:
 
 ```sh
 cargo fmt --all -- --check
@@ -22,15 +22,15 @@ cargo xtask layers
 cargo xtask wasm
 ```
 
-`cargo xtask wasm` requires the `wasm32-unknown-unknown` target. UI work should also be checked using the offscreen snapshot example described in the [development guide](https://github.com/storytold/photocraft/blob/main/docs/development.md).
+`cargo xtask wasm` requires the `wasm32-unknown-unknown` target. ui work should also be checked using the offscreen snapshot example described in the [development guide](https://github.com/shep95/brahma/blob/main/docs/development.md).
 
-## Build the documentation
+## build the documentation
 
-Install mdBook, then build from the repository root:
+install mdBook, then build from the repository root:
 
 ```sh
 cargo install mdbook --locked
 mdbook build book
 ```
 
-The generated site is written to `book/output/` and is not source documentation.
+the generated site is written to `book/output/` and is not source documentation.

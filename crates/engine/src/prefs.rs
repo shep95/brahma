@@ -55,16 +55,16 @@ choice!(TypeUnit { Points = "points", Pixels = "pixels", Millimeters = "mm" } de
 choice!(PointSize { PostScript = "postScript", Traditional = "traditional" } default PostScript);
 choice!(Interpolation { BicubicAutomatic = "bicubicAutomatic", Nearest = "nearestNeighbor", Bilinear = "bilinear", Bicubic = "bicubic", BicubicSmoother = "bicubicSmoother", BicubicSharper = "bicubicSharper", PreserveDetails = "preserveDetails" } default BicubicAutomatic);
 choice!(ColorPicker { Adobe = "adobe", System = "system" } default Adobe);
-choice!(Theme { Pro = "pro", ProMedium = "proMedium", ProLightGray = "proLightGray", ProLight = "proLight", Studio = "studio", StudioLight = "studioLight", Classic = "classic", SolarizedDark = "solarizedDark", Adwaita = "adwaita", AdwaitaDark = "adwaitaDark", BreezeLight = "breezeLight", BreezeDark = "breezeDark", SoftDark = "softDark", SoftLight = "softLight" } default ProMedium);
+choice!(Theme { Pro = "pro", ProMedium = "proMedium", ProLightGray = "proLightGray", ProLight = "proLight", Studio = "studio", StudioLight = "studioLight", Classic = "classic", SolarizedDark = "solarizedDark", Adwaita = "adwaita", AdwaitaDark = "adwaitaDark", BreezeLight = "breezeLight", BreezeDark = "breezeDark", SoftDark = "softDark", SoftLight = "softLight" } default Pro);
 choice!(AppearanceMode { Auto = "auto", Dark = "dark", Light = "light" } default Dark);
-choice!(DarkTheme { Pro = "pro", ProMedium = "proMedium", Studio = "studio", SolarizedDark = "solarizedDark", AdwaitaDark = "adwaitaDark", BreezeDark = "breezeDark", SoftDark = "softDark" } default ProMedium);
+choice!(DarkTheme { Pro = "pro", ProMedium = "proMedium", Studio = "studio", SolarizedDark = "solarizedDark", AdwaitaDark = "adwaitaDark", BreezeDark = "breezeDark", SoftDark = "softDark" } default Pro);
 choice!(LightTheme { ProLight = "proLight", ProLightGray = "proLightGray", StudioLight = "studioLight", Classic = "classic", Adwaita = "adwaita", BreezeLight = "breezeLight", SoftLight = "softLight" } default ProLight);
 choice!(CanvasColor { Default = "default", Black = "black", DarkGray = "darkGray", MediumGray = "mediumGray", LightGray = "lightGray", Custom = "custom" } default Default);
 choice!(CanvasBorder { DropShadow = "dropShadow", Line = "line", None = "none" } default DropShadow);
 choice!(UiScale { Auto = "auto", P75 = "75", P80 = "80", P85 = "85", P90 = "90", P95 = "95", P100 = "100", P125 = "125", P150 = "150", P175 = "175", P200 = "200", P250 = "250", P300 = "300" } default Auto);
 choice!(
     /// Graphics backend of the desktop app's window and GPU canvas (applies at next launch).
-    /// `auto` lets PhotoCraft pick (DX12 for Intel adapters on Windows); `cpu` composites on the
+    /// `auto` lets brahma pick (DX12 for Intel adapters on Windows); `cpu` composites on the
     /// CPU and draws the window with a software adapter where the platform has one. A start that
     /// crashes inside the graphics driver moves this to the next safer choice.
     GpuBackend { Auto = "auto", Vulkan = "vulkan", Dx12 = "dx12", Metal = "metal", Gl = "gl", Cpu = "cpu" } default Auto
@@ -76,9 +76,9 @@ choice!(
 );
 choice!(
     /// Linux display server of the desktop app's window (applies at next launch). `x11` runs
-    /// PhotoCraft through XWayland on a Wayland session, where native file drag and drop works
+    /// brahma through XWayland on a Wayland session, where native file drag and drop works
     /// (winit 0.30 has none on Wayland, issue #386); fractional scaling may then look softer.
-    /// It needs an X server (`DISPLAY`); without one PhotoCraft starts as `auto`. Other
+    /// It needs an X server (`DISPLAY`); without one brahma starts as `auto`. Other
     /// platforms ignore it.
     LinuxDisplayServer { Auto = "auto", X11 = "x11" } default Auto
 );
@@ -282,7 +282,7 @@ pub struct Interface {
     /// Move tool drags show only the layer's outline and an arrow, leaving its pixels in place
     /// until release. Off (the default), the pixels follow the pointer live inside the outline.
     pub show_bounding_box_when_dragging_layer: bool,
-    /// Windows and Linux: use the system's title bar and window buttons instead of PhotoCraft's
+    /// Windows and Linux: use the system's title bar and window buttons instead of brahma's
     /// own one-row title bar (tiling window managers, desktops that draw their own decorations;
     /// #1271, #1316). Read when the app starts. macOS always uses the system's.
     pub system_title_bar: bool,
@@ -296,9 +296,9 @@ pub struct Interface {
 impl Default for Interface {
     fn default() -> Self {
         Self {
-            theme: Theme::ProMedium,
+            theme: Theme::Pro,
             appearance_mode: AppearanceMode::Dark,
-            dark_theme: DarkTheme::ProMedium,
+            dark_theme: DarkTheme::Pro,
             light_theme: LightTheme::ProLight,
             favorite_themes: Vec::new(),
             canvas_color: CanvasColor::Default,
@@ -414,9 +414,9 @@ impl Default for Tools {
 }
 
 /// Preferences › Tools › Pressure Curve, ready to evaluate: the same monotone cubic every brush
-/// dynamic uses for its own control ([`photocraft_paint::ResponseCurve`]), sanitised the same way,
+/// dynamic uses for its own control ([`brahma_paint::ResponseCurve`]), sanitised the same way,
 /// since a whole-section update or a hand-edited preferences file can store anything.
-pub use photocraft_paint::ResponseCurve as PressureCurve;
+pub use brahma_paint::ResponseCurve as PressureCurve;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
@@ -473,7 +473,7 @@ impl Default for FileHandling {
             exr_aces_cg: false,
             ask_before_saving_layered_tiff: true,
             maximize_psd_compatibility: Ask::Always,
-            rasterize_svg_groups_deeper_than: photocraft_doc::MAX_GROUP_DEPTH as u32,
+            rasterize_svg_groups_deeper_than: brahma_doc::MAX_GROUP_DEPTH as u32,
             recent_file_count: 20,
             recent_files: Vec::new(),
         }
@@ -510,7 +510,7 @@ impl Default for Export {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct Performance {
-    /// Memory PhotoCraft may use, in MB: bounds each document's pixels plus its History (the
+    /// Memory brahma may use, in MB: bounds each document's pixels plus its History (the
     /// oldest states are dropped beyond it).
     pub memory_usage_mb: u32,
     /// Undo steps kept per document (History panel states).
@@ -861,6 +861,14 @@ impl Default for RawDefaults {
     }
 }
 
+choice!(
+    /// Which AI provider brahma talks to with the user's own key (see [`crate::ai`]).
+    AiProvider { None = "none", Anthropic = "anthropic", OpenAi = "openai", Google = "google", Custom = "custom" } default None
+);
+
+/// Edit › Preferences › AI Integrations. The API keys are the user's own ("bring your own key"):
+/// they live only in this preferences file on the user's device, are sent only to the provider
+/// the user picked, and brahma has no account, sign-up or server of its own behind them.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 pub struct Integrations {
@@ -868,11 +876,35 @@ pub struct Integrations {
     pub allow_agent_control: bool,
     /// Default control port (0 = only when `--control` is given).
     pub control_port: u32,
+    /// The provider AI features call: none, anthropic, openai, google or custom.
+    pub ai_provider: AiProvider,
+    /// The model name sent to the provider (empty = the provider's default in [`crate::ai`]).
+    pub ai_model: String,
+    /// The user's own Anthropic API key, kept on this device.
+    pub anthropic_api_key: String,
+    /// The user's own OpenAI API key, kept on this device.
+    pub openai_api_key: String,
+    /// The user's own Google AI (Gemini) API key, kept on this device.
+    pub google_api_key: String,
+    /// Base URL of a custom OpenAI-compatible endpoint (a local server, a proxy, another vendor).
+    pub custom_base_url: String,
+    /// The key for the custom endpoint (may be empty for a local server).
+    pub custom_api_key: String,
 }
 
 impl Default for Integrations {
     fn default() -> Self {
-        Self { allow_agent_control: true, control_port: 0 }
+        Self {
+            allow_agent_control: true,
+            control_port: 0,
+            ai_provider: AiProvider::None,
+            ai_model: String::new(),
+            anthropic_api_key: String::new(),
+            openai_api_key: String::new(),
+            google_api_key: String::new(),
+            custom_base_url: String::new(),
+            custom_api_key: String::new(),
+        }
     }
 }
 
@@ -999,7 +1031,7 @@ pub const SECTIONS: [(&str, &str); 18] = [
 ];
 
 /// Preferences that nothing reads yet, so Edit › Preferences doesn't show them: a control that
-/// does nothing is worse than a missing one (https://github.com/storytold/photocraft/issues/204).
+/// does nothing is worse than a missing one (https://github.com/shep95/brahma/issues/204).
 /// They still load, save and round-trip through `prefs.get` / `prefs.set` unchanged.
 ///
 /// When you implement one, remove it here; the `prefs_usage` test fails while a listed
@@ -1051,6 +1083,7 @@ pub fn choices(path: &str) -> Option<&'static [&'static str]> {
         "general.colorPicker" => ColorPicker::NAMES,
         "general.imageInterpolation" => Interpolation::NAMES,
         "interface.theme" => Theme::NAMES,
+        "integrations.aiProvider" => AiProvider::NAMES,
         "interface.appearanceMode" => AppearanceMode::NAMES,
         "interface.darkTheme" => DarkTheme::NAMES,
         "interface.lightTheme" => LightTheme::NAMES,
@@ -1091,7 +1124,7 @@ pub fn range(path: &str) -> Option<(f64, f64)> {
         "fileHandling.autosaveMinutes" => (1.0, 240.0),
         "fileHandling.recentFileCount" => (0.0, 100.0),
         "tools.nudgeBundlePauseMs" => (100.0, 10_000.0),
-        "fileHandling.rasterizeSvgGroupsDeeperThan" => (0.0, photocraft_doc::MAX_GROUP_DEPTH as f64),
+        "fileHandling.rasterizeSvgGroupsDeeperThan" => (0.0, brahma_doc::MAX_GROUP_DEPTH as f64),
         "interface.notificationDurationSeconds" => (1.0, 120.0),
         "export.jpegQuality" | "export.webpQuality" => (1.0, 100.0),
         "performance.memoryUsageMb" => (256.0, 1_048_576.0),
@@ -1555,9 +1588,9 @@ impl Session {
             st.history.max_bytes = bytes;
             st.history.trim(&st.doc);
         }
-        photocraft_compose::set_effect_cache_budget(budget << 20);
+        brahma_compose::set_effect_cache_budget(budget << 20);
         // Without waiting for the system font scan: this runs on the UI thread at launch.
-        photocraft_text::set_shared_missing_glyph_protection(self.prefs().type_.missing_glyph_protection());
+        brahma_text::set_shared_missing_glyph_protection(self.prefs().type_.missing_glyph_protection());
         crate::plugin_cmds::sync_prefs(self);
     }
 
@@ -1604,7 +1637,7 @@ impl Session {
         let prefs: Preferences = serde_json::from_value(v).map_err(|e| format!("preferences: {e}"))?;
         if let Some(c) = color {
             self.color.settings = serde_json::from_value(c).unwrap_or_default();
-            photocraft_compose::psblend::set_text_gamma(self.color.settings.blend_text_gamma);
+            brahma_compose::psblend::set_text_gamma(self.color.settings.blend_text_gamma);
         }
         self.prefs.edit(|p| *p = prefs);
         if let Some(v) = presets {
@@ -1784,7 +1817,7 @@ fn prefs_set(s: &mut Session, p: &Value) -> Result<Value> {
         return Err(bad(cmd, e));
     }
     // `colorSettings.blendTextGamma` lives in the compositor too, as `edit.colorSettings` sets it.
-    photocraft_compose::psblend::set_text_gamma(s.color.settings.blend_text_gamma);
+    brahma_compose::psblend::set_text_gamma(s.color.settings.blend_text_gamma);
     s.apply_prefs();
     let view = s.prefs_view();
     let out: Map<String, Value> = changes.iter().map(|(k, _)| (k.clone(), get_path(&view, k).cloned().unwrap_or(Value::Null))).collect();
@@ -1814,7 +1847,7 @@ fn prefs_reset(s: &mut Session, p: &Value) -> Result<Value> {
         }
     }
     s.prefs.edit(|_| ());
-    photocraft_compose::psblend::set_text_gamma(s.color.settings.blend_text_gamma);
+    brahma_compose::psblend::set_text_gamma(s.color.settings.blend_text_gamma);
     s.apply_prefs();
     if path.is_some_and(|path| keyed(path).is_some()) {
         // The removed override is absent, so reading its old path would report an error.

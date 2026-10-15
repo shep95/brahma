@@ -2,25 +2,25 @@
 //! the Pen does.
 
 use egui::Modifiers;
-use photocraft_doc::{LayerContent, Path};
+use brahma_doc::{LayerContent, Path};
 use serde_json::json;
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::canvas::{ToolEvent, tool_event};
 use crate::state::Tool;
 
-fn app(tool: Tool) -> PhotocraftApp {
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+fn app(tool: Tool) -> BrahmaApp {
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
     app.run("file.new", json!({"width": 300, "height": 200})).unwrap();
     app.ui.tool = tool;
     app
 }
 
-fn work_path(app: &PhotocraftApp) -> Path {
+fn work_path(app: &BrahmaApp) -> Path {
     app.session.active().unwrap().doc.work_path.clone().expect("a work path")
 }
 
-fn click(app: &mut PhotocraftApp, x: f64, y: f64) {
+fn click(app: &mut BrahmaApp, x: f64, y: f64) {
     tool_event(app, ToolEvent::Down { x, y, pressure: 1.0 }, Modifiers::NONE);
     tool_event(app, ToolEvent::Up { x, y }, Modifiers::NONE);
 }
@@ -105,7 +105,7 @@ fn curvature_pen_clicks_make_a_smooth_path_through_every_point() {
     assert!(sp.knots[0].smooth && sp.knots[2].smooth);
 }
 
-fn ev(app: &mut PhotocraftApp, kind: &str, x: f64, y: f64, mods: Modifiers) {
+fn ev(app: &mut BrahmaApp, kind: &str, x: f64, y: f64, mods: Modifiers) {
     let e = match kind {
         "down" => ToolEvent::Down { x, y, pressure: 1.0 },
         "up" => ToolEvent::Up { x, y },

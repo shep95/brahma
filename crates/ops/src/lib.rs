@@ -1,6 +1,6 @@
 //! Undo/redo history.
 //!
-//! Because pixel tiles are `Arc`-shared copy-on-write (see `photocraft-raster`), a full
+//! Because pixel tiles are `Arc`-shared copy-on-write (see `brahma-raster`), a full
 //! [`Document`] clone costs O(layers + tiles) pointer copies, not pixel copies. History therefore
 //! stores whole-document snapshots per transaction, which is simple, obviously correct, and the
 //! same approach Photoshop's History panel exposes to users (one state per step).
@@ -13,7 +13,7 @@
 use std::collections::{HashSet, VecDeque};
 use std::sync::Arc;
 
-use photocraft_doc::{Document, LayerId};
+use brahma_doc::{Document, LayerId};
 
 mod tiles;
 
@@ -264,7 +264,7 @@ fn tile_bytes(doc: &Document, seen: &mut HashSet<usize>) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use photocraft_doc::{Color, ColorMode, Layer, SampleType, Size};
+    use brahma_doc::{Color, ColorMode, Layer, SampleType, Size};
 
     fn base() -> Document {
         Document::with_background("h", Size::new(64, 64), ColorMode::Rgb, SampleType::U8, Color::WHITE)
@@ -410,7 +410,7 @@ mod tests {
 
     #[test]
     fn fill_caches_and_smart_filter_masks_count_toward_history_bytes() {
-        use photocraft_doc::{Affine, Fill, FillCache, LayerContent, LayerMask, PixelFormat, SmartObject, SmartSource, Surface};
+        use brahma_doc::{Affine, Fill, FillCache, LayerContent, LayerMask, PixelFormat, SmartObject, SmartSource, Surface};
         let mut doc = Document::new("fills", Size::new(64, 64), ColorMode::Rgb, SampleType::U8);
         let mut fill = Layer::new("Fill", LayerContent::Fill(Fill::Solid(Color::WHITE)));
         let mut cache = Surface::new(PixelFormat::GRAY8);
@@ -446,7 +446,7 @@ mod tests {
 
     #[test]
     fn selection_tiles_count_current_and_history_without_double_counting() {
-        use photocraft_doc::{PixelFormat, Surface};
+        use brahma_doc::{PixelFormat, Surface};
         for depth in SampleType::ALL {
             let mut doc = Document::new("selection", Size::new(300, 64), ColorMode::Rgb, depth);
             let mut selection = Surface::new(PixelFormat::new(ColorMode::Grayscale, depth, false));
@@ -495,7 +495,7 @@ mod tests {
 
     #[test]
     fn selection_byte_budget_drops_old_masks_and_keeps_the_last_undo() {
-        use photocraft_doc::{PixelFormat, Surface};
+        use brahma_doc::{PixelFormat, Surface};
         for depth in SampleType::ALL {
             let mut doc = Document::new("selection", Size::new(64, 64), ColorMode::Rgb, depth);
             doc.selection = Some(Surface::new(PixelFormat::new(ColorMode::Grayscale, depth, false)));
@@ -539,13 +539,13 @@ mod tests {
         let mut layer = Layer::raster("Video", doc.pixel_format());
         let footage: Vec<_> = (0..frames)
             .map(|i| {
-                let mut surface = photocraft_doc::Surface::new(doc.pixel_format());
+                let mut surface = brahma_doc::Surface::new(doc.pixel_format());
                 surface.write_pixel(1, 1, &[i as f32 / frames as f32, 0.0, 0.0, 1.0]);
                 surface
             })
             .collect();
-        layer.content = photocraft_doc::LayerContent::Raster(footage[0].clone());
-        layer.video = Some(photocraft_doc::VideoData::new(footage, 24.0));
+        layer.content = brahma_doc::LayerContent::Raster(footage[0].clone());
+        layer.video = Some(brahma_doc::VideoData::new(footage, 24.0));
         doc.layers.push(layer);
         doc
     }
@@ -621,7 +621,7 @@ mod tests {
     /// count like layer pixels, shared ones once; undoing that step leaves them to the redo states.
     #[test]
     fn document_patterns_count_as_document_pixels() {
-        use photocraft_doc::{Pattern, Surface};
+        use brahma_doc::{Pattern, Surface};
         for depth in SampleType::ALL {
             let tile = 4 * 256 * 256 * depth.bytes();
             let mut cur = Arc::new(Document::new("patterns", Size::new(64, 64), ColorMode::Rgb, depth));
@@ -659,7 +659,7 @@ mod tests {
     fn counter_tracks_eviction_undo_redo_branching_purge_and_clones() {
         for depth in [SampleType::U8, SampleType::U16, SampleType::F32] {
             let mut cur = Arc::new(Document::with_background("h", Size::new(300, 64), ColorMode::Rgb, depth, Color::WHITE));
-            Arc::make_mut(&mut cur).selection = Some(photocraft_doc::Surface::new(photocraft_doc::PixelFormat::GRAY8));
+            Arc::make_mut(&mut cur).selection = Some(brahma_doc::Surface::new(brahma_doc::PixelFormat::GRAY8));
             let mut h = History::new(4);
             h.max_bytes = usize::MAX;
             for i in 0..8 {
@@ -696,7 +696,7 @@ mod tests {
 
     #[test]
     fn shared_masks_channels_and_repeated_snapshot_references_count_once() {
-        use photocraft_doc::{AlphaChannel, LayerMask, PixelFormat, Surface};
+        use brahma_doc::{AlphaChannel, LayerMask, PixelFormat, Surface};
         let mut doc = base();
         let mut gray = Surface::new(PixelFormat::GRAY8);
         gray.write_pixel(1, 1, &[1.0]);
@@ -756,12 +756,12 @@ mod tests {
 
     #[test]
     fn transferred_tiles_cannot_make_the_budget_check_underestimate_current() {
-        use photocraft_doc::{PixelFormat, Surface};
+        use brahma_doc::{PixelFormat, Surface};
         let before = Arc::new(base());
         let mut current = (*before).clone();
         let mut large = Surface::new(PixelFormat::new(ColorMode::Cmyk, SampleType::F32, true));
         large.write_pixel(256, 0, &[1.0; 5]);
-        current.layers[0].surface_mut().unwrap().put_tiles(large.take_tiles(photocraft_doc::Rect::from_xywh(256, 0, 1, 1)));
+        current.layers[0].surface_mut().unwrap().put_tiles(large.take_tiles(brahma_doc::Rect::from_xywh(256, 0, 1, 1)));
         let mut h = History::new(50);
         h.max_bytes = tile_bytes(&current, &mut HashSet::new()) - 1;
         h.record("A", before.clone(), LayerTarget::default());

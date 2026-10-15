@@ -6,16 +6,16 @@ use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
 use serde_json::json;
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::theme::ThemeKind;
 
 use super::{TabStrip, pro_tab_title};
 
 /// A real app window with `docs` documents named "ch1-pNN.png".
-fn harness(docs: usize, theme: ThemeKind) -> Harness<'static, PhotocraftApp> {
+fn harness(docs: usize, theme: ThemeKind) -> Harness<'static, BrahmaApp> {
     let mut h = Harness::builder().with_size(vec2(1000.0, 700.0)).with_max_steps(64).build_eframe(move |cc| {
-        PhotocraftApp::setup_context(&cc.egui_ctx, theme);
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        BrahmaApp::setup_context(&cc.egui_ctx, theme);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         // The theme is an interface preference, applied on the first frame: set the preference.
         app.run("prefs.set", json!({"values": {"interface.theme": theme.id()}})).unwrap();
         for n in 1..=docs {
@@ -27,11 +27,11 @@ fn harness(docs: usize, theme: ThemeKind) -> Harness<'static, PhotocraftApp> {
     h
 }
 
-fn strip(h: &Harness<'_, PhotocraftApp>) -> TabStrip {
+fn strip(h: &Harness<'_, BrahmaApp>) -> TabStrip {
     h.state().tab_strip.clone().expect("the strip is drawn")
 }
 
-fn has_menu(h: &Harness<'_, PhotocraftApp>) -> bool {
+fn has_menu(h: &Harness<'_, BrahmaApp>) -> bool {
     h.query_by_label("More documents").is_some()
 }
 
@@ -123,9 +123,9 @@ fn ctrl() -> egui::Modifiers {
 #[test]
 fn ctrl_tab_cycles_through_the_document_tabs() {
     let mut h = harness(3, ThemeKind::Pro);
-    let active = |h: &Harness<'_, PhotocraftApp>| h.state().session.active_index();
+    let active = |h: &Harness<'_, BrahmaApp>| h.state().session.active_index();
     assert_eq!(active(&h), Some(2), "the last new document is active");
-    let press = |h: &mut Harness<'_, PhotocraftApp>, shift: bool| {
+    let press = |h: &mut Harness<'_, BrahmaApp>, shift: bool| {
         h.key_press_modifiers(if shift { ctrl() | egui::Modifiers::SHIFT } else { ctrl() }, egui::Key::Tab);
         h.run_steps(2);
     };

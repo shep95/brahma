@@ -10,7 +10,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::state::DialogKind;
 
 /// View › Show flags (Photoshop defaults).
@@ -289,7 +289,7 @@ fn changed_flags<T: Copy>(now: T, def: T, keys: &[&str], slot: impl for<'a> Fn(&
 /// View › Extras, Show and Snap To as remembered across restarts (`Preferences::view_extras`):
 /// only what differs from the defaults, so a default changed in a later release still reaches
 /// users who never touched that item. `Null` when nothing differs.
-fn remembered(app: &PhotocraftApp) -> Value {
+fn remembered(app: &BrahmaApp) -> Value {
     let (v, e, def) = (&app.ui.view, &app.ui.extras, crate::state::Extras::default());
     let mut m = Map::new();
     if v.extras != ViewOptions::default().extras {
@@ -314,7 +314,7 @@ fn remembered(app: &PhotocraftApp) -> Value {
 /// Remember View › Extras, Show and Snap To in the preferences once the user lets go of the
 /// pointer (#3762). Cheap: a small JSON compare per frame. Run every frame, so items set by the
 /// control channel or the Show Extras Options dialog are remembered too.
-pub fn persist(app: &mut PhotocraftApp, ctx: &egui::Context) {
+pub fn persist(app: &mut BrahmaApp, ctx: &egui::Context) {
     if ctx.input(|i| i.pointer.any_down()) {
         return;
     }
@@ -326,7 +326,7 @@ pub fn persist(app: &mut PhotocraftApp, ctx: &egui::Context) {
 
 /// Restore the remembered View › Extras, Show and Snap To items at launch. A hand-edited file
 /// can't break them: an unknown key or a value that isn't a boolean keeps its default.
-pub fn restore(app: &mut PhotocraftApp) {
+pub fn restore(app: &mut BrahmaApp) {
     let saved = app.session.prefs().view_extras.clone();
     if !saved.is_null() && !saved.is_object() {
         log::warn!("Preferences: the remembered View › Show items are not an object; using the defaults");
@@ -355,7 +355,7 @@ pub fn restore(app: &mut PhotocraftApp) {
 }
 
 /// Window › <panel>: (panel, dock tab) for panels that live as tabs of a dock card.
-fn panel_tab(app: &PhotocraftApp, id: &str) -> Option<(&'static str, usize)> {
+fn panel_tab(app: &BrahmaApp, id: &str) -> Option<(&'static str, usize)> {
     let pro = app.ui.theme.is_pro();
     Some(match id {
         "window.panel.info" => ("navigator", 2),
@@ -378,7 +378,7 @@ fn panel_tab(app: &PhotocraftApp, id: &str) -> Option<(&'static str, usize)> {
     })
 }
 
-fn panel_state<'a>(app: &'a mut PhotocraftApp, panel: &str) -> (&'a mut bool, &'a mut usize) {
+fn panel_state<'a>(app: &'a mut BrahmaApp, panel: &str) -> (&'a mut bool, &'a mut usize) {
     let (p, t) = (&mut app.ui.panels, &mut app.ui.dock_tabs);
     match panel {
         "navigator" => (&mut p.navigator, &mut t.navigator),
@@ -458,7 +458,7 @@ pub fn handles(id: &str) -> bool {
     )
 }
 
-pub fn is_enabled(app: &PhotocraftApp, id: &str) -> Option<bool> {
+pub fn is_enabled(app: &BrahmaApp, id: &str) -> Option<bool> {
     if !handles(id) && !wraps(id) {
         return None;
     }
@@ -481,7 +481,7 @@ pub fn is_enabled(app: &PhotocraftApp, id: &str) -> Option<bool> {
     })
 }
 
-pub fn checked(app: &PhotocraftApp, id: &str) -> Option<bool> {
+pub fn checked(app: &BrahmaApp, id: &str) -> Option<bool> {
     let o = &app.ui.view;
     if let Some(k) = id.strip_prefix("view.show.") {
         let mut s = o.show;
@@ -541,13 +541,13 @@ pub fn checked(app: &PhotocraftApp, id: &str) -> Option<bool> {
 /// options bar and Properties show: the one being edited, else the active or a selected type layer.
 /// Anti-aliasing and orientation stay check items (`Some(false)`) without a type layer: a native
 /// menu can't change an item's kind in place.
-fn type_checked(app: &PhotocraftApp, id: &str) -> Option<bool> {
+fn type_checked(app: &BrahmaApp, id: &str) -> Option<bool> {
     let t = crate::type_tool::target_text(app);
     if let Some(k) = id.strip_prefix("type.antiAlias.") {
-        return Some(t.is_some_and(|t| photocraft_engine::type_extra_cmds::aa_name(t.antialias) == k));
+        return Some(t.is_some_and(|t| brahma_engine::type_extra_cmds::aa_name(t.antialias) == k));
     }
     if let Some(k) = id.strip_prefix("type.orientation.") {
-        return Some(t.is_some_and(|t| (t.orientation == photocraft_doc::text::Orientation::Vertical) == (k == "vertical")));
+        return Some(t.is_some_and(|t| (t.orientation == brahma_doc::text::Orientation::Vertical) == (k == "vertical")));
     }
     let t = t?;
     let tag = match id.strip_prefix("type.openType.")? {
@@ -563,7 +563,7 @@ fn type_checked(app: &PhotocraftApp, id: &str) -> Option<bool> {
         "fractions" => "frac",
         _ => return None,
     };
-    Some(t.char_runs().first().is_some_and(|r| photocraft_engine::type_extra_cmds::feature_on(&r.style, tag)))
+    Some(t.char_runs().first().is_some_and(|r| brahma_engine::type_extra_cmds::feature_on(&r.style, tag)))
 }
 
 /// Engine commands that get a dialog or file picker here when invoked without parameters.
@@ -610,7 +610,7 @@ fn no_params(p: &Value) -> bool {
 
 /// Run a View/Window/Type shell command, or front an engine command with its dialog. `None` when
 /// `id` isn't ours.
-pub fn invoke(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
+pub fn invoke(app: &mut BrahmaApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
     if wraps(id) {
         return front(app, ctx, id, params);
     }
@@ -624,7 +624,7 @@ fn flag_param(p: &Value, cur: bool) -> bool {
     p.get("on").and_then(Value::as_bool).unwrap_or(!cur)
 }
 
-fn run(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, p: &Value) -> Result<Value, String> {
+fn run(app: &mut BrahmaApp, ctx: &egui::Context, id: &str, p: &Value) -> Result<Value, String> {
     if let Some((panel, tab)) = panel_tab(app, id) {
         let group = crate::dock::Group::from_key(panel);
         let collapsed = group.is_some_and(|g| app.ui.dock.is_collapsed(g));
@@ -764,10 +764,10 @@ fn run(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, p: &Value) -> Res
 }
 
 /// View › Fit Layer(s) on Screen: zoom and centre on the selected layers' bounds.
-fn fit_layers(app: &mut PhotocraftApp) -> Result<Value, String> {
+fn fit_layers(app: &mut BrahmaApp) -> Result<Value, String> {
     let i = app.session.active_index().ok_or("no document")?;
     let st = app.session.active().ok_or("no document")?;
-    let mut b = photocraft_geom::Rect::EMPTY;
+    let mut b = brahma_geom::Rect::EMPTY;
     for id in st.selected_layers() {
         if let Some(r) = st.doc.layer(id).and_then(|l| l.surface()).map(|s| s.content_bounds()) {
             b = if b.is_empty() { r } else { b.union(&r) };
@@ -797,7 +797,7 @@ fn screen_position(v: &Value) -> Option<[f32; 2]> {
     Some([n(0)?, n(1)?])
 }
 
-pub(crate) fn float_window(app: &mut PhotocraftApp, doc: usize, offset: usize) -> u64 {
+pub(crate) fn float_window(app: &mut BrahmaApp, doc: usize, offset: usize) -> u64 {
     let wid = app.ui.alloc_id();
     let mut view = app.ui.views.get(doc).cloned().unwrap_or_default();
     view.fit_pending = offset > 0 || view.fit_pending;
@@ -805,7 +805,7 @@ pub(crate) fn float_window(app: &mut PhotocraftApp, doc: usize, offset: usize) -
     wid
 }
 
-fn arrange(app: &mut PhotocraftApp, k: &str, p: &Value) -> Result<Value, String> {
+fn arrange(app: &mut BrahmaApp, k: &str, p: &Value) -> Result<Value, String> {
     if LAYOUTS.contains(&k) {
         app.ui.view.arrange = k.to_string();
         // Each document fits its new cell.
@@ -920,7 +920,7 @@ pub fn cells(layout: &str, rect: egui::Rect, n: usize) -> Option<Vec<egui::Rect>
 /// File › Open EXR Parts…: pick an EXR, then choose the parts and channel groups that become
 /// the layers of one document (a Maya/Arnold render writes one part per AOV). The dialog is
 /// a plain command form, so the control channel can drive the same selection headlessly.
-fn open_exr_parts_dialog(app: &mut PhotocraftApp) -> Option<Result<Value, String>> {
+fn open_exr_parts_dialog(app: &mut BrahmaApp) -> Option<Result<Value, String>> {
     Some(app.pick_file_bytes_filtered(&["exr"], |app, name, _bytes| {
         let info = app.run("file.exrParts", json!({"path": name})).map_err(|e| e.to_string())?;
         let entries = info.as_array().cloned().unwrap_or_default();
@@ -970,7 +970,7 @@ fn open_exr_parts_dialog(app: &mut PhotocraftApp) -> Option<Result<Value, String
     }))
 }
 
-fn form(app: &mut PhotocraftApp, command: &str, label: &str, fields: Value, choices: Value) -> u64 {
+fn form(app: &mut BrahmaApp, command: &str, label: &str, fields: Value, choices: Value) -> u64 {
     let mut f = Map::new();
     f.insert("__command".into(), json!(command));
     f.insert("__label".into(), json!(label));
@@ -1047,7 +1047,7 @@ mod form_reset_tests {
 
     #[test]
     fn alt_reset_restores_form_orig() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         let id = form(&mut app, "test.form", "Test", json!({"radius": 5.0, "on": true}), json!({}));
         let f = &mut app.ui.dialog_mut(id).unwrap().fields;
         f.insert("radius".into(), json!(99.0));
@@ -1144,7 +1144,7 @@ fn camera_data(ui: &mut egui::Ui, f: &Map<String, Value>) {
     ui.label(egui::RichText::new(tl!("Camera Data")).font(crate::theme::semibold(13.0)));
     ui.add_space(4.0);
     egui::Grid::new("form-camera-data").num_columns(2).spacing([12.0, 4.0]).show(ui, |ui| {
-        for (key, label) in photocraft_engine::file_cmds::CAMERA_FIELDS {
+        for (key, label) in brahma_engine::file_cmds::CAMERA_FIELDS {
             if let Some(v) = camera.get(key).and_then(Value::as_str) {
                 ui.label(crate::i18n::tr_ctx(crate::i18n::current(), "cameraData", label));
                 ui.add(egui::Label::new(v).selectable(true));
@@ -1155,11 +1155,11 @@ fn camera_data(ui: &mut egui::Ui, f: &Map<String, Value>) {
 }
 
 /// Folder the batch dialogs start from: next to the active document, else the working directory.
-fn default_dir(app: &PhotocraftApp) -> String {
+fn default_dir(app: &BrahmaApp) -> String {
     app.session.active().and_then(|d| d.path.as_deref()).and_then(|p| p.rfind(['/', '\\']).map(|i| p[..i].to_string())).unwrap_or_else(|| ".".into())
 }
 
-fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
+fn front(app: &mut BrahmaApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
     if id == "file.closeAll" || id == "file.closeOthers" {
         // Keep the remaining document's view (views are index-aligned with documents).
         let keep = app.session.active_index().and_then(|i| app.ui.views.get(i).cloned());
@@ -1190,8 +1190,8 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
     }
     let doc = app.session.active().map(|d| (d.doc.size.width, d.doc.size.height, d.doc.name.clone()));
     let dir = default_dir(app);
-    let label = photocraft_engine::commands::find(id).map_or(id, |c| c.label);
-    let dialog = |app: &mut PhotocraftApp, fields: Value, choices: Value| Some(Ok(json!({"dialog": form(app, id, label, fields, choices)})));
+    let label = brahma_engine::commands::find(id).map_or(id, |c| c.label);
+    let dialog = |app: &mut BrahmaApp, fields: Value, choices: Value| Some(Ok(json!({"dialog": form(app, id, label, fields, choices)})));
     match id {
         "file.openAs" => Some(app.open_dialog_file()),
         "file.openExrParts" => open_exr_parts_dialog(app),
@@ -1222,7 +1222,7 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
             let (doc, layer) = (st.doc.id, st.active_layer?);
             Some(app.pick_file_bytes(move |app, name, bytes| {
                 app.with_document(doc, |app| {
-                    let r = photocraft_engine::smart_cmds::replace_contents_bytes(&mut app.session, layer, &name, bytes).map_err(|e| e.to_string());
+                    let r = brahma_engine::smart_cmds::replace_contents_bytes(&mut app.session, layer, &name, bytes).map_err(|e| e.to_string());
                     app.sync_views();
                     r
                 })
@@ -1232,7 +1232,7 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
         "layer.smartObjects.convertToLinked" => {
             let st = app.session.active()?;
             let (doc, layer) = (st.doc.id, st.active_layer?);
-            let (name, _) = match photocraft_engine::smart_cmds::contents_of(&st.doc, layer) {
+            let (name, _) = match brahma_engine::smart_cmds::contents_of(&st.doc, layer) {
                 Ok(c) => c,
                 Err(e) => return Some(Err(e.to_string())),
             };
@@ -1285,7 +1285,7 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
         }
         "layer.new.artboard" => {
             let (w, h, _) = doc?;
-            let presets: Vec<&str> = std::iter::once("").chain(photocraft_engine::artboard_cmds::PRESETS.iter().map(|p| p.0)).collect();
+            let presets: Vec<&str> = std::iter::once("").chain(brahma_engine::artboard_cmds::PRESETS.iter().map(|p| p.0)).collect();
             dialog(
                 app,
                 json!({"name": "", "preset": "", "width": w, "height": h, "background": "white"}),
@@ -1302,7 +1302,7 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
                 !chosen.is_empty()
                     && chosen.iter().all(|id| {
                         st.doc.layers.iter().any(|root| root.id == *id)
-                            && st.doc.layer(*id).is_some_and(|layer| layer.visible && matches!(layer.content, photocraft_doc::LayerContent::Adjustment(_)))
+                            && st.doc.layer(*id).is_some_and(|layer| layer.visible && matches!(layer.content, brahma_doc::LayerContent::Adjustment(_)))
                     })
             });
             let scope = if selected_adjustments { "selected" } else { "all" };
@@ -1347,9 +1347,9 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
             let st = app.session.active()?;
             let d = &st.doc;
             let mode = d.pixel_format().mode;
-            let mut chans: Vec<String> = vec![photocraft_engine::channel_cmds::composite_name(mode).to_string()];
+            let mut chans: Vec<String> = vec![brahma_engine::channel_cmds::composite_name(mode).to_string()];
             if mode.color_channels() > 1 {
-                chans.extend(photocraft_engine::channel_cmds::color_names(mode).iter().map(|n| n.to_string()));
+                chans.extend(brahma_engine::channel_cmds::color_names(mode).iter().map(|n| n.to_string()));
             }
             chans.extend(d.channels.iter().map(|c| c.name.clone()));
             let alphas: Vec<String> = std::iter::once("new".to_string()).chain(d.channels.iter().map(|c| c.name.clone())).collect();
@@ -1428,7 +1428,7 @@ fn front(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value)
 /// File › Save a Copy: pick a name, encode with the export service, write; the document's path
 /// and saved state are untouched. An action being recorded keeps it as a `file.saveACopy` step
 /// with its path (#4373).
-fn save_a_copy(app: &mut PhotocraftApp) -> Result<Value, String> {
+fn save_a_copy(app: &mut BrahmaApp) -> Result<Value, String> {
     let doc = app.session.active().ok_or("no document")?.doc.clone();
     let stem = doc.name.rsplit_once('.').map_or(doc.name.as_str(), |(a, _)| a);
     let suggested = format!("{stem} copy.psd");
@@ -1454,10 +1454,10 @@ fn save_a_copy(app: &mut PhotocraftApp) -> Result<Value, String> {
 /// Writes `doc` to `path` as a copy (Save a Copy, and its replayed action step): the document's
 /// path and saved state are untouched. `tga_bits` is the Targa answer, when there is one.
 pub(crate) fn write_copy(
-    app: &mut PhotocraftApp,
-    doc: &photocraft_doc::Document,
+    app: &mut BrahmaApp,
+    doc: &brahma_doc::Document,
     path: &str,
-    tga_bits: Option<photocraft_io::TgaBits>,
+    tga_bits: Option<brahma_io::TgaBits>,
 ) -> Result<Value, String> {
     let settings = crate::ExportSettings { tga_bits, ..app.save_settings() };
     let export = app.services.export.as_ref().ok_or("no exporter configured")?;
@@ -1473,11 +1473,11 @@ pub(crate) fn write_copy(
 }
 
 /// Layer › Smart Objects › Export Contents: saves the contents file under its own name by default.
-fn export_contents(app: &mut PhotocraftApp) -> Result<Value, String> {
+fn export_contents(app: &mut BrahmaApp) -> Result<Value, String> {
     let st = app.session.active().ok_or("no document")?;
     let layer = st.active_layer.ok_or("no layer selected")?;
     // The contents as they were when asked, like Save a Copy.
-    let (name, bytes) = photocraft_engine::smart_cmds::contents_of(&st.doc, layer).map_err(|e| e.to_string())?;
+    let (name, bytes) = brahma_engine::smart_cmds::contents_of(&st.doc, layer).map_err(|e| e.to_string())?;
     app.pick_save(&name.clone(), move |app, path| {
         let write = app.services.write.as_mut().ok_or("no writer configured")?;
         write(&path, &bytes)?;

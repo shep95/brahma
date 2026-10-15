@@ -1,49 +1,49 @@
-# Quick Selection stroke performance
+# quick selection stroke performance
 
-Measured 2026-10-10 on an AWS c7i.4xlarge, Intel Xeon Platinum 8488C,
-16 vCPUs, 32 GiB RAM, Ubuntu 24.04, Rust 1.99.0. Release builds and the
-default native worker count. Builds and other tests were idle during timing.
-Algorithm commit: `78dca424510bbdecb01228a4a98a971fd070b658`.
+measured 2026-10-10 on an AWS c7i.4xlarge, intel xeon platinum 8488c,
+16 vcpus, 32 gib RAM, ubuntu 24.04, rust 1.99.0. release builds and the
+default native worker count. builds and other tests were idle during timing.
+algorithm commit: `78dca424510bbdecb01228a4a98a971fd070b658`.
 
-## What changed
+## what changed
 
-The fitted Quick Selection energy, brush footprint, costs, weights, working
+the fitted quick selection energy, brush footprint, costs, weights, working
 resolution, boundary bands and window expansion rules stay the same.
 
-Large finite graphs with both terminal directions use FIFO push/relabel,
-implemented from [Goldberg and Tarjan (JACM 1988)](https://doi.org/10.1145/48014.61051).
-Local excess pushes replace repeated augmenting paths. Periodic global
+large finite graphs with both terminal directions use FIFO push/relabel,
+implemented from goldberg and tarjan (JACM 1988).
+local excess pushes replace repeated augmenting paths. periodic global
 relabelling computes distances to the sink and, for the remaining vertices,
-back to the source. Returning unused source flow is necessary to retain a
+back to the source. returning unused source flow is necessary to retain a
 feasible residual graph and support another solve after adding capacities.
-The final source-reachability pass returns the smallest source-side cut.
-Graphs below 4096 nodes, one-terminal graphs, and graphs with nonfinite or
-negative edge capacities keep the existing Boykov-Kolmogorov implementation.
-Both solvers use the existing f32 residual capacities and saturation epsilon.
-The new solver stores f32 reverse source capacities and f64 excess, 12 bytes
+the final source-reachability pass returns the smallest source-side cut.
+graphs below 4096 nodes, one-terminal graphs, and graphs with nonfinite or
+negative edge capacities keep the existing boykov-kolmogorov implementation.
+both solvers use the existing f32 residual capacities and saturation epsilon.
+the new solver stores f32 reverse source capacities and f64 excess, 12 bytes
 per free graph node, and reuses the graph's height, current-arc and active arrays.
 
-Graph construction skips weights between two fixed pixels. With fewer than
+graph construction skips weights between two fixed pixels. with fewer than
 one free pixel in eight, a five-way merge enumerates just the canonical edge
-sources incident to free pixels, in their original raster order. This makes
-edge enumeration and weight evaluation O(free pixels), while the existing
-indexing and terminal setup remain linear in the working image. Preserving
+sources incident to free pixels, in their original raster order. this makes
+edge enumeration and weight evaluation o(free pixels), while the existing
+indexing and terminal setup remain linear in the working image. preserving
 edge order also preserves f32 accumulation into fixed-neighbour terminals.
 
-## Raster surface strokes
+## raster surface strokes
 
-The timed call is the full `quick_select` CPU pipeline through `SurfaceSampler`,
+the timed call is the full `quick_select` CPU pipeline through `SurfaceSampler`,
 as used by `select.quick`: raster reading and depth conversion, RGB sampling,
 window expansion, footprint and distance costs, coarse-to-fine cuts, mask
-upsampling and region trimming. Document construction is outside the timer.
-The stroke paints three rows across a 2400 x 1200 textured object with a
-180 px brush. The fixture is deterministic synthetic RGB with a contrasting
+upsampling and region trimming. document construction is outside the timer.
+the stroke paints three rows across a 2400 x 1200 textured object with a
+180 px brush. the fixture is deterministic synthetic RGB with a contrasting
 background and a small texture component.
 
-One warm pair, then five alternating before/after pairs per depth and document.
-The table reports medians. Every run asserts identical bounds and every mask byte.
+one warm pair, then five alternating before/after pairs per depth and document.
+the table reports medians. every run asserts identical bounds and every mask byte.
 
-| Document | Depth | Before (ms) | After (ms) | Speedup |
+| document | depth | before (ms) | after (ms) | speedup |
 | --- | --- | --- | --- | --- |
 | 6000x4000 | 8-bit | 747.60 | 201.96 | 3.70x |
 | 6000x4000 | 16-bit | 747.36 | 208.29 | 3.59x |
@@ -52,16 +52,16 @@ The table reports medians. Every run asserts identical bounds and every mask byt
 | 7200x5000 | 16-bit | 719.26 | 207.96 | 3.46x |
 | 7200x5000 | 32f | 732.08 | 205.96 | 3.55x |
 
-## Other complete CPU strokes
+## other complete CPU strokes
 
-These use `ImageSampler` to isolate the same complete stroke pipeline from
-raster storage conversion. One warm pair and three alternating measured pairs.
-The click uses a 30 px brush on a 220 x 220 object; the long stroke uses a
+these use `ImageSampler` to isolate the same complete stroke pipeline from
+raster storage conversion. one warm pair and three alternating measured pairs.
+the click uses a 30 px brush on a 220 x 220 object; the long stroke uses a
 256 px brush across 2000 px on a 2400 x 1000 object; paint-object is the
-three-row stroke above. All 24 MP and 36 MP fixtures retain normal working
+three-row stroke above. all 24 mp and 36 mp fixtures retain normal working
 resolution and automatic window expansion.
 
-| Document | Stroke | Before (ms) | After (ms) | Speedup |
+| document | stroke | before (ms) | after (ms) | speedup |
 | --- | --- | --- | --- | --- |
 | 6000x4000 | click | 113.60 | 39.90 | 2.85x |
 | 6000x4000 | long-stroke | 1199.74 | 360.31 | 3.33x |
@@ -70,36 +70,36 @@ resolution and automatic window expansion.
 | 7200x5000 | long-stroke | 1168.25 | 353.19 | 3.31x |
 | 7200x5000 | paint-object | 725.02 | 201.60 | 3.60x |
 
-## Correctness and regression checks
+## correctness and regression checks
 
-- 1170 integer-capacity graphs compare flow and all labels against BK, then solve again.
-- 600 arbitrary f32-capacity graphs compare flows and all labels against BK.
+- 1170 integer-capacity graphs compare flow and all labels against bk, then solve again.
+- 600 arbitrary f32-capacity graphs compare flows and all labels against bk.
 - 240 fractional graphs enumerate every possible cut, checking optimal energy
-  and the intersection of all optimal source sets independently of BK.
-- A 5000-node disconnected chain checks return-to-source progress, a repeated
+  and the intersection of all optimal source sets independently of bk.
+- a 5000-node disconnected chain checks return-to-source progress, a repeated
   solve, and adding a link before another solve.
-- Exhaustive small constraint masks and edge-source masks cover borders,
+- exhaustive small constraint masks and edge-source masks cover borders,
   diagonals, degenerate dimensions and tied cuts.
-- 36 full Quick Selection comparisons cover texture, low contrast, gradients,
+- 36 full quick selection comparisons cover texture, low contrast, gradients,
   noise, thin bars, discs, uniform areas and canvas-border strokes, with direct
   and coarse-to-fine cuts.
-- Every measured workflow compares full region bounds and mask bytes.
+- every measured workflow compares full region bounds and mask bytes.
 
-## Reproduction
+## reproduction
 
 ```sh
-cargo test --release -p photocraft-algo quick_selection_surface_release_comparison -- --ignored --nocapture --test-threads=1
-cargo test --release -p photocraft-algo quick_selection_workflow_release_comparison -- --ignored --nocapture --test-threads=1
-cargo test --release -p photocraft-algo solver_workload_release_comparison -- --ignored --nocapture --test-threads=1
+cargo test --release -p brahma-algo quick_selection_surface_release_comparison -- --ignored --nocapture --test-threads=1
+cargo test --release -p brahma-algo quick_selection_workflow_release_comparison -- --ignored --nocapture --test-threads=1
+cargo test --release -p brahma-algo solver_workload_release_comparison -- --ignored --nocapture --test-threads=1
 ```
 
-The private const test path keeps the previous dense weight scan and the
-unchanged BK solver, sharing the rest of the full stroke pipeline. Solver-only
+the private const test path keeps the previous dense weight scan and the
+unchanged bk solver, sharing the rest of the full stroke pipeline. solver-only
 fixtures additionally cover chains, one-terminal grids and dense terminal grids
-at 1024, 4096, 16384 and 65536 nodes. Their numbers measure just the solve,
+at 1024, 4096, 16384 and 65536 nodes. their numbers measure just the solve,
 with graph cloning outside the timer.
 
-## Raw samples
+## raw samples
 
 ```text
 SURFACE 6000x4000 format=PixelFormat { mode: Rgb, sample: U8, alpha: true } old_ms=[745.840809, 746.246292, 747.604875, 747.82731, 748.878614] new_ms=[201.579251, 201.723446, 201.956769, 202.38253, 202.948418] speedup=3.70

@@ -1,4 +1,4 @@
-use photocraft_engine::Session;
+use brahma_engine::Session;
 use serde_json::json;
 
 #[test]

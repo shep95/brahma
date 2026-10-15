@@ -1,30 +1,30 @@
-# Batch output naming
+# batch output naming
 
-Select a recorded action, then open **File > Automate > Batch**. Set the input and output
-folders. **File Naming** accepts a filename stem template; the selected export format supplies
-the extension. Leave it blank to keep the existing source filenames and collision reporting.
+select a recorded action, then open **file > automate > batch**. set the input and output
+folders. **file naming** accepts a filename stem template; the selected export format supplies
+the extension. leave it blank to keep the existing source filenames and collision reporting.
 
-| Token | Value |
+| token | value |
 | --- | --- |
-| `{name}` | Input filename without its last extension |
-| `{serial}` | Input position plus **Starting serial** (default 1), padded to at least three digits |
+| `{name}` | input filename without its last extension |
+| `{serial}` | input position plus **starting serial** (default 1), padded to at least three digits |
 | `{date}` | UTC date at the start of the batch, in `YYYY-MM-DD` form |
 
-For example, `{name}_{serial}` with starting serial 7 writes `photo_007.png` and
-`photo_008.png` for two PNG inputs named `photo.png`. A serial after 999 becomes 1000;
-it does not wrap. Folder inputs use the existing filename order, and an explicit input array
-keeps its order. Failed inputs consume their position, so later filenames do not shift.
-Braces in an input filename are literal text, not additional tokens.
+for example, `{name}_{serial}` with starting serial 7 writes `photo_007.png` and
+`photo_008.png` for two PNG inputs named `photo.png`. a serial after 999 becomes 1000;
+it does not wrap. folder inputs use the existing filename order, and an explicit input array
+keeps its order. failed inputs consume their position, so later filenames do not shift.
+braces in an input filename are literal text, not additional tokens.
 
-Unknown tokens, unmatched braces, invalid parameter types, path separators, reserved filename
+unknown tokens, unmatched braces, invalid parameter types, path separators, reserved filename
 characters, excessive filename length (255 UTF-8 bytes), and serial overflow are rejected before
-export writes begin. Starting serial must be an integer from 1 to 4,294,967,295.
-A custom template that resolves to an existing input file is also rejected; choose a separate
-destination or another template. Ordinary per-file read, action and save failures still appear
-in the batch's `errors` result. When two results share a name, including a case-only difference,
+export writes begin. starting serial must be an integer from 1 to 4,294,967,295.
+a custom template that resolves to an existing input file is also rejected; choose a separate
+destination or another template. ordinary per-file read, action and save failures still appear
+in the batch's `errors` result. when two results share a name, including a case-only difference,
 the first successful result is kept and the later collision is reported.
 
-The same options are available on `file.automate.batch` through the engine command interface:
+the same options are available on `file.automate.batch` through the engine command interface:
 
 ```json
 {
@@ -37,5 +37,5 @@ The same options are available on `file.automate.batch` through the engine comma
 }
 ```
 
-The CLI can invoke this command with `run --cmd file.automate.batch --params ...`.
-This option belongs to Batch; Image Processor and droplet options retain their existing behavior.
+the CLI can invoke this command with `run --cmd file.automate.batch --params ...`.
+this option belongs to batch; image processor and droplet options retain their existing behavior.

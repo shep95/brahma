@@ -3,10 +3,10 @@
 mod common;
 
 use common::temp_dir;
-use photocraft_color::{ColorMode, SampleType};
-use photocraft_doc::Document;
-use photocraft_format::{PcraftWriter, SaveOptions};
-use photocraft_geom::Size;
+use brahma_color::{ColorMode, SampleType};
+use brahma_doc::Document;
+use brahma_format::{PcraftWriter, SaveOptions};
+use brahma_geom::Size;
 
 fn empty_doc() -> Document {
     Document::new("clean", Size::new(1, 1), ColorMode::Rgb, SampleType::U8)
@@ -34,8 +34,8 @@ fn directory_cleanup_preserves_unrelated_zst_files() {
 #[cfg(any(target_os = "linux", target_os = "android", target_vendor = "apple"))]
 mod permissions {
     use super::*;
-    use photocraft_format::load_path;
-    use photocraft_raster::Rgba8Image;
+    use brahma_format::load_path;
+    use brahma_raster::Rgba8Image;
     use std::os::unix::fs::{PermissionsExt, symlink};
     use std::path::{Path, PathBuf};
 

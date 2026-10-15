@@ -6,7 +6,7 @@ use egui_kittest::kittest::Queryable;
 use serde_json::{Value, json};
 
 use super::{KysCommand, parse, plan};
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::file_dialog::FileDialogAnswer;
 
 /// A cut-down set in Photoshop's own layout: BOM, a dynamic (filter) row, static rows with
@@ -53,8 +53,8 @@ const SAMPLE: &str = "\u{feff}<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </photoshop-keyboard-shortcuts>
 ";
 
-fn app() -> PhotocraftApp {
-    PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default())
+fn app() -> BrahmaApp {
+    BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default())
 }
 
 #[test]
@@ -118,8 +118,8 @@ fn import_button_fills_the_dialog_and_ok_applies_the_set() {
     let answers = vec![Some(FileDialogAnswer::Contents("/sets/texcuts.kys".into(), SAMPLE.as_bytes().to_vec()))];
     let services = crate::Services { file_dialog: Some(crate::file_dialog::fake(answers).0), ..Default::default() };
     let mut h = Harness::builder().with_size(egui::vec2(1100.0, 760.0)).with_max_steps(64).build_eframe(|cc| {
-        PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
-        PhotocraftApp::new(photocraft_engine::Session::new(), services)
+        BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
+        BrahmaApp::new(brahma_engine::Session::new(), services)
     });
     let ctx = h.ctx.clone();
     // A hand-made override the file agrees with the default on: the import clears it.
@@ -131,7 +131,7 @@ fn import_button_fills_the_dialog_and_ok_applies_the_set() {
     h.run_steps(2);
     h.get_by_label("Import Shortcuts…").click();
     h.run_steps(3);
-    let field = |h: &Harness<'_, PhotocraftApp>, name: &str| -> Value {
+    let field = |h: &Harness<'_, BrahmaApp>, name: &str| -> Value {
         h.state().ui.dialogs.iter().find(|d| d.id == id).unwrap().fields.get(name).cloned().unwrap_or(Value::Null)
     };
     assert_eq!(h.state().ui.status, "", "the import failed");
@@ -143,7 +143,7 @@ fn import_button_fills_the_dialog_and_ok_applies_the_set() {
     assert!(overrides.get("select.all").is_none(), "already the default: {overrides}");
     assert!(overrides.get("view.zoomIn").is_none(), "Cmd+= is among the keys, so the default stays: {overrides}");
     let message = field(&h, "message");
-    assert_eq!(message, json!("Imported 9 shortcuts from texcuts.kys. Click OK to keep them. 2 commands are not in PhotoCraft."));
+    assert_eq!(message, json!("Imported 9 shortcuts from texcuts.kys. Click OK to keep them. 2 commands are not in brahma."));
     assert_eq!(field(&h, "capture"), json!(false));
     assert_eq!(field(&h, "messageWarning"), json!(false), "an import clears the earlier shortcut conflict warning");
     // Nothing is applied until OK.
@@ -209,7 +209,7 @@ type Store = std::sync::Arc<std::sync::Mutex<Option<String>>>;
 
 /// An app beside a Photoshop whose live set is `set`; `saved_prefs` is this app's own saved
 /// preferences file, and the store receives what it writes back.
-fn with_photoshop(set: &'static str, saved_prefs: Option<&'static str>) -> (PhotocraftApp, Store) {
+fn with_photoshop(set: &'static str, saved_prefs: Option<&'static str>) -> (BrahmaApp, Store) {
     let store: Store = Default::default();
     let written = store.clone();
     let services = crate::Services {
@@ -223,7 +223,7 @@ fn with_photoshop(set: &'static str, saved_prefs: Option<&'static str>) -> (Phot
         })),
         ..Default::default()
     };
-    (PhotocraftApp::new(photocraft_engine::Session::new(), services), store)
+    (BrahmaApp::new(brahma_engine::Session::new(), services), store)
 }
 
 /// First launch beside Photoshop: its live set is offered, not applied. Import applies it,
@@ -277,7 +277,7 @@ fn dont_import_keeps_the_defaults_and_is_not_asked_again() {
 #[test]
 fn the_prompt_shows_the_set_and_its_import_button_applies_it() {
     let mut h = Harness::builder().with_size(egui::vec2(1100.0, 760.0)).with_max_steps(64).build_eframe(|cc| {
-        PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+        BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
         with_photoshop(SAMPLE, None).0
     });
     h.run_steps(2);

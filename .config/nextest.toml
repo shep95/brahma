@@ -11,5 +11,5 @@
 gpu = { max-threads = 4 }
 
 [[profile.default.overrides]]
-filter = 'package(photocraft-gpu) | (package(photocraft-ui-egui) & (kind(test) | test(/canvas|gpu|mip|type_tool/)))'
+filter = 'package(brahma-gpu) | (package(brahma-ui-egui) & (kind(test) | test(/canvas|gpu|mip|type_tool/)))'
 test-group = 'gpu'

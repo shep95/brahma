@@ -22,8 +22,8 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-use photocraft_geom::Rect;
-use photocraft_raster::{Cancelled, Interrupt};
+use brahma_geom::Rect;
+use brahma_raster::{Cancelled, Interrupt};
 
 use super::grabcut::{self, BG, PR_BG, PR_FG};
 use super::slic::{rgb_to_lab, slic_lab};

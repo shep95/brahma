@@ -1,61 +1,61 @@
-# Context-menu inventory and parity contract
+# context-menu inventory and parity contract
 
-> **Last reviewed:** 2026-10-10 · **Last updated:** 2026-10-10 · **Change:** trivial (status line added; the inventory is the 2026-10-06 branch-point snapshot, current status lives in context-menu-parity.md) · **Target:** Adobe Photoshop 2026
+> **last reviewed:** 2026-10-10 · **last updated:** 2026-10-10 · **change:** trivial (status line added; the inventory is the 2026-10-06 branch-point snapshot, current status lives in context-menu-parity.md) · **target:** adobe photoshop 2026
 
-This is the source-code inventory of PhotoCraft's right-click behavior at the branch point, captured 2026-10-06. It distinguishes a menu from another secondary-button gesture. The initial selection, Paths row, and document-tab menus added by this PR are called out separately. Photoshop comparison should be checked against an identified Photoshop version and platform before claiming exact parity; the current Layers menu explicitly targets Photoshop 2026 order.
+this is the source-code inventory of brahma's right-click behavior at the branch point, captured 2026-10-06. it distinguishes a menu from another secondary-button gesture. the initial selection, paths row, and document-tab menus added by this pr are called out separately. photoshop comparison should be checked against an identified photoshop version and platform before claiming exact parity; the current layers menu explicitly targets photoshop 2026 order.
 
-## Canvas: every tool
+## canvas: every tool
 
-The shared rule is **Command/Ctrl + right-click** on opaque document pixels → a topmost-first list of visible layers at that point; choosing a row dispatches `layer.select`. The Move tool gets that menu on plain right-click too. The list comes from `layer.pickAt` and is omitted over fully transparent pixels. On the remaining tools, plain right-click depends on the tool group below. The canvas behavior lives in `canvas.rs`, `paint_mouse.rs`, `layer_pick_ui.rs`, and `brush_resize.rs`.
+the shared rule is **command/ctrl + right-click** on opaque document pixels → a topmost-first list of visible layers at that point; choosing a row dispatches `layer.select`. the move tool gets that menu on plain right-click too. the list comes from `layer.pickAt` and is omitted over fully transparent pixels. on the remaining tools, plain right-click depends on the tool group below. the canvas behavior lives in `canvas.rs`, `paint_mouse.rs`, `layer_pick_ui.rs`, and `brush_resize.rs`.
 
-| Tools | Plain right-click today | Other secondary gesture | Parity work |
+| tools | plain right-click today | other secondary gesture | parity work |
 |---|---|---|---|
-| Move | Layer-under-pointer list (`layer.pickAt`, `layer.select`) | Command/Ctrl gives the same list | Verify Photoshop modifier and auto-select behavior; test overlaps, masks, groups, transformed pixels, empty areas. |
-| Brush, Pencil, Eraser, Background Eraser | Brush Preset picker (size, hardness, presets) | Alt/Option + right-drag changes size/hardness via `tools.setBrush`; Brush/Eraser can right-drag erase via `tools.rightClickWithPaintingTools=erase` | Verify whether context should expose brush presets, settings, or tool-specific eraser controls. Keep erase preference and modifier priority deterministic. |
-| Spot Healing, Healing, Clone Stamp, History Brush, Blur, Sharpen, Smudge, Dodge, Burn, Sponge | Brush Preset picker | Alt/Option + right-drag changes size/hardness | Compare each tool's Photoshop picker and source/retouch options; use existing brush command route. |
-| Quick Selection | Brush Preset picker | Alt/Option + right-drag changes size/hardness | Check selection-tool brush options and whether mode controls belong in picker. |
-| Rectangular/Elliptical Marquee, Lasso, Polygonal Lasso, Magnetic Lasso, Magic Wand, Object Selection | Selection context menu: the full Photoshop list with a selection, Select All / Reselect / Color Range / Load Selection without (`canvas_tool_menu.rs`, rows in `docs/context-menu-parity.md`) | Command/Ctrl opens layer list | Confirm the no-selection variant against a dated Photoshop capture. |
-| Crop, Slice, Slice Select | No plain secondary action | Command/Ctrl opens layer list | Define crop/straighten commit and cancel, aspect/preset, slice selection/edit behavior separately. |
-| Eyedropper, Ruler, Note, Count | No plain secondary action | Command/Ctrl opens layer list | Check tool-specific sampling, measurement, annotation, and count menus. |
-| Gradient, Paint Bucket | No plain secondary action | Command/Ctrl opens layer list | Expose gradient preset and fill settings through commands if Photoshop's context UI provides them; avoid painting on right-click. |
-| Type | No plain secondary action | Command/Ctrl opens layer list | Test text edit versus non-edit context, spelling, type options, and selection behavior. |
-| Pen, Path Selection | No plain secondary action | Command/Ctrl opens layer list | High-priority path-point context contract: add/delete/convert point, close path, make selection, fill/stroke path, path operations when applicable. |
-| Rectangle, Ellipse Shape, Triangle, Polygon, Line, Custom Shape | No plain secondary action | Command/Ctrl opens layer list | Define shape versus path context, point edit, fill/stroke, and transform entries. |
-| Hand, Zoom | View menu: Zoom In, Zoom Out, Fit on Screen, Fill Screen, 100%, 200%, Print Size (`canvas_tool_menu.rs`, #3242) | Command/Ctrl opens layer list | Confirm the row order against a dated Photoshop capture. |
+| move | layer-under-pointer list (`layer.pickAt`, `layer.select`) | command/ctrl gives the same list | verify photoshop modifier and auto-select behavior; test overlaps, masks, groups, transformed pixels, empty areas. |
+| brush, pencil, eraser, background eraser | brush preset picker (size, hardness, presets) | alt/option + right-drag changes size/hardness via `tools.setBrush`; brush/eraser can right-drag erase via `tools.rightClickWithPaintingTools=erase` | verify whether context should expose brush presets, settings, or tool-specific eraser controls. keep erase preference and modifier priority deterministic. |
+| spot healing, healing, clone stamp, history brush, blur, sharpen, smudge, dodge, burn, sponge | brush preset picker | alt/option + right-drag changes size/hardness | compare each tool's photoshop picker and source/retouch options; use existing brush command route. |
+| quick selection | brush preset picker | alt/option + right-drag changes size/hardness | check selection-tool brush options and whether mode controls belong in picker. |
+| rectangular/elliptical marquee, lasso, polygonal lasso, magnetic lasso, magic wand, object selection | selection context menu: the full photoshop list with a selection, select all / reselect / color range / load selection without (`canvas_tool_menu.rs`, rows in `docs/context-menu-parity.md`) | command/ctrl opens layer list | confirm the no-selection variant against a dated photoshop capture. |
+| crop, slice, slice select | no plain secondary action | command/ctrl opens layer list | define crop/straighten commit and cancel, aspect/preset, slice selection/edit behavior separately. |
+| eyedropper, ruler, note, count | no plain secondary action | command/ctrl opens layer list | check tool-specific sampling, measurement, annotation, and count menus. |
+| gradient, paint bucket | no plain secondary action | command/ctrl opens layer list | expose gradient preset and fill settings through commands if photoshop's context ui provides them; avoid painting on right-click. |
+| type | no plain secondary action | command/ctrl opens layer list | test text edit versus non-edit context, spelling, type options, and selection behavior. |
+| pen, path selection | no plain secondary action | command/ctrl opens layer list | high-priority path-point context contract: add/delete/convert point, close path, make selection, fill/stroke path, path operations when applicable. |
+| rectangle, ellipse shape, triangle, polygon, line, custom shape | no plain secondary action | command/ctrl opens layer list | define shape versus path context, point edit, fill/stroke, and transform entries. |
+| hand, zoom | view menu: zoom in, zoom out, fit on screen, fill screen, 100%, 200%, print size (`canvas_tool_menu.rs`, #3242) | command/ctrl opens layer list | confirm the row order against a dated photoshop capture. |
 
-Canvas invariant: secondary click must not accidentally start a paint stroke, commit a crop, or edit the document; every mutating menu action dispatches a command. Escape/outside click closes a popup. Existing `ui.pointer` supports a secondary button; UI tests should exercise both native and control-driven gestures.
+canvas invariant: secondary click must not accidentally start a paint stroke, commit a crop, or edit the document; every mutating menu action dispatches a command. escape/outside click closes a popup. existing `ui.pointer` supports a secondary button; ui tests should exercise both native and control-driven gestures.
 
-## Other right-click surfaces
+## other right-click surfaces
 
-| Surface | Current entries or behavior | Command route / gap |
+| surface | current entries or behavior | command route / gap |
 |---|---|---|
-| Layers panel row | Blending Options; Duplicate/Delete; Group from Layers; Quick Export PNG / Export As; Artboard/Frame from Layers; Convert to Smart Object; content-specific Rasterize; Add/Disable/Apply/Delete Layer Mask; Create/Release Clipping Mask; Link/Select Linked; Copy/Paste/Clear Layer Style; Merge Layers/Down, Merge Visible, Flatten Image; Rename Layer. Multi-select changes duplicate/delete/merge labels and target. | `layer_menu_ui::entries` supplies IDs for all except inline rename, then `menus::invoke` or engine dispatch. Missing or disabled commands are filtered/greyed. Check menu visibility and enabled state for groups, backgrounds, masks, type, adjustment/fill, smart objects, and multi-selection. |
-| Channels panel row | Alpha: Duplicate/Delete/Rename, spot conversion or merge, selection-display and overlay controls. Quick Mask: Exit, display and overlay. Composite/color: Duplicate. Layer mask: Enable/Disable, Delete. Common: New Channel, New Spot Channel, Split, Merge. | `channel.*`, `layer.layerMask.*`, `select.editInQuickMaskMode`, `ui.renameChannel`. Check selection loading/saving, channel options, and per-row enablement against Photoshop. |
-| Brushes panel preset | Rename Brush, Delete Brush. | Routed through `brush.presets.*` panel actions. Check duplicate/export/import and library organization. |
-| Brushes panel group | Rename Group, Delete Group. | Routed through preset panel actions; confirm group deletion consequences. |
-| Generic presets group (gradients, patterns, swatches, etc.) | Rename Group, Delete Group. | `preset_panels.rs`; verify each collection's appropriate create, export/import, and delete semantics. |
-| Generic preset item | Rename, Delete, Move to another group. | `preset_panels.rs`; behavior is generic across preset collections. |
-| Tool Presets item | Rename Tool Preset, Delete Tool Preset. | `tool.presets.edit`; compare current-tool filtering and preset application. |
-| Toolbar grouped tool slot | Right-click or long-press opens its tool flyout. | Sets active `Tool` UI state. Single-tool slots have no flyout. |
-| Toolbar Screen Mode | Standard, Full Screen With Menu Bar, Full Screen. | `view.screenMode.*` via `menus::invoke`. |
-| Color chip in color panel | Right-click sets background color (left-click sets foreground). | Direct UI state behavior; verify foreground/background target commands. |
-| Wide Angle constraint | Right-click deletes that constraint. | Tool-local action; no menu. |
-| Camera Raw point curve | Right-click deletes a curve point. | Tool-local action; no menu. |
-| Document tab / loading tab | No context menu at branch point. This PR adds Close, Close Others, Close All for document tabs. Left click activates; close icon closes/cancels. | Existing guarded File commands handle unsaved documents; reveal file and tab layout remain open. |
-| Paths panel row | Make Selection, Fill/Stroke Path, Save Work Path or Duplicate Path, Delete Path or Vector Mask as applicable (added in this PR). | `path.*` and `layer.vectorMask.delete`; direct action on the clicked path. |
-| History, Properties and empty panel areas | No `context_menu` handler found in UI source at this audit. | Audit each panel's Photoshop menu and prioritize its useful commands; do not invent dead entries. |
+| layers panel row | blending options; duplicate/delete; group from layers; quick export PNG / export as; artboard/frame from layers; convert to smart object; content-specific rasterize; add/disable/apply/delete layer mask; create/release clipping mask; link/select linked; copy/paste/clear layer style; merge layers/down, merge visible, flatten image; rename layer. multi-select changes duplicate/delete/merge labels and target. | `layer_menu_ui::entries` supplies ids for all except inline rename, then `menus::invoke` or engine dispatch. missing or disabled commands are filtered/greyed. check menu visibility and enabled state for groups, backgrounds, masks, type, adjustment/fill, smart objects, and multi-selection. |
+| channels panel row | alpha: duplicate/delete/rename, spot conversion or merge, selection-display and overlay controls. quick mask: exit, display and overlay. composite/color: duplicate. layer mask: enable/disable, delete. common: new channel, new spot channel, split, merge. | `channel.*`, `layer.layerMask.*`, `select.editInQuickMaskMode`, `ui.renameChannel`. check selection loading/saving, channel options, and per-row enablement against photoshop. |
+| brushes panel preset | rename brush, delete brush. | routed through `brush.presets.*` panel actions. check duplicate/export/import and library organization. |
+| brushes panel group | rename group, delete group. | routed through preset panel actions; confirm group deletion consequences. |
+| generic presets group (gradients, patterns, swatches, etc.) | rename group, delete group. | `preset_panels.rs`; verify each collection's appropriate create, export/import, and delete semantics. |
+| generic preset item | rename, delete, move to another group. | `preset_panels.rs`; behavior is generic across preset collections. |
+| tool presets item | rename tool preset, delete tool preset. | `tool.presets.edit`; compare current-tool filtering and preset application. |
+| toolbar grouped tool slot | right-click or long-press opens its tool flyout. | sets active `Tool` ui state. single-tool slots have no flyout. |
+| toolbar screen mode | standard, full screen with menu bar, full screen. | `view.screenMode.*` via `menus::invoke`. |
+| color chip in color panel | right-click sets background color (left-click sets foreground). | direct ui state behavior; verify foreground/background target commands. |
+| wide angle constraint | right-click deletes that constraint. | tool-local action; no menu. |
+| camera raw point curve | right-click deletes a curve point. | tool-local action; no menu. |
+| document tab / loading tab | no context menu at branch point. this pr adds close, close others, close all for document tabs. left click activates; close icon closes/cancels. | existing guarded file commands handle unsaved documents; reveal file and tab layout remain open. |
+| paths panel row | make selection, fill/stroke path, save work path or duplicate path, delete path or vector mask as applicable (added in this pr). | `path.*` and `layer.vectorMask.delete`; direct action on the clicked path. |
+| history, properties and empty panel areas | no `context_menu` handler found in ui source at this audit. | audit each panel's photoshop menu and prioritize its useful commands; do not invent dead entries. |
 
-## Contract for implementation
+## contract for implementation
 
-1. Record a Photoshop reference matrix by version, operating system, surface, tool and state (empty/selection/path/text edit/multi-layer). Capture exact item labels, order, separators, submenus, disabled conditions, and modifier variants. Mark observations versus inference.
-2. Encode menu descriptors as data with predicate tests. Route document edits through existing or new engine command IDs; view-only actions can stay in UI. A menu on the canvas must receive the document coordinate and relevant target from hit testing, so actions operate on what was clicked rather than silently on an unrelated active object.
-3. Prioritize shared canvas menus, then high-value tool-specific interactions (path, selection, type, crop/zoom), then panel and tab gaps. Reuse Layers/Channels implementations where their command contract already exists. Preserve the existing Move/layer pick, brush picker, erase preference, Alt/Option brush resize, and toolbar flyout gestures.
-4. Test each descriptor's item order and enablement, dispatch with expected params, empty/invalid states, modifiers, and action result. Add UI gesture tests for right-click opening, target selection, Escape/outside dismissal, and the absence of accidental edits. Validate native and web builds.
-5. Capture screenshots from the running app for representative tool groups and panel states, with test fixture documents rather than personal photos. A screenshot proves visible menu composition; command tests prove its behavior.
+1. record a photoshop reference matrix by version, operating system, surface, tool and state (empty/selection/path/text edit/multi-layer). capture exact item labels, order, separators, submenus, disabled conditions, and modifier variants. mark observations versus inference.
+2. encode menu descriptors as data with predicate tests. route document edits through existing or new engine command ids; view-only actions can stay in ui. a menu on the canvas must receive the document coordinate and relevant target from hit testing, so actions operate on what was clicked rather than silently on an unrelated active object.
+3. prioritize shared canvas menus, then high-value tool-specific interactions (path, selection, type, crop/zoom), then panel and tab gaps. reuse layers/channels implementations where their command contract already exists. preserve the existing move/layer pick, brush picker, erase preference, alt/option brush resize, and toolbar flyout gestures.
+4. test each descriptor's item order and enablement, dispatch with expected params, empty/invalid states, modifiers, and action result. add ui gesture tests for right-click opening, target selection, escape/outside dismissal, and the absence of accidental edits. validate native and web builds.
+5. capture screenshots from the running app for representative tool groups and panel states, with test fixture documents rather than personal photos. a screenshot proves visible menu composition; command tests prove its behavior.
 
-## Revision history
+## revision history
 
-| Date | Change | Summary |
+| date | change | summary |
 |---|---|---|
-| 2026-10-10 | trivial | Status line, revision history; marked as the branch-point snapshot |
-| 2026-10-06 | major | Source inventory of right-click behaviour |
+| 2026-10-10 | trivial | status line, revision history; marked as the branch-point snapshot |
+| 2026-10-06 | major | source inventory of right-click behaviour |

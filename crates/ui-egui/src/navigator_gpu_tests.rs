@@ -2,16 +2,16 @@
 //! edit costs it no CPU composite; elsewhere (a flipped view draws on the CPU) it keeps the CPU
 //! thumbnail. Renders the real app offscreen; skips without a GPU adapter.
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use serde_json::json;
 
-type Harness = egui_kittest::Harness<'static, PhotocraftApp>;
+type Harness = egui_kittest::Harness<'static, BrahmaApp>;
 
 fn harness() -> Option<Harness> {
     let built = std::panic::catch_unwind(|| {
         egui_kittest::Harness::builder().with_size(egui::vec2(1400.0, 900.0)).with_pixels_per_point(1.0).with_max_steps(64).wgpu().build_eframe(|cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
-            let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
+            let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
             if let Some(rs) = cc.wgpu_render_state.as_ref() {
                 app.set_wgpu(rs.clone());
             }

@@ -19,16 +19,16 @@
 //! Widgets read [`Tokens::get`] instead of hard-coding colours, so every theme applies everywhere.
 
 use egui::{Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals};
-use photocraft_engine::prefs::UiFontSize;
+use brahma_engine::prefs::UiFontSize;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ThemeKind {
-    /// Photoshop-style Spectrum dark: flat charcoal panels, tab strips, blue accents (darkest brightness).
-    Pro,
-    /// Photoshop's default (second) interface brightness: #535353 panels, #282828 canvas (default).
+    /// brahma's default: the Pro layout on a warm near-black (#141310) with a gold accent.
     #[default]
+    Pro,
+    /// Photoshop's default (second) interface brightness: #535353 panels, #282828 canvas.
     ProMedium,
     /// Photoshop's third interface brightness: #B8B8B8 panels (#2661).
     ProLightGray,
@@ -277,43 +277,44 @@ impl Tokens {
             },
             ThemeKind::Pro => Tokens {
                 kind,
-                chrome: Color32::from_rgb(50, 50, 50),
-                canvas: Color32::from_rgb(40, 40, 40),
-                canvas_dot: Color32::from_rgb(40, 40, 40),
-                dock: Color32::from_rgb(30, 30, 30),
-                card: Color32::from_rgb(50, 50, 50),
-                card_border: Color32::from_rgb(30, 30, 30),
-                field: Color32::from_rgb(36, 36, 36),
-                field_border: Color32::from_rgb(74, 74, 74),
-                hover: Color32::from_rgb(66, 66, 66),
-                pressed: Color32::from_rgb(78, 78, 78),
-                text: Color32::from_rgb(222, 222, 222),
-                text_dim: Color32::from_rgb(178, 178, 178),
-                text_faint: Color32::from_rgb(128, 128, 128),
-                icon: Color32::from_rgb(200, 200, 200),
-                accent: Color32::from_rgb(55, 142, 240),
-                accent_soft: Color32::from_rgb(78, 78, 78),
-                accent_border: Color32::from_rgb(55, 142, 240),
-                accent_text: Color32::WHITE,
-                separator: Color32::from_rgb(30, 30, 30),
-                shadow: Color32::from_black_alpha(150),
-                primary_bg: Color32::from_rgb(55, 142, 240),
-                primary_text: Color32::WHITE,
-                danger: Color32::from_rgb(236, 91, 98),
-                warning: Color32::from_rgb(232, 176, 70),
+                // brahma's house palette: a warm near-black (#141310) with gold for the accent.
+                chrome: Color32::from_rgb(20, 19, 16),
+                canvas: Color32::from_rgb(16, 15, 12),
+                canvas_dot: Color32::from_rgb(16, 15, 12),
+                dock: Color32::from_rgb(12, 11, 9),
+                card: Color32::from_rgb(24, 23, 19),
+                card_border: Color32::from_rgb(12, 11, 9),
+                field: Color32::from_rgb(30, 29, 24),
+                field_border: Color32::from_rgb(58, 56, 48),
+                hover: Color32::from_rgb(44, 42, 36),
+                pressed: Color32::from_rgb(56, 54, 46),
+                text: Color32::from_rgb(232, 228, 218),
+                text_dim: Color32::from_rgb(178, 174, 164),
+                text_faint: Color32::from_rgb(126, 122, 112),
+                icon: Color32::from_rgb(210, 206, 196),
+                accent: Color32::from_rgb(201, 168, 90),
+                accent_soft: Color32::from_rgb(56, 54, 46),
+                accent_border: Color32::from_rgb(201, 168, 90),
+                accent_text: Color32::from_rgb(20, 19, 16),
+                separator: Color32::from_rgb(12, 11, 9),
+                shadow: Color32::from_black_alpha(170),
+                primary_bg: Color32::from_rgb(201, 168, 90),
+                primary_text: Color32::from_rgb(20, 19, 16),
+                danger: Color32::from_rgb(214, 96, 90),
+                warning: Color32::from_rgb(222, 176, 82),
                 radius_sm: 3.0,
                 radius: 4.0,
                 radius_lg: 6.0,
                 bevel: false,
                 pro: true,
                 round_chips: false,
-                tab_strip: Color32::from_rgb(38, 38, 38),
-                row_selected: Color32::from_rgb(82, 82, 82),
-                histogram_bg: Color32::from_rgb(40, 40, 40),
+                tab_strip: Color32::from_rgb(16, 15, 12),
+                row_selected: Color32::from_rgb(52, 50, 42),
+                histogram_bg: Color32::from_rgb(16, 15, 12),
                 histogram_level: 225,
-                caption_close: Color32::from_rgb(196, 43, 28),
+                caption_close: Color32::from_rgb(166, 52, 40),
                 caption_close_text: Color32::WHITE,
-                scrim: Color32::from_black_alpha(110),
+                scrim: Color32::from_black_alpha(120),
             },
             ThemeKind::Studio => Tokens {
                 kind,
@@ -747,7 +748,7 @@ impl Tokens {
 
     /// Tokens for the active theme (stored in egui's context data by [`apply`]).
     pub fn get(ctx: &egui::Context) -> Tokens {
-        ctx.data(|d| d.get_temp::<Tokens>(egui::Id::new("photocraft-theme"))).unwrap_or_else(|| Tokens::for_kind(ThemeKind::Studio))
+        ctx.data(|d| d.get_temp::<Tokens>(egui::Id::new("brahma-theme"))).unwrap_or_else(|| Tokens::for_kind(ThemeKind::Studio))
     }
 
     /// Thin RGB outlines; the filled bands use the same hues with subdued coverage.
@@ -761,8 +762,8 @@ impl Tokens {
     }
 
     /// Semantic label hues stay recognisable across themes; None keeps the normal row surface.
-    pub fn layer_label_colors(&self, label: photocraft_doc::LabelColor) -> Option<(Color32, Color32)> {
-        use photocraft_doc::LabelColor;
+    pub fn layer_label_colors(&self, label: brahma_doc::LabelColor) -> Option<(Color32, Color32)> {
+        use brahma_doc::LabelColor;
         let (swatch, eye) = match label {
             LabelColor::None => return None,
             LabelColor::Red => ([0xFC, 0x5D, 0x5B], [0x9F, 0x2F, 0x30]),
@@ -781,8 +782,8 @@ impl Tokens {
         Some((rgb(swatch), rgb(eye)))
     }
 
-    pub fn layer_label_icon(&self, label: photocraft_doc::LabelColor) -> Color32 {
-        if label == photocraft_doc::LabelColor::None { self.icon } else { Color32::from_gray(226) }
+    pub fn layer_label_icon(&self, label: brahma_doc::LabelColor) -> Color32 {
+        if label == brahma_doc::LabelColor::None { self.icon } else { Color32::from_gray(226) }
     }
 
     /// Analysis colours are semantic hues, independent of the application accent palette.
@@ -831,7 +832,7 @@ pub fn install_fonts(ctx: &egui::Context) {
 pub fn install_fonts_with(ctx: &egui::Context, cjk: crate::cjk_fonts::Sources) {
     // egui's default fonts stay last in the stack, for symbols and emoji Inter lacks.
     let mut fonts = crate::egui_fonts::definitions();
-    // The bundled fonts are inflated on first use (photocraft_text::fonts). Should one ever fail
+    // The bundled fonts are inflated on first use (brahma_text::fonts). Should one ever fail
     // to inflate (empty bytes), it is left out and egui's default fonts draw that text.
     let add = |fonts: &mut FontDefinitions, name: &str, bytes: &'static [u8]| -> Option<String> {
         if bytes.is_empty() {
@@ -841,10 +842,10 @@ pub fn install_fonts_with(ctx: &egui::Context, cjk: crate::cjk_fonts::Sources) {
         fonts.font_data.insert(name.to_owned(), Arc::new(FontData::from_static(bytes)));
         Some(name.to_owned())
     };
-    let inter = add(&mut fonts, "Inter", photocraft_text::fonts::INTER_REGULAR.as_slice());
-    let medium = add(&mut fonts, "Inter-Medium", photocraft_text::fonts::INTER_MEDIUM.as_slice());
-    let semibold = add(&mut fonts, "Inter-SemiBold", photocraft_text::fonts::INTER_SEMIBOLD.as_slice());
-    let mono = add(&mut fonts, "JetBrainsMono", photocraft_text::fonts::JETBRAINS_MONO_REGULAR.as_slice());
+    let inter = add(&mut fonts, "Inter", brahma_text::fonts::INTER_REGULAR.as_slice());
+    let medium = add(&mut fonts, "Inter-Medium", brahma_text::fonts::INTER_MEDIUM.as_slice());
+    let semibold = add(&mut fonts, "Inter-SemiBold", brahma_text::fonts::INTER_SEMIBOLD.as_slice());
+    let mono = add(&mut fonts, "JetBrainsMono", brahma_text::fonts::JETBRAINS_MONO_REGULAR.as_slice());
     if let Some(inter) = inter {
         fonts.families.entry(FontFamily::Proportional).or_default().insert(0, inter);
     }
@@ -887,7 +888,7 @@ fn ui_fonts_active(ctx: &egui::Context) -> bool {
 }
 
 fn ui_fonts_id() -> egui::Id {
-    egui::Id::new("photocraft-ui-fonts")
+    egui::Id::new("brahma-ui-fonts")
 }
 
 fn ui_font_size(ctx: &egui::Context) -> UiFontSize {
@@ -931,7 +932,7 @@ struct UiFontSizePlugin {
 
 impl egui::Plugin for UiFontSizePlugin {
     fn debug_name(&self) -> &'static str {
-        "photocraft-ui-font-size"
+        "brahma-ui-font-size"
     }
 
     fn output_hook(&mut self, ctx: &egui::Context, _output: &mut egui::FullOutput) {
@@ -976,7 +977,7 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
     // including when an integration or restored egui state pinned its own theme preference.
     ctx.set_theme(egui::ThemePreference::System);
     let t = Tokens::for_kind(kind);
-    ctx.data_mut(|d| d.insert_temp(egui::Id::new("photocraft-theme"), t));
+    ctx.data_mut(|d| d.insert_temp(egui::Id::new("brahma-theme"), t));
     let mut v = if t.dark() { Visuals::dark() } else { Visuals::light() };
     v.panel_fill = t.chrome;
     v.window_fill = t.card;
@@ -1049,7 +1050,7 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
         s.spacing.scroll = scroll;
         s.spacing.tooltip_width = 280.0;
     });
-    // egui selects its style branch using OS appearance, independently of PhotoCraft's fixed
+    // egui selects its style branch using OS appearance, independently of brahma's fixed
     // Dark/Light mode or platform appearance service. Both branches need the selected palette.
     let style = ctx.global_style();
     ctx.set_style_of(egui::Theme::Light, Arc::clone(&style));
@@ -1129,7 +1130,7 @@ mod tests {
         let mut width = 0.0;
         ctx.run_ui(Default::default(), |ui| {
             assert!(medium_bound(ui.ctx()), "the installed stack reaches the second pass");
-            width = ui.painter().layout_no_wrap("PhotoCraft".into(), medium(13.0), Color32::WHITE).size().x;
+            width = ui.painter().layout_no_wrap("brahma".into(), medium(13.0), Color32::WHITE).size().x;
         })
         .textures_delta
         .clear();
@@ -1139,7 +1140,7 @@ mod tests {
         let mut scaled = 0.0;
         ctx.run_ui(Default::default(), |ui| {
             assert!(medium_bound(ui.ctx()));
-            scaled = ui.painter().layout_no_wrap("PhotoCraft".into(), medium(13.0), Color32::WHITE).size().x;
+            scaled = ui.painter().layout_no_wrap("brahma".into(), medium(13.0), Color32::WHITE).size().x;
         })
         .textures_delta
         .clear();
@@ -1149,7 +1150,7 @@ mod tests {
         for _ in 0..2 {
             ctx.run_ui(Default::default(), |ui| {
                 assert!(medium_bound(ui.ctx()));
-                let w = ui.painter().layout_no_wrap("PhotoCraft".into(), medium(13.0), Color32::WHITE).size().x;
+                let w = ui.painter().layout_no_wrap("brahma".into(), medium(13.0), Color32::WHITE).size().x;
                 assert!((w - scaled).abs() < 1.0, "{w} vs {scaled}");
             })
             .textures_delta
@@ -1381,7 +1382,7 @@ mod tests {
 
 /// Development feature: live design-token overrides.
 ///
-/// Set `PHOTOCRAFT_THEME_FILE=/path/tokens.json` in a debug build; the file is polled and applied
+/// Set `BRAHMA_THEME_FILE=/path/tokens.json` in a debug build; the file is polled and applied
 /// on change, so colours, radii and sizes can be tuned without recompiling. Keys are `Tokens` field
 /// names; values are `"#rrggbb"`, `"#rrggbbaa"` or numbers. Compiled out of release builds.
 #[cfg(all(debug_assertions, not(target_arch = "wasm32")))]
@@ -1399,7 +1400,7 @@ pub mod live {
 
     impl LiveTokens {
         pub fn from_env() -> Self {
-            Self { path: std::env::var_os("PHOTOCRAFT_THEME_FILE").map(Into::into), ..Default::default() }
+            Self { path: std::env::var_os("BRAHMA_THEME_FILE").map(Into::into), ..Default::default() }
         }
 
         /// Re-apply overrides if the file changed. Returns true when tokens were updated.
@@ -1424,7 +1425,7 @@ pub mod live {
                     super::apply(ctx, kind);
                     let mut t = Tokens::get(ctx);
                     let unknown = apply_overrides(&mut t, &v);
-                    ctx.data_mut(|d| d.insert_temp(egui::Id::new("photocraft-theme"), t));
+                    ctx.data_mut(|d| d.insert_temp(egui::Id::new("brahma-theme"), t));
                     if !unknown.is_empty() {
                         log::warn!("unknown token keys: {unknown:?}");
                     }

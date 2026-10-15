@@ -1,73 +1,73 @@
-# Italian terminology and dynamic UI labels
+# italian terminology and dynamic ui labels
 
-This note goes with the completion of the Italian catalog (`crates/ui-egui/src/i18n/it.tsv`).
-The catalog already covered every key `cargo xtask i18n-coverage` measures, but it lacked 1,287
-labels that only exist at runtime and that other catalogs (Brazilian Portuguese, Dutch, Czech)
-already translate: filter and adjustment parameter names, Camera Raw panels, lighting effects,
-History, Layers, path and channel menu labels, metadata fields, status messages, System Info and
-dialog text. In Italian those showed in English.
-They are now translated, and a review pass fixed mistranslations and inconsistent terms in the
-existing entries. Translations are written from the meaning of PhotoCraft's English labels; no
+this note goes with the completion of the italian catalog (`crates/ui-egui/src/i18n/it.tsv`).
+the catalog already covered every key `cargo xtask i18n-coverage` measures, but it lacked 1,287
+labels that only exist at runtime and that other catalogs (brazilian portuguese, dutch, czech)
+already translate: filter and adjustment parameter names, camera raw panels, lighting effects,
+history, layers, path and channel menu labels, metadata fields, status messages, system info and
+dialog text. in italian those showed in english.
+they are now translated, and a review pass fixed mistranslations and inconsistent terms in the
+existing entries. translations are written from the meaning of brahma's english labels; no
 proprietary translation resources, fonts, screenshots or user documents are included.
 
-## Register and style
+## register and style
 
-Commands are imperatives in the second person singular (*Elimina*, *Applica*, *Crea
-pacchetto*); text addresses the user as *tu*. Only the first word is capitalised, except in
-command names joined by a slash, which keep both capitals (*Luminosità/Contrasto*,
-*HSL/Scala di grigio*). Decimals use a comma.
+commands are imperatives in the second person singular (*elimina*, *applica*, *crea
+pacchetto*); text addresses the user as *tu*. only the first word is capitalised, except in
+command names joined by a slash, which keep both capitals (*luminosità/contrasto*,
+*HSL/scala di grigio*). decimals use a comma.
 
-## Terminology
+## terminology
 
-| English source | Italian | Note |
+| english source | italian | note |
 |---|---|---|
-| Layer | Livello | |
-| Canvas | Quadro | also in *Come il quadro*, *Applica ai limiti del quadro* |
-| Preset | Predefinito | *Salva come predefinito* |
-| Default(s) | Predefinito / Predefiniti | never *default* or *valori predefiniti* |
-| Stroke | Traccia | contour and painterly strokes alike (*Tracce angolate*, *Direzione traccia*); a dash stays *Tratto* |
-| Sharpen | Contrasta / Contrasto | also in Camera Raw (*Quantità contrasto*) |
-| Noise | Disturbo | *Riduzione disturbo di luminanza*, *Riduzione disturbo cromatico* |
-| Highlights | Luci | pairs with *Ombre* |
-| Snapshot | Istantanea | |
-| Smart Filters | Filtri avanzati | |
-| Pattern | Pattern | *Timbro pattern* |
-| Gradient stops | Punti della sfumatura | |
-| Spot color | Tinta piatta | *Canale tinta piatta* |
-| Click | clic | *Fai clic*, *{key}-clic*, *doppio clic* |
-| Keyboard shortcut | Scorciatoia da tastiera | |
-| Footage | Filmato | *Interpreta filmato*, *Sostituisci filmato* |
-| Facet | Sfaccetta | |
-| SemiBold / ExtraBold / ExtraLight | Semigrassetto / Extragrassetto / Extraleggero | one spelling for every weight |
-| (Color) Mode | Metodo | *Cambia metodo condizionale*, never *modo* |
-| Trap | Trapping | the prepress term; *Sovrastampa* is overprint, a different thing |
-| HDR Toning | Mappatura tonale HDR | tone mapping; *Viraggio* stays for colour toning (*Viraggio separato*) |
-| Bevel & Emboss | Smusso e rilievo | pairs with *Rilievo* (Emboss) |
-| Linked (smart object) | Oggetto collegato | *Inserisci oggetto collegato*, *Converti in oggetto collegato* |
+| layer | livello | |
+| canvas | quadro | also in *come il quadro*, *applica ai limiti del quadro* |
+| preset | predefinito | *salva come predefinito* |
+| default(s) | predefinito / predefiniti | never *default* or *valori predefiniti* |
+| stroke | traccia | contour and painterly strokes alike (*tracce angolate*, *direzione traccia*); a dash stays *tratto* |
+| sharpen | contrasta / contrasto | also in camera raw (*quantità contrasto*) |
+| noise | disturbo | *riduzione disturbo di luminanza*, *riduzione disturbo cromatico* |
+| highlights | luci | pairs with *ombre* |
+| snapshot | istantanea | |
+| smart filters | filtri avanzati | |
+| pattern | pattern | *timbro pattern* |
+| gradient stops | punti della sfumatura | |
+| spot color | tinta piatta | *canale tinta piatta* |
+| click | clic | *fai clic*, *{key}-clic*, *doppio clic* |
+| keyboard shortcut | scorciatoia da tastiera | |
+| footage | filmato | *interpreta filmato*, *sostituisci filmato* |
+| facet | sfaccetta | |
+| SemiBold / ExtraBold / ExtraLight | semigrassetto / extragrassetto / extraleggero | one spelling for every weight |
+| (color) mode | metodo | *cambia metodo condizionale*, never *modo* |
+| trap | trapping | the prepress term; *sovrastampa* is overprint, a different thing |
+| HDR toning | mappatura tonale HDR | tone mapping; *viraggio* stays for colour toning (*viraggio separato*) |
+| bevel & emboss | smusso e rilievo | pairs with *rilievo* (emboss) |
+| linked (smart object) | oggetto collegato | *inserisci oggetto collegato*, *converti in oggetto collegato* |
 
-## Native review
+## native review
 
-2026-10-12: a native Italian speaker read the catalog and fixed mistranslations (Trap, HDR
-Toning, Display Text, Vine Color, Override Action "Save" Commands) and unnatural phrasing (Bevel &
-Emboss, East Asian / Middle Eastern Features, linked smart objects, bit depth labels).
+2026-10-12: a native italian speaker read the catalog and fixed mistranslations (trap, HDR
+toning, display text, vine color, override action "save" commands) and unnatural phrasing (bevel &
+emboss, east asian / middle eastern features, linked smart objects, bit depth labels).
 
-## Not covered
+## not covered
 
-Engine error and status messages, user document, layer and preset names, and automation
-command IDs stay in English, as in every language. A few dynamic labels the other catalogs carry
+engine error and status messages, user document, layer and preset names, and automation
+command ids stay in english, as in every language. a few dynamic labels the other catalogs carry
 (`Ask Before Saving Saved Embedded`, `Clear Selection`, the `Heal` family) are not used by the
 current code; they are translated to stay aligned with the other catalogs.
 
-## Validation
+## validation
 
 - `italian_covers_generated_filter_options_and_gallery_names` (`crates/ui-egui/src/filter_dialog.rs`)
   enumerates every filter and adjustment parameter, symbolic choice and gallery name, like the
-  Korean test, and requires an Italian row for each. With the catalog on `main` before this change
+  korean test, and requires an italian row for each. with the catalog on `main` before this change
   it lists 388 missing labels; now none.
-- `cargo test -p photocraft-ui-egui --lib`: the catalog tests pass. Two layout tests,
+- `cargo test -p brahma-ui-egui --lib`: the catalog tests pass. two layout tests,
   `type_controls_fill_the_panel_at_every_width_and_scale` and
   `properties_edit_shown_metrics_and_paragraphs_with_a_non_type_primary`, fail on `main` as well
   without this change.
 - `cargo xtask i18n-coverage`: 1,726 / 1,726 for `it`.
-- The offscreen `snapshot` example with `PHOTOCRAFT_LOCALE=it` rendered Lighting Effects, the
-  Camera Raw filter and Wind with Italian labels, without missing glyphs or clipped text.
+- the offscreen `snapshot` example with `BRAHMA_LOCALE=it` rendered lighting effects, the
+  camera raw filter and wind with italian labels, without missing glyphs or clipped text.

@@ -26,7 +26,8 @@ mod system;
 pub use system::system_lang;
 
 use std::cell::Cell;
-use std::sync::OnceLock;
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 use catalog::Catalog;
 
@@ -376,7 +377,7 @@ pub fn language_scope(lang: Lang) -> impl Drop {
 pub fn sync_context(ctx: &egui::Context, language: &str) {
     let lang = Lang::from_pref(language);
     set_current(lang);
-    let id = egui::Id::new("photocraft-ui-language");
+    let id = egui::Id::new("brahma-ui-language");
     let changed = ctx.data(|data| data.get_temp::<Lang>(id) != Some(lang));
     if changed {
         ctx.data_mut(|data| data.insert_temp(id, lang));
@@ -390,24 +391,43 @@ pub fn has(lang: Lang, s: &str) -> bool {
     lang.catalog().plain(s).is_some()
 }
 
+/// brahma's house style: every word of the interface is shown in lower case, in every language.
+/// Lookups still use the English source text as written in the code (and in the catalogs), so
+/// nothing about translation keys changes; only what reaches the screen does. A string with no
+/// upper-case letter is returned as is; others are lower-cased once and kept for the life of
+/// the process, which bounds the work to the set of distinct UI strings.
+pub fn lower(s: &str) -> &str {
+    if !s.chars().any(char::is_uppercase) {
+        return s;
+    }
+    static CACHE: OnceLock<Mutex<HashMap<String, &'static str>>> = OnceLock::new();
+    let mut cache = CACHE.get_or_init(Default::default).lock().unwrap_or_else(|e| e.into_inner());
+    if let Some(l) = cache.get(s) {
+        return l;
+    }
+    let l: &'static str = Box::leak(s.to_lowercase().into_boxed_str());
+    cache.insert(s.to_string(), l);
+    l
+}
+
 /// Translate an English UI string into the current language ([`tr`] with [`current`]).
 pub fn t(s: &str) -> &str {
     tr(current(), s)
 }
 
-/// Translate an English UI string; unknown strings come back unchanged.
+/// Translate an English UI string; unknown strings come back unchanged (lower-cased, see [`lower`]).
 pub fn tr(lang: Lang, s: &str) -> &str {
-    lang.catalog().plain(s).unwrap_or(s)
+    lower(lang.catalog().plain(s).unwrap_or(s))
 }
 
 /// Like [`tr`], for an English string that needs a disambiguating `context`.
 pub fn tr_ctx<'a>(lang: Lang, context: &str, s: &'a str) -> &'a str {
-    lang.catalog().contextual(context, s).unwrap_or_else(|| tr(lang, s))
+    lower(lang.catalog().contextual(context, s).unwrap_or_else(|| tr(lang, s)))
 }
 
 /// A string keyed by its command id, falling back to the translation of the English `label`.
 pub fn tr_id<'a>(lang: Lang, id: &str, label: &'a str) -> &'a str {
-    lang.catalog().id(id).unwrap_or_else(|| tr(lang, label))
+    lower(lang.catalog().id(id).unwrap_or_else(|| tr(lang, label)))
 }
 
 /// Fill `{name}` placeholders. Unknown placeholders are left as written.
@@ -422,7 +442,7 @@ pub fn fmt(template: &str, args: &[(&str, &str)]) -> String {
 /// A plural-aware message: `one`/`other` are the English forms (with `{n}` where the count goes).
 pub fn trn(lang: Lang, n: u64, one: &str, other: &str) -> String {
     let idx = (lang.0.plural)(n);
-    let text = lang.catalog().plural(one, other, idx).unwrap_or(if n == 1 { one } else { other });
+    let text = lower(lang.catalog().plural(one, other, idx).unwrap_or(if n == 1 { one } else { other }));
     fmt(text, &[("n", &n.to_string())])
 }
 
@@ -993,7 +1013,7 @@ mod tests {
             strings.extend(path.iter().copied());
             strings.insert(label);
         }
-        for c in photocraft_engine::command_specs().iter().filter(|c| !c.menu.is_empty()) {
+        for c in brahma_engine::command_specs().iter().filter(|c| !c.menu.is_empty()) {
             strings.extend(c.menu.iter().copied());
             strings.insert(c.label);
         }
@@ -1185,7 +1205,7 @@ mod tests {
     #[test]
     fn layer_color_names_are_translated() {
         for lang in Lang::all().filter(|l| l.complete_menus()) {
-            for color in photocraft_doc::LabelColor::ALL {
+            for color in brahma_doc::LabelColor::ALL {
                 let cat = lang.0.catalog();
                 assert!(
                     cat.contextual("layerLabel", color.label()).or_else(|| cat.plain(color.label())).is_some(),
@@ -1211,7 +1231,7 @@ mod tests {
         for kind in [crate::theme::ThemeKind::ProLight, crate::theme::ThemeKind::ProLightGray] {
             assert!(has(ru, kind.label()), "Russian theme label missing {}", kind.label());
         }
-        for (_, label) in photocraft_engine::analysis_cmds::COLUMNS {
+        for (_, label) in brahma_engine::analysis_cmds::COLUMNS {
             assert!(has(ru, label), "Russian measurement header missing {label}");
         }
         assert_eq!(tr(ru, "Pro (Light)"), "Pro (светлая)");
@@ -1238,7 +1258,7 @@ mod tests {
     #[test]
     fn blend_mode_names_are_translated() {
         for l in LANGUAGES.iter().filter(|l| l.complete_menus) {
-            for m in std::iter::once(photocraft_color::BlendMode::PassThrough).chain(photocraft_color::BlendMode::layer_modes()) {
+            for m in std::iter::once(brahma_color::BlendMode::PassThrough).chain(brahma_color::BlendMode::layer_modes()) {
                 assert!(l.catalog().plain(m.label()).is_some(), "{}: blend mode {:?}", l.code, m.label());
             }
         }

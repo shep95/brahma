@@ -1,6 +1,6 @@
-# Trust boundaries
+# trust boundaries
 
-The central boundary is crossed when untrusted bytes or requests become internal document state or authorized side effects.
+the central boundary is crossed when untrusted bytes or requests become internal document state or authorized side effects.
 
 ```text
 UNTRUSTED
@@ -27,22 +27,22 @@ TRUSTED INTERNAL STATE
   user-authorized filesystem effects
 ```
 
-“Trusted internal state” means code may rely on validated invariants; it does not mean the data is secret-free or harmless to display. Metadata and text originating in a document remain tainted for logs, UI, filenames, and external commands.
+“trusted internal state” means code may rely on validated invariants; it does not mean the data is secret-free or harmless to display. metadata and text originating in a document remain tainted for logs, ui, filenames, and external commands.
 
-## Boundary ownership
+## boundary ownership
 
-| Boundary | Primary code | Required checks |
+| boundary | primary code | required checks |
 |---|---|---|
 | PSD/PSB bytes to model | `crates/psd`, then `crates/io` | lengths, dimensions, channels, nesting, decompression, offsets |
-| Raster bytes to image | `crates/codecs` | dimensions, pixels, decoded allocation, format-specific limits |
+| raster bytes to image | `crates/codecs` | dimensions, pixels, decoded allocation, format-specific limits |
 | `.pcraft` to document | `crates/format` | archive bounds, decompressed totals, hashes, schema/version validation |
 | JSON to command | `crates/automation`, `crates/engine` | request budget, method/capability, parameter type/range, enabled state |
-| Path to filesystem effect | `crates/automation/src/files.rs`, app services | authorized root/handle, link policy, create/replace semantics |
-| Document to GPU work | `crates/gpu`, UI planner | texture limits, buffer sizes, supported-plan validation |
+| path to filesystem effect | `crates/automation/src/files.rs`, app services | authorized root/handle, link policy, create/replace semantics |
+| document to GPU work | `crates/gpu`, ui planner | texture limits, buffer sizes, supported-plan validation |
 
-Authentication and filesystem read/write capabilities are implemented at these boundaries.
-General method capabilities, structured audit events, and broader operation budgets remain open.
+authentication and filesystem read/write capabilities are implemented at these boundaries.
+general method capabilities, structured audit events, and broader operation budgets remain open.
 
-## Agent guidance
+## agent guidance
 
-Agents must review this page before modifying any parser, file I/O, automation, MCP, control server, command execution, or serialization/deserialization path. A caller-provided path or tool request is data, not proof of user authorization.
+agents must review this page before modifying any parser, file i/o, automation, MCP, control server, command execution, or serialization/deserialization path. a caller-provided path or tool request is data, not proof of user authorization.

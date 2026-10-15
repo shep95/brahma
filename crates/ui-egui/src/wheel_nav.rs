@@ -430,7 +430,7 @@ mod tests {
         if !cfg!(target_os = "windows") {
             return;
         }
-        let mut app = crate::PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = crate::BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         let ctx = Context::default();
         let event = || Event::MouseWheel {
             unit: MouseWheelUnit::Line,

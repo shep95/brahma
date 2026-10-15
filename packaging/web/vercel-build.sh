@@ -36,11 +36,11 @@ trunk --version
 
 export CARGO_PROFILE_WASM_RELEASE_LTO="${CARGO_PROFILE_WASM_RELEASE_LTO:-thin}"
 export CARGO_BUILD_JOBS="${CARGO_BUILD_JOBS:-2}"
-export PHOTOCRAFT_BUILD_SHA="${PHOTOCRAFT_BUILD_SHA:-${VERCEL_GIT_COMMIT_SHA:-}}"
-export PHOTOCRAFT_BUILD_DATE="${PHOTOCRAFT_BUILD_DATE:-$(date -u +%Y-%m-%d)}"
+export BRAHMA_BUILD_SHA="${BRAHMA_BUILD_SHA:-${VERCEL_GIT_COMMIT_SHA:-}}"
+export BRAHMA_BUILD_DATE="${BRAHMA_BUILD_DATE:-$(date -u +%Y-%m-%d)}"
 
 echo "==> trunk build --release (lto=$CARGO_PROFILE_WASM_RELEASE_LTO, jobs=$CARGO_BUILD_JOBS)"
-(cd "$ROOT/apps/photocraft-web" && trunk build --release --locked)
+(cd "$ROOT/apps/brahma-web" && trunk build --release --locked)
 
 SITE="$ROOT/dist/web"
 [ -f "$SITE/index.html" ] || { echo "error: $SITE/index.html missing" >&2; exit 1; }

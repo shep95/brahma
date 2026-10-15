@@ -1,0 +1,36 @@
+# cargo-deny configuration: run by .github/workflows/security.yml on every push, pull request
+# and once a week, so new advisories and licence changes in the dependency tree are caught
+# without anyone remembering to look.
+[graph]
+all-features = false
+targets = [
+  { triple = "x86_64-unknown-linux-gnu" },
+  { triple = "x86_64-pc-windows-msvc" },
+  { triple = "aarch64-apple-darwin" },
+  { triple = "wasm32-unknown-unknown" },
+]
+
+[advisories]
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+yanked = "deny"
+ignore = []
+
+[licenses]
+allow = [
+  "MIT", "Apache-2.0", "Apache-2.0 WITH LLVM-exception", "BSD-2-Clause", "BSD-3-Clause", "ISC",
+  "Zlib", "BSL-1.0", "CC0-1.0", "Unicode-3.0", "Unicode-DFS-2016", "MPL-2.0", "OFL-1.1",
+  "0BSD", "Unlicense", "CDLA-Permissive-2.0", "bzip2-1.0.6", "NCSA", "OpenSSL",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+highlight = "all"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = ["https://github.com/storytold/craft-libs"]

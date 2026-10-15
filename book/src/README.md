@@ -1,34 +1,34 @@
-# PhotoCraft Documentation
+# brahma documentation
 
-PhotoCraft is a native image editor written in Rust. This book is the maintained entry point for installation, architecture, formats, automation, development, and security documentation.
+brahma is a native image editor written in rust. this book is the maintained entry point for installation, architecture, formats, automation, development, and security documentation.
 
-The repository's existing `docs/` directory remains authoritative for detailed design notes, parity reports, UI conventions, release procedures, and the complete control-protocol method reference. The book links to those documents instead of copying them.
+the repository's existing `docs/` directory remains authoritative for detailed design notes, parity reports, ui conventions, release procedures, and the complete control-protocol method reference. the book links to those documents instead of copying them.
 
-## Start here
+## start here
 
-- Users and evaluators: [Installation](getting-started/installation.md)
-- Contributors: [Building](getting-started/building.md) and [Contributing](getting-started/contributing.md)
-- Architecture work: [Architecture overview](architecture/overview.md)
-- Agents and automation clients: [Automation overview](automation/overview.md)
-- Security-sensitive work: [Security overview](security/overview.md) and [Threat model](security/threat-model.md)
+- users and evaluators: [installation](getting-started/installation.md)
+- contributors: [building](getting-started/building.md) and [contributing](getting-started/contributing.md)
+- architecture work: [architecture overview](architecture/overview.md)
+- agents and automation clients: [automation overview](automation/overview.md)
+- security-sensitive work: [security overview](security/overview.md) and [threat model](security/threat-model.md)
 
-## Documentation for coding agents
+## documentation for coding agents
 
-Coding agents should read the following in order:
+coding agents should read the following in order:
 
-1. [`AGENTS.md`](https://github.com/storytold/photocraft/blob/main/AGENTS.md) for repository rules and verification gates.
-2. [`README.md`](https://github.com/storytold/photocraft/blob/main/README.md) for product scope and current entry points.
+1. [`AGENTS.md`](https://github.com/shep95/brahma/blob/main/AGENTS.md) for repository rules and verification gates.
+2. [`README.md`](https://github.com/shep95/brahma/blob/main/README.md) for product scope and current entry points.
 3. [`book/src/architecture/`](architecture/overview.md) for crate boundaries and command flow.
 4. [`book/src/automation/`](automation/overview.md) before driving the CLI, control protocol, or MCP server.
-5. [`book/src/security/`](security/overview.md) before changing a parser, file I/O, automation, MCP, the control server, command execution, or serialization/deserialization.
+5. [`book/src/security/`](security/overview.md) before changing a parser, file i/o, automation, MCP, the control server, command execution, or serialization/deserialization.
 
-Agents must treat document bytes, paths, command parameters, and automation messages as untrusted input. A page that describes a proposed control does not mean that control is implemented.
+agents must treat document bytes, paths, command parameters, and automation messages as untrusted input. a page that describes a proposed control does not mean that control is implemented.
 
-## Status language
+## status language
 
-Security pages use four labels consistently:
+security pages use four labels consistently:
 
-- **Implemented:** behavior confirmed in current source or tests.
-- **Known limitation:** an exposed risk or missing control in current source.
-- **Proposed:** a design direction that is not enforced by the current build.
-- **Future hardening:** useful follow-up work without an accepted implementation yet.
+- **implemented:** behavior confirmed in current source or tests.
+- **known limitation:** an exposed risk or missing control in current source.
+- **proposed:** a design direction that is not enforced by the current build.
+- **future hardening:** useful follow-up work without an accepted implementation yet.

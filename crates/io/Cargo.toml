@@ -1,6 +1,6 @@
 [package]
-name = "photocraft-io"
-description = "Import/export between photocraft documents and PSD/PSB and flat raster formats"
+name = "brahma-io"
+description = "Import/export between brahma documents and PSD/PSB and flat raster formats"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,25 +12,25 @@ workspace = true
 [features]
 # Real-file corpus tests (opt-in; `cargo xtask test-corpus`). Fail when the corpus is missing.
 corpus = []
-# HEIC/HEIF decode (forwarded to photocraft-codecs; see its `heif` feature).
-heif = ["photocraft-codecs/heif"]
+# HEIC/HEIF decode (forwarded to brahma-codecs; see its `heif` feature).
+heif = ["brahma-codecs/heif"]
 
 [dependencies]
-photocraft-geom = { workspace = true }
-photocraft-color = { workspace = true }
-photocraft-cms = { workspace = true }
-photocraft-raster = { workspace = true }
-photocraft-doc = { workspace = true }
-photocraft-compose = { workspace = true }
-photocraft-algo = { workspace = true }
-photocraft-psd = { workspace = true }
-photocraft-codecs = { workspace = true }
-photocraft-raw = { workspace = true }
-photocraft-affinity = { workspace = true }
-photocraft-text = { workspace = true }
-photocraft-paint = { workspace = true }
-photocraft-vector = { workspace = true }
-photocraft-format = { path = "../format" }
+brahma-geom = { workspace = true }
+brahma-color = { workspace = true }
+brahma-cms = { workspace = true }
+brahma-raster = { workspace = true }
+brahma-doc = { workspace = true }
+brahma-compose = { workspace = true }
+brahma-algo = { workspace = true }
+brahma-psd = { workspace = true }
+brahma-codecs = { workspace = true }
+brahma-raw = { workspace = true }
+brahma-affinity = { workspace = true }
+brahma-text = { workspace = true }
+brahma-paint = { workspace = true }
+brahma-vector = { workspace = true }
+brahma-format = { path = "../format" }
 thiserror = { workspace = true }
 serde_json = { workspace = true }
 blake3 = { version = "1.8", default-features = false, features = ["pure"] }
@@ -49,8 +49,8 @@ resvg = { version = "0.45", default-features = false, features = ["text", "raste
 
 [dev-dependencies]
 crc32fast = "1.5"
-photocraft-affinity = { workspace = true, features = ["synth"] }
+brahma-affinity = { workspace = true, features = ["synth"] }
 flate2 = { workspace = true }
-photocraft-psd = { workspace = true, features = ["testgen"] }
-photocraft-raw = { workspace = true, features = ["testgen"] }
+brahma-psd = { workspace = true, features = ["testgen"] }
+brahma-raw = { workspace = true, features = ["testgen"] }
 proptest = { workspace = true }

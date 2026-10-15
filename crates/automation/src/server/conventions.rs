@@ -4,9 +4,9 @@ use rmcp::RoleServer;
 use rmcp::model::*;
 use rmcp::service::RequestContext;
 
-const DOCUMENT: &str = "photocraft://document";
-const COMMANDS: &str = "photocraft://commands";
-const INSTRUCTIONS: &str = "PhotoCraft image editor. Start with doc_new/doc_open, discover ids and parameter docs with command_list, edit with command_run or command_batch (one history step per command). Inspect with doc_inspect and render_preview; doc_save writes native .pcraft or exports by extension. File paths are relative to the read/write roots granted at launch. ui_inspect/ui_screenshot and other ui_* tools require bridge mode. Read photocraft://document and photocraft://commands for live JSON state.";
+const DOCUMENT: &str = "brahma://document";
+const COMMANDS: &str = "brahma://commands";
+const INSTRUCTIONS: &str = "brahma image editor. Start with doc_new/doc_open, discover ids and parameter docs with command_list, edit with command_run or command_batch (one history step per command). Inspect with doc_inspect and render_preview; doc_save writes native .pcraft or exports by extension. File paths are relative to the read/write roots granted at launch. ui_inspect/ui_screenshot and other ui_* tools require bridge mode. Read brahma://document and brahma://commands for live JSON state.";
 
 fn annotated(mut tool: Tool) -> Tool {
     let words = tool.name.replace('_', " ");
@@ -23,10 +23,10 @@ fn annotated(mut tool: Tool) -> Tool {
     tool
 }
 
-impl ServerHandler for PhotocraftMcp {
+impl ServerHandler for BrahmaMcp {
     fn get_info(&self) -> ServerConfig {
         ServerConfig::new(ServerCapabilities::builder().enable_tools().enable_resources().build())
-            .with_server_info(Implementation::new("photocraft", env!("CARGO_PKG_VERSION")))
+            .with_server_info(Implementation::new("brahma", env!("CARGO_PKG_VERSION")))
             .with_instructions(INSTRUCTIONS)
     }
 

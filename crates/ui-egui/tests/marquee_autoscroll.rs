@@ -6,12 +6,12 @@
 //! `drag_preview_canvas.rs`).
 
 use egui::{Modifiers, PointerButton, Pos2};
-use photocraft_ui_egui::PhotocraftApp;
-use photocraft_ui_egui::canvas::ViewXform;
-use photocraft_ui_egui::control::{ControlRequest, handle};
+use brahma_ui_egui::BrahmaApp;
+use brahma_ui_egui::canvas::ViewXform;
+use brahma_ui_egui::control::{ControlRequest, handle};
 use serde_json::{Value, json};
 
-type Harness = egui_kittest::Harness<'static, PhotocraftApp>;
+type Harness = egui_kittest::Harness<'static, BrahmaApp>;
 
 fn harness() -> Option<Harness> {
     harness_with_size(egui::vec2(900.0, 640.0))
@@ -20,8 +20,8 @@ fn harness() -> Option<Harness> {
 fn harness_with_size(size: egui::Vec2) -> Option<Harness> {
     let built = std::panic::catch_unwind(|| {
         egui_kittest::Harness::builder().with_size(size).with_max_steps(64).wgpu().build_eframe(|cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
-            let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
+            let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
             if let Some(rs) = cc.wgpu_render_state.as_ref() {
                 app.set_wgpu(rs.clone());
             }

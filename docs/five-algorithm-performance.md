@@ -1,66 +1,66 @@
-# Five imaging algorithms: measured CPU performance
+# five imaging algorithms: measured CPU performance
 
-Measured on 2026-10-10. These changes remove repeated work from Extrude Blocks,
-Wind/Blast, Spin Blur, Lens Correction and prepress Trap. They preserve the existing
-output and parameter behavior. Measurements compare the full CPU operation against
+measured on 2026-10-10. these changes remove repeated work from extrude blocks,
+wind/blast, spin blur, lens correction and prepress trap. they preserve the existing
+output and parameter behavior. measurements compare the full CPU operation against
 `7722172585a01cbdb93c06f0f5ff2634fcb17999`, not just the inner kernel.
 
-## What changed
+## what changed
 
-- **Extrude Blocks:** visit each cell once, calculate its color and height once, then
-  rasterize its swept bounds. Keep the original candidate-range checks, intersection
-  tests and cell tie order. The default 30 px blocks benefit too, not only dense blocks.
-- **Wind/Blast:** scatter each actual source streak once. Reuse source luminance and
+- **extrude blocks:** visit each cell once, calculate its color and height once, then
+  rasterize its swept bounds. keep the original candidate-range checks, intersection
+  tests and cell tie order. the default 30 px blocks benefit too, not only dense blocks.
+- **wind/blast:** scatter each actual source streak once. reuse source luminance and
   hash work, retain the nearest-source tie rule, then blend once per output pixel.
-- **Spin Blur:** prepare all 2..64 sample-count rotation tables once per pin. Fixed
+- **spin blur:** prepare all 2..64 sample-count rotation tables once per pin. fixed
   channel samplers keep bilinear accumulators in registers without changing tap or
   premultiplied-alpha arithmetic order.
-- **Lens Correction:** share Catmull-Rom coordinates and weights across channels
+- **lens correction:** share catmull-rom coordinates and weights across channels
   sampling the same point, using fixed channel accumulators. RGB chromatic-aberration
   offsets still use independent samples.
-- **Trap:** replace wide-window ink scans with separable prefix/suffix block maxima,
-  independent of radius. Transpose the intermediate output for contiguous column
-  writes. Widths 1 and 2 retain the original path.
+- **trap:** replace wide-window ink scans with separable prefix/suffix block maxima,
+  independent of radius. transpose the intermediate output for contiguous column
+  writes. widths 1 and 2 retain the original path.
 
-## Method
+## method
 
-AWS m7i.4xlarge, 16 vCPUs, Intel Xeon Platinum 8488C, 61 GiB RAM, Ubuntu 24.04.5.
-Rust `1.99.0 (b940084d7 2026-09-28)`, release profile, `RAYON_NUM_THREADS=16`.
-Builds used independent target directories. No build or test ran during timing.
-The final rebase adds upstream canvas and automation changes; the timed algorithm
-source, fixture, dependencies and Cargo configuration are unchanged. The raw results
+AWS m7i.4xlarge, 16 vcpus, intel xeon platinum 8488c, 61 gib RAM, ubuntu 24.04.5.
+rust `1.99.0 (b940084d7 2026-09-28)`, release profile, `RAYON_NUM_THREADS=16`.
+builds used independent target directories. no build or test ran during timing.
+the final rebase adds upstream canvas and automation changes; the timed algorithm
+source, fixture, dependencies and cargo configuration are unchanged. the raw results
 record both the measured revision and its equivalent rebased revision.
 
-The identical committed `bench_algorithms` example runs at both revisions. It creates
+the identical committed `bench_algorithms` example runs at both revisions. it creates
 native RGB or CMYK tiles at 8-bit, 16-bit or 32-bit float depth, with deterministic
-65536-level busy texture, variable alpha and roughly 20% zero-alpha pixels. Bounds begin at
-(-17, -29). A 128 x 128 operation warms each process before timing.
+65536-level busy texture, variable alpha and roughly 20% zero-alpha pixels. bounds begin at
+(-17, -29). a 128 x 128 operation warms each process before timing.
 
-Each case has three independent before/after pairs, alternating process order:
-before/after, after/before, before/after. The table reports the median of each set
-of three, with speedup computed from unrounded medians. Fixture construction,
+each case has three independent before/after pairs, alternating process order:
+before/after, after/before, before/after. the table reports the median of each set
+of three, with speedup computed from unrounded medians. fixture construction,
 warmup, output serialization and result destruction are outside the timer.
 
-For filters, the timer includes `apply_in`, tile reads, processing, writeback and
-pruning. Lens times the full `lens::correct` call. Trap includes surface reads,
-ink dilation, clone, writeback and pruning. Document flattening, undo bookkeeping
-and UI rendering are outside these CPU measurements.
+for filters, the timer includes `apply_in`, tile reads, processing, writeback and
+pruning. lens times the full `lens::correct` call. trap includes surface reads,
+ink dilation, clone, writeback and pruning. document flattening, undo bookkeeping
+and ui rendering are outside these CPU measurements.
 
-Every pair serializes every output sample as its normalized f32 bits in tile order.
-All 72 before/after SHA-256 comparisons match exactly, including alpha. The
+every pair serializes every output sample as its normalized f32 bits in tile order.
+all 72 before/after SHA-256 comparisons match exactly, including alpha. the
 [raw results](five-algorithm-performance.json) contain all times, medians and hashes.
 
-Extrude uses random-depth Blocks, seed 17, size/depth 30/30 px, or 8/128 px for
+extrude uses random-depth blocks, seed 17, size/depth 30/30 px, or 8/128 px for
 `extrude-dense`; solid-front, level-based and incomplete-cell masking are off.
-Wind/Blast use seed 17; `blast-right` changes direction. `spin` uses one full-frame
+wind/blast use seed 17; `blast-right` changes direction. `spin` uses one full-frame
 elliptical pin, 30 degree blur and 17 degree orientation; `spin-default` uses the
-unchanged default pin. Lens uses distortion 12, rotation 2.5 degrees and vignette 20;
-`lens-ca` also enables red/cyan 12 and blue/yellow -8. Trap widths are 10, 50
+unchanged default pin. lens uses distortion 12, rotation 2.5 degrees and vignette 20;
+`lens-ca` also enables red/cyan 12 and blue/yellow -8. trap widths are 10, 50
 (`trap-wide`) and 1 (`trap-default`) pixels.
 
-## Full-operation results
+## full-operation results
 
-| Case | Dimensions | Mode/depth | Before (s) | After (s) | Speedup |
+| case | dimensions | mode/depth | before (s) | after (s) | speedup |
 |---|---|---|---:|---:|---:|
 | `extrude` | 6000 x 4000 | RGB/u8 | 2.0641 | 0.3296 | 6.26x |
 | `extrude-dense` | 6000 x 4000 | RGB/u8 | 160.3010 | 0.3866 | 414.69x |
@@ -87,42 +87,42 @@ unchanged default pin. Lens uses distortion 12, rotation 2.5 degrees and vignett
 | `trap` | 6000 x 4000 | CMYK/f32 | 1.1924 | 1.0273 | 1.16x |
 | `trap-default` | 6000 x 4000 | CMYK/u8 | 0.6363 | 0.6506 | 0.98x |
 
-## Correctness and bounded work
+## correctness and bounded work
 
-407 algorithm tests passed, with 14 existing ignored tests. New direct-reference
+407 algorithm tests passed, with 14 existing ignored tests. new direct-reference
 comparisons cover all eight color models, alpha on/off, all three depths, edge
-modes, unusual tile sizes and soft selections where applicable. They also exercise
+modes, unusual tile sizes and soft selections where applicable. they also exercise
 ties, partial cells, extreme coordinates, nonfinite samples and fallback paths.
-Spin rotation tables match the original trigonometric results bit for bit.
-Trap tests include clipped windows, paper preservation, extra channels and signed zero.
+spin rotation tables match the original trigonometric results bit for bit.
+trap tests include clipped windows, paper preservation, extra channels and signed zero.
 
-Extrude caps its additional winner plane at 4,194,304 pixels (16 MiB), cell visits
+extrude caps its additional winner plane at 4,194,304 pixels (16 mib), cell visits
 at 262,144 and coordinates at +/-2^22; normal tiled execution fits these bounds.
-Wind caps winner scratch at 1,048,576 entries per row (8 MiB). Spin tables are
-under 2 MiB for up to 120 pins. These scratch allocations are fallible and use the
+wind caps winner scratch at 1,048,576 entries per row (8 mib). spin tables are
+under 2 mib for up to 120 pins. these scratch allocations are fallible and use the
 original direct implementation if preparation fails or bounds are exceeded.
-Extrude Pyramids and Wind Stagger keep their original implementations. Trap's new
+extrude pyramids and wind stagger keep their original implementations. trap's new
 per-line suffix buffer is fallible, with a direct fallback; it adds no full-image
-plane beyond the existing dilation workspace. Lines containing negative zero use
+plane beyond the existing dilation workspace. lines containing negative zero use
 the original scan to retain float bit patterns.
 
 `cargo fmt --all -- --check`, algorithm clippy with all targets and denied warnings,
 `cargo xtask layers`, full `cargo xtask wasm`, `cargo xtask perf --quick`, and
-scorecard generation/check passed. The quick performance run used llvmpipe and
-still reports existing over-budget UI scenarios. These operation measurements do
-not change those budget claims or establish Photoshop pixel parity.
+scorecard generation/check passed. the quick performance run used llvmpipe and
+still reports existing over-budget ui scenarios. these operation measurements do
+not change those budget claims or establish photoshop pixel parity.
 
-## Reproduce
+## reproduce
 
-From the PR checkout, create a base worktree and copy only the benchmark fixture:
+from the pr checkout, create a base worktree and copy only the benchmark fixture:
 
 ```sh
 base=7722172585a01cbdb93c06f0f5ff2634fcb17999
-git worktree add --detach ../photocraft-five-base "$base"
-cp crates/algo/examples/bench_algorithms.rs ../photocraft-five-base/crates/algo/examples/
-CARGO_TARGET_DIR="$PWD/target/five-after" cargo build --release -p photocraft-algo --example bench_algorithms
-(cd ../photocraft-five-base && CARGO_TARGET_DIR="$PWD/target/five-before" cargo build --release -p photocraft-algo --example bench_algorithms)
-before="$PWD/../photocraft-five-base/target/five-before/release/examples/bench_algorithms"
+git worktree add --detach ../brahma-five-base "$base"
+cp crates/algo/examples/bench_algorithms.rs ../brahma-five-base/crates/algo/examples/
+CARGO_TARGET_DIR="$PWD/target/five-after" cargo build --release -p brahma-algo --example bench_algorithms
+(cd ../brahma-five-base && CARGO_TARGET_DIR="$PWD/target/five-before" cargo build --release -p brahma-algo --example bench_algorithms)
+before="$PWD/../brahma-five-base/target/five-before/release/examples/bench_algorithms"
 after="$PWD/target/five-after/release/examples/bench_algorithms"
 export RAYON_NUM_THREADS=16
 
@@ -146,7 +146,7 @@ for pair in 1 2 3; do
 done
 ```
 
-Take the median of the three times for each binary. Output files can reach 720 MB
-per side for 36 MP CMYK+alpha; reuse the two filenames between cases. Hardware,
+take the median of the three times for each binary. output files can reach 720 mb
+per side for 36 mp CMYK+alpha; reuse the two filenames between cases. hardware,
 worker count and image content affect the times, so preserve the fixture when
 comparing revisions.

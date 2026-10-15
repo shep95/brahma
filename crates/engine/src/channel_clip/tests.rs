@@ -1,6 +1,6 @@
 use super::*;
-use photocraft_color::ColorMode;
-use photocraft_geom::Rect;
+use brahma_color::ColorMode;
+use brahma_geom::Rect;
 
 const W: i32 = 40;
 const H: i32 = 20;
@@ -108,7 +108,7 @@ fn copying_and_pasting_channels_fail_cleanly() {
     s.execute("channel.target", json!({"channel": "red"})).unwrap();
     // An empty selection copies nothing and leaves the clipboard alone.
     s.edit("empty selection", |doc, _| {
-        doc.selection = Some(Surface::new(photocraft_color::PixelFormat::GRAY8));
+        doc.selection = Some(Surface::new(brahma_color::PixelFormat::GRAY8));
         Ok(())
     })
     .unwrap();

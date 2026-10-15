@@ -14,12 +14,12 @@
 //!   the page-only `blendIfChannel`; `channelNames`: the document's colour channels.
 
 use egui::{Color32, RichText, Sense, Stroke, StrokeKind, vec2};
-use photocraft_doc::effects::{FxPaint, GlowSource, StrokePosition};
-use photocraft_doc::{Effect, Layer};
+use brahma_doc::effects::{FxPaint, GlowSource, StrokePosition};
+use brahma_doc::{Effect, Layer};
 use serde_json::{Map, Value, json};
 
 use crate::theme::Tokens;
-use crate::{PhotocraftApp, widgets};
+use crate::{BrahmaApp, widgets};
 
 pub(crate) mod color_picker;
 mod contour;
@@ -66,11 +66,11 @@ fn multi(kind: &str) -> bool {
 }
 
 fn kind_of(e: &Effect) -> &'static str {
-    photocraft_engine::layer_style::kind_of(e)
+    brahma_engine::layer_style::kind_of(e)
 }
 
 fn defaults(kind: &str) -> Value {
-    photocraft_engine::layer_style::effect_defaults(kind)
+    brahma_engine::layer_style::effect_defaults(kind)
 }
 
 /// Factory params for a new instance, with the shared light angle filled in.
@@ -197,7 +197,7 @@ fn spec(kind: &str) -> &'static [(&'static str, &'static str, P)] {
     }
 }
 
-fn hex(c: &photocraft_doc::Color) -> String {
+fn hex(c: &brahma_doc::Color) -> String {
     let [r, g, b, _] = c.to_rgba8();
     format!("#{r:02x}{g:02x}{b:02x}")
 }
@@ -228,7 +228,7 @@ fn values_of(e: &Effect, light: f32) -> Value {
             set(&mut v, "distance", json!(s.distance));
             set(&mut v, if matches!(e, Effect::DropShadow(_)) { "spread" } else { "choke" }, json!((s.spread * 100.0).round()));
             set(&mut v, "size", json!(s.size));
-            set(&mut v, "contour", photocraft_engine::layer_style::contour_param(&s.contour));
+            set(&mut v, "contour", brahma_engine::layer_style::contour_param(&s.contour));
             set(&mut v, "antiAlias", json!(s.anti_alias));
             set(&mut v, "noise", json!((s.noise * 100.0).round()));
             if matches!(e, Effect::DropShadow(_)) {
@@ -246,7 +246,7 @@ fn values_of(e: &Effect, light: f32) -> Value {
             set(&mut v, if matches!(e, Effect::OuterGlow(_)) { "spread" } else { "choke" }, json!((g.spread * 100.0).round()));
             set(&mut v, "size", json!(g.size));
             set(&mut v, "range", json!((g.range * 100.0).round()));
-            set(&mut v, "contour", photocraft_engine::layer_style::contour_param(&g.contour));
+            set(&mut v, "contour", brahma_engine::layer_style::contour_param(&g.contour));
             set(&mut v, "antiAlias", json!(g.anti_alias));
             set(&mut v, "noise", json!((g.noise * 100.0).round()));
             if matches!(e, Effect::InnerGlow(_)) {
@@ -292,11 +292,11 @@ fn values_of(e: &Effect, light: f32) -> Value {
                     &mut v,
                     "style",
                     json!(match g.style {
-                        photocraft_doc::effects::GradientStyle::Radial => "radial",
-                        photocraft_doc::effects::GradientStyle::Angle => "angle",
-                        photocraft_doc::effects::GradientStyle::Reflected => "reflected",
-                        photocraft_doc::effects::GradientStyle::Diamond => "diamond",
-                        photocraft_doc::effects::GradientStyle::Linear => "linear",
+                        brahma_doc::effects::GradientStyle::Radial => "radial",
+                        brahma_doc::effects::GradientStyle::Angle => "angle",
+                        brahma_doc::effects::GradientStyle::Reflected => "reflected",
+                        brahma_doc::effects::GradientStyle::Diamond => "diamond",
+                        brahma_doc::effects::GradientStyle::Linear => "linear",
                     }),
                 );
                 set(&mut v, "angle", json!(g.angle));
@@ -323,7 +323,7 @@ fn values_of(e: &Effect, light: f32) -> Value {
             set(&mut v, "distance", json!(s.distance));
             set(&mut v, "size", json!(s.size));
             set(&mut v, "invert", json!(s.invert));
-            set(&mut v, "contour", photocraft_engine::layer_style::contour_param(&s.contour));
+            set(&mut v, "contour", brahma_engine::layer_style::contour_param(&s.contour));
             set(&mut v, "antiAlias", json!(s.anti_alias));
         }
         Effect::BevelEmboss(b) => {
@@ -331,20 +331,20 @@ fn values_of(e: &Effect, light: f32) -> Value {
                 &mut v,
                 "style",
                 json!(match b.style {
-                    photocraft_doc::effects::BevelStyle::OuterBevel => "outer",
-                    photocraft_doc::effects::BevelStyle::Emboss => "emboss",
-                    photocraft_doc::effects::BevelStyle::PillowEmboss => "pillow",
-                    photocraft_doc::effects::BevelStyle::StrokeEmboss => "stroke",
-                    photocraft_doc::effects::BevelStyle::InnerBevel => "inner",
+                    brahma_doc::effects::BevelStyle::OuterBevel => "outer",
+                    brahma_doc::effects::BevelStyle::Emboss => "emboss",
+                    brahma_doc::effects::BevelStyle::PillowEmboss => "pillow",
+                    brahma_doc::effects::BevelStyle::StrokeEmboss => "stroke",
+                    brahma_doc::effects::BevelStyle::InnerBevel => "inner",
                 }),
             );
             set(
                 &mut v,
                 "technique",
                 json!(match b.technique {
-                    photocraft_doc::effects::BevelTechnique::ChiselHard => "chiselHard",
-                    photocraft_doc::effects::BevelTechnique::ChiselSoft => "chiselSoft",
-                    photocraft_doc::effects::BevelTechnique::Smooth => "smooth",
+                    brahma_doc::effects::BevelTechnique::ChiselHard => "chiselHard",
+                    brahma_doc::effects::BevelTechnique::ChiselSoft => "chiselSoft",
+                    brahma_doc::effects::BevelTechnique::Smooth => "smooth",
                 }),
             );
             set(&mut v, "depth", json!((b.depth * 100.0).round()));
@@ -354,10 +354,10 @@ fn values_of(e: &Effect, light: f32) -> Value {
             set(&mut v, "useGlobalLight", json!(b.use_global_light));
             set(&mut v, "altitude", json!(b.altitude));
             set(&mut v, "direction", json!(if b.up { "up" } else { "down" }));
-            set(&mut v, "glossContour", photocraft_engine::layer_style::contour_param(&b.gloss_contour));
+            set(&mut v, "glossContour", brahma_engine::layer_style::contour_param(&b.gloss_contour));
             set(&mut v, "contour", json!(b.contour.is_some()));
             if let Some(c) = &b.contour {
-                set(&mut v, "contourName", photocraft_engine::layer_style::contour_param(&c.contour));
+                set(&mut v, "contourName", brahma_engine::layer_style::contour_param(&c.contour));
                 set(&mut v, "contourRange", json!((c.range * 100.0).round()));
                 set(&mut v, "contourAntiAlias", json!(c.anti_alias));
             }
@@ -466,7 +466,7 @@ pub fn initial_fields(layer: &Layer, select: Option<&str>, light: f32) -> Map<St
     f.insert("layer".into(), json!(layer.id.0));
     f.insert("globalLight".into(), json!(light));
     f.insert("preview".into(), json!(true));
-    set_blending_fields(&mut f, layer, photocraft_color::ColorMode::Rgb);
+    set_blending_fields(&mut f, layer, brahma_color::ColorMode::Rgb);
     let mut effects = Vec::new();
     for (i, e) in layer.effects.items.iter().enumerate() {
         effects.push(json!({
@@ -505,7 +505,7 @@ pub fn initial_fields(layer: &Layer, select: Option<&str>, light: f32) -> Map<St
     f
 }
 
-pub fn open(app: &mut PhotocraftApp, select: Option<&str>) -> Option<u64> {
+pub fn open(app: &mut BrahmaApp, select: Option<&str>) -> Option<u64> {
     // An open Free Transform box is applied first, as in Photoshop (#4821): the canvas shows the
     // box's preview while it is open, so the dialog's preview would not show until Enter.
     if app.ui.transform.is_some() {
@@ -528,7 +528,7 @@ pub fn open(app: &mut PhotocraftApp, select: Option<&str>) -> Option<u64> {
 
 /// Double-click on an effect row of the Layers panel: open Layer Style for that row's layer. A
 /// row of another layer selects it first, as its right-click menu does (Photoshop does the same).
-pub fn open_for_layer(app: &mut PhotocraftApp, layer: photocraft_doc::LayerId, select: Option<&str>) -> Option<u64> {
+pub fn open_for_layer(app: &mut BrahmaApp, layer: brahma_doc::LayerId, select: Option<&str>) -> Option<u64> {
     let active = app.session.active().is_some_and(|s| s.active_layer == Some(layer));
     if !active {
         app.run("layer.select", json!({"layer": layer.0})).ok()?;
@@ -537,7 +537,7 @@ pub fn open_for_layer(app: &mut PhotocraftApp, layer: photocraft_doc::LayerId, s
 }
 
 /// `[[id, name], …]` of the patterns a style can use (document's, then the library's).
-pub fn pattern_list(app: &PhotocraftApp) -> Value {
+pub fn pattern_list(app: &BrahmaApp) -> Value {
     let mut out: Vec<Value> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let doc_pats = app.session.active().map(|d| d.doc.patterns.clone()).unwrap_or_default();
@@ -550,7 +550,7 @@ pub fn pattern_list(app: &PhotocraftApp) -> Value {
 }
 
 /// Apply the dialog: replace the layer's effects with the dialog's instances.
-pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value, String> {
+pub fn confirm(app: &mut BrahmaApp, f: &Map<String, Value>) -> Result<Value, String> {
     apply(f, |id, p| app.run(id, p))
 }
 
@@ -650,11 +650,11 @@ pub fn preview_hash(f: &Map<String, Value>) -> u64 {
 
 /// `doc` with the dialog's style applied, run on a scratch session (no history) for the live preview.
 pub fn preview_document(
-    doc: &photocraft_doc::Document,
-    patterns: &photocraft_engine::pattern_cmds::PatternLibrary,
+    doc: &brahma_doc::Document,
+    patterns: &brahma_engine::pattern_cmds::PatternLibrary,
     f: &Map<String, Value>,
-) -> Result<photocraft_doc::Document, String> {
-    let mut s = photocraft_engine::Session::new();
+) -> Result<brahma_doc::Document, String> {
+    let mut s = brahma_engine::Session::new();
     s.patterns = patterns.clone();
     s.add_document(doc.clone(), None);
     apply(f, |id, p| s.execute(id, p).map_err(|e| e.to_string()))?;
@@ -663,8 +663,8 @@ pub fn preview_document(
 
 /// Applies a style preset to the dialog fields in-place without touching the document.
 /// Clicking Cancel leaves the document untouched; clicking OK commits.
-fn apply_style_preset(app: &PhotocraftApp, f: &mut Map<String, Value>, name: &str) {
-    let Ok(style) = photocraft_engine::presets::styles::find_style(&app.session, &json!({"preset": name}), "apply_style_preset") else { return };
+fn apply_style_preset(app: &BrahmaApp, f: &mut Map<String, Value>, name: &str) {
+    let Ok(style) = brahma_engine::presets::styles::find_style(&app.session, &json!({"preset": name}), "apply_style_preset") else { return };
     let light = f.get("pendingGlobalLight").or_else(|| f.get("globalLight")).and_then(Value::as_f64).unwrap_or(120.0) as f32;
     let mut effects = Vec::new();
     for (i, e) in style.effects.iter().enumerate() {
@@ -686,7 +686,7 @@ fn apply_style_preset(app: &PhotocraftApp, f: &mut Map<String, Value>, name: &st
 }
 
 /// Saves the dialog's pending state (enabled instances + blending page) as a style preset.
-fn save_new_style(app: &mut PhotocraftApp, f: &Map<String, Value>) {
+fn save_new_style(app: &mut BrahmaApp, f: &Map<String, Value>) {
     let mut entries = Vec::new();
     for e in effects_of(f) {
         if e.get("on").and_then(Value::as_bool) != Some(true) {
@@ -738,7 +738,7 @@ fn fx_checkbox(p: &egui::Painter, cb: egui::Rect, on: bool, t: &Tokens) {
     }
 }
 
-pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
+pub fn body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let selected = f.get("selected").and_then(Value::as_str).unwrap_or("dropShadow").to_string();
     let mut style_click: Option<String> = None;
@@ -966,7 +966,7 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
                             ui.label(RichText::new(tl!(&label)).color(t.text_dim));
                             let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or("Normal").to_string();
                             let opts: Vec<(String, &str)> =
-                                photocraft_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
+                                brahma_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
                             if widgets::dropdown(ui, &format!("fx-blend-{sel_kind}"), &mut cur, &opts, 150.0) {
                                 let value = json!(cur);
                                 disp[key] = value.clone();
@@ -1055,8 +1055,8 @@ pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Valu
 }
 
 /// Colour channel names of a document mode, as Blending Options lists them (Channels, Blend If).
-pub fn channel_names(mode: photocraft_color::ColorMode) -> Vec<&'static str> {
-    use photocraft_color::ColorMode as M;
+pub fn channel_names(mode: brahma_color::ColorMode) -> Vec<&'static str> {
+    use brahma_color::ColorMode as M;
     match mode {
         M::Rgb | M::Indexed | M::Multichannel => vec!["R", "G", "B"],
         M::Cmyk => vec!["C", "M", "Y", "K"],
@@ -1078,7 +1078,7 @@ const ADVANCED_CHECKS: &[(&str, &str)] = &[
 
 /// The Blending Options page's fields for `layer` in a `mode` document (the parameters of
 /// `layer.layerStyle.blendingOptions`, plus the page's Blend If channel), and the channel names.
-pub fn set_blending_fields(f: &mut Map<String, Value>, layer: &Layer, mode: photocraft_color::ColorMode) {
+pub fn set_blending_fields(f: &mut Map<String, Value>, layer: &Layer, mode: brahma_color::ColorMode) {
     let names = channel_names(mode);
     let n = names.len();
     let a = &layer.advanced;
@@ -1128,8 +1128,8 @@ fn blending_page(ui: &mut egui::Ui, p: &mut Value, names: &[String]) {
         ui.label(RichText::new(tl!("Blend Mode")).color(t.text_dim));
         let mut cur = p.get("blend").and_then(Value::as_str).unwrap_or("Normal").to_string();
         // Photoshop's modes, plus the layer's own Paint.NET mode when it has one (an imported .pdn).
-        let own = photocraft_color::BlendMode::PAINT_NET_MODES.into_iter().find(|m| m.label() == cur);
-        let opts: Vec<(String, &str)> = photocraft_color::BlendMode::LAYER_MODES.into_iter().chain(own).map(|m| (m.label().to_string(), m.label())).collect();
+        let own = brahma_color::BlendMode::PAINT_NET_MODES.into_iter().find(|m| m.label() == cur);
+        let opts: Vec<(String, &str)> = brahma_color::BlendMode::LAYER_MODES.into_iter().chain(own).map(|m| (m.label().to_string(), m.label())).collect();
         if widgets::dropdown(ui, "fx-blend-blendingOptions", &mut cur, &opts, 150.0) {
             p["blend"] = json!(cur);
         }
@@ -1344,16 +1344,16 @@ impl MaxAlpha for Color32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use photocraft_doc::StrokeFx;
+    use brahma_doc::StrokeFx;
 
-    fn session() -> photocraft_engine::Session {
-        let mut s = photocraft_engine::Session::new();
+    fn session() -> brahma_engine::Session {
+        let mut s = brahma_engine::Session::new();
         s.execute("file.new", json!({"width": 64, "height": 64})).unwrap();
         s.execute("layer.new.layer", json!({})).unwrap();
         s
     }
 
-    fn strokes_of(s: &photocraft_engine::Session) -> Vec<StrokeFx> {
+    fn strokes_of(s: &brahma_engine::Session) -> Vec<StrokeFx> {
         let d = s.active().unwrap();
         let id = d.active_layer.unwrap();
         d.doc
@@ -1373,12 +1373,12 @@ mod tests {
     /// layer yet (an empty box), not only after one was turned on and off again.
     #[test]
     fn every_effect_row_shows_a_checkbox() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         app.run("file.new", json!({"width": 32, "height": 32})).unwrap();
-        let l = Layer::raster("x", photocraft_doc::PixelFormat::RGBA8);
+        let l = Layer::raster("x", brahma_doc::PixelFormat::RGBA8);
         let fields = initial_fields(&l, Some(BLENDING), 120.0);
         let mut h = egui_kittest::Harness::builder().with_size(vec2(900.0, 700.0)).build_ui_state(
-            move |ui, app: &mut PhotocraftApp| {
+            move |ui, app: &mut BrahmaApp| {
                 if !ui.ctx().fonts(|f| f.families().contains(&egui::FontFamily::Name("medium".into()))) {
                     return;
                 }
@@ -1387,7 +1387,7 @@ mod tests {
             },
             app,
         );
-        PhotocraftApp::setup_context(&h.ctx, crate::theme::ThemeKind::ProMedium);
+        BrahmaApp::setup_context(&h.ctx, crate::theme::ThemeKind::ProMedium);
         h.run_steps(3);
         let boxes: Vec<egui::Rect> = h
             .output()
@@ -1408,7 +1408,7 @@ mod tests {
     /// the dialog holds its effects (and OK edits it), not the active layer's.
     #[test]
     fn effect_row_of_another_layer_opens_that_layers_style() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         app.run("file.new", json!({"width": 32, "height": 32})).unwrap();
         app.run("layer.new.layer", json!({})).unwrap();
         let with_fx = app.session.active().unwrap().active_layer.unwrap();
@@ -1442,7 +1442,7 @@ mod tests {
     #[test]
     fn adding_an_effect_after_maximum_instance_id_uses_an_unused_id() {
         // Imported and scripted effects can provide arbitrary instance IDs.
-        let layer = Layer::raster("x", photocraft_doc::PixelFormat::RGBA8);
+        let layer = Layer::raster("x", brahma_doc::PixelFormat::RGBA8);
         let mut fields = initial_fields(&layer, None, 120.0);
         fields.insert(
             "effects".into(),
@@ -1460,7 +1460,7 @@ mod tests {
 
     #[test]
     fn initial_fields_lists_every_instance_and_selects() {
-        let l = Layer::raster("x", photocraft_doc::PixelFormat::RGBA8);
+        let l = Layer::raster("x", brahma_doc::PixelFormat::RGBA8);
         let f = initial_fields(&l, Some("stroke"), 120.0);
         assert_eq!(f["globalLight"], json!(120.0));
         // The kind isn't on the layer yet: selecting it creates the instance.
@@ -1489,8 +1489,8 @@ mod tests {
         let strokes = strokes_of(&s);
         assert_eq!(strokes.len(), 2);
         assert_eq!((strokes[0].size, strokes[1].size), (3.0, 7.0));
-        assert_eq!(strokes[0].paint, FxPaint::Color(photocraft_color::Color::BLACK));
-        assert_eq!(strokes[1].paint, FxPaint::Color(photocraft_color::Color::WHITE));
+        assert_eq!(strokes[0].paint, FxPaint::Color(brahma_color::Color::BLACK));
+        assert_eq!(strokes[1].paint, FxPaint::Color(brahma_color::Color::WHITE));
     }
 
     #[test]
@@ -1507,7 +1507,7 @@ mod tests {
         assert_eq!(strokes.len(), 2);
         assert_eq!(strokes[0].size, 5.0);
         assert_eq!(strokes[1].size, 7.0, "the second stroke is untouched");
-        assert_eq!(strokes[1].paint, FxPaint::Color(photocraft_color::Color::WHITE));
+        assert_eq!(strokes[1].paint, FxPaint::Color(brahma_color::Color::WHITE));
     }
 
     #[test]
@@ -1563,8 +1563,8 @@ mod tests {
         assert_eq!(strokes.len(), 1);
         assert!(
             matches!(&strokes[0].paint, FxPaint::Gradient(g) if g.stops.len() == 2
-                && g.stops[0].1 == photocraft_color::Color::rgb(1.0, 0.0, 0.0)
-                && g.stops[1].1 == photocraft_color::Color::rgb(0.0, 0.0, 1.0)),
+                && g.stops[0].1 == brahma_color::Color::rgb(1.0, 0.0, 0.0)
+                && g.stops[1].1 == brahma_color::Color::rgb(0.0, 0.0, 1.0)),
             "the gradient is carried, not reset",
         );
     }
@@ -1582,13 +1582,13 @@ mod tests {
         set_param(&mut f, "fx2", "size", json!(5));
         assert_ne!(preview_hash(&f), h);
         let shown = preview_document(&st.doc, &s.patterns, &f).unwrap();
-        let fx = |doc: &photocraft_doc::Document| doc.layer(id).unwrap().effects.items.len();
+        let fx = |doc: &brahma_doc::Document| doc.layer(id).unwrap().effects.items.len();
         assert_eq!((fx(&shown), fx(&st.doc)), (2, 0));
     }
 
     #[test]
     fn preview_rejects_non_object_effect_params() {
-        let mut s = photocraft_engine::Session::new();
+        let mut s = brahma_engine::Session::new();
         s.execute("file.new", json!({"width": 16, "height": 16})).unwrap();
         s.execute("layer.new.layer", json!({})).unwrap();
         let st = s.active().unwrap();
@@ -1617,8 +1617,8 @@ mod tests {
     #[test]
     fn body_keeps_invalid_params_and_renders_without_panicking() {
         let ctx = egui::Context::default();
-        PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+        BrahmaApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
         for bad in [json!(7), json!(null), json!("x")] {
             let mut fields = Map::new();
             fields.insert("selected".into(), json!("fx1"));
@@ -1653,12 +1653,12 @@ mod tests {
     #[test]
     fn blending_page_renders_for_every_mode_and_odd_fields() {
         let ctx = egui::Context::default();
-        PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
-        let mut layer = photocraft_doc::Layer::new("L", photocraft_doc::LayerContent::Adjustment(photocraft_doc::Adjustment::Invert));
-        layer.advanced.knockout = photocraft_doc::Knockout::Deep;
+        BrahmaApp::setup_context(&ctx, crate::theme::ThemeKind::ALL[0]);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
+        let mut layer = brahma_doc::Layer::new("L", brahma_doc::LayerContent::Adjustment(brahma_doc::Adjustment::Invert));
+        layer.advanced.knockout = brahma_doc::Knockout::Deep;
         for mode in
-            [photocraft_color::ColorMode::Rgb, photocraft_color::ColorMode::Cmyk, photocraft_color::ColorMode::Lab, photocraft_color::ColorMode::Grayscale]
+            [brahma_color::ColorMode::Rgb, brahma_color::ColorMode::Cmyk, brahma_color::ColorMode::Lab, brahma_color::ColorMode::Grayscale]
         {
             let mut f = initial_fields(&layer, Some(BLENDING), 120.0);
             set_blending_fields(&mut f, &layer, mode);
@@ -1678,7 +1678,7 @@ mod tests {
 
     #[test]
     fn confirm_rejects_invalid_params_and_applies_valid_effects() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
         app.run("file.new", json!({"width": 16, "height": 16})).unwrap();
         app.run("layer.new.layer", json!({})).unwrap();
         let layer = app.session.active().unwrap().doc.layer(app.session.active().unwrap().active_layer.unwrap()).unwrap().clone();
@@ -1695,9 +1695,9 @@ mod tests {
 
     #[test]
     fn blending_page_round_trips_advanced_blending_and_blend_if() {
-        use photocraft_doc::{BlendRange, Knockout};
+        use brahma_doc::{BlendRange, Knockout};
         for mode in ["rgb", "cmyk", "grayscale"] {
-            let mut s = photocraft_engine::Session::new();
+            let mut s = brahma_engine::Session::new();
             s.execute("file.new", json!({"width": 16, "height": 16, "mode": mode})).unwrap();
             s.execute("layer.new.layer", json!({})).unwrap();
             let st = s.active().unwrap();
@@ -1746,7 +1746,7 @@ mod tests {
     fn contour_picker_and_editor_edit_the_effect_curve() {
         let mut s = session();
         s.execute("layer.layerStyle.dropShadow", json!({})).unwrap();
-        let shadow = |s: &photocraft_engine::Session| {
+        let shadow = |s: &brahma_engine::Session| {
             let d = s.active().unwrap();
             match &d.doc.layer(d.active_layer.unwrap()).unwrap().effects.items[0] {
                 Effect::DropShadow(sh) => sh.contour.clone(),
@@ -1758,7 +1758,7 @@ mod tests {
         // The picker: Cone.
         contour::pick(&mut f, "fx1", "contour", "Cone");
         apply(&f, |cmd, p| s.execute(cmd, p).map_err(|e| e.to_string())).unwrap();
-        assert_eq!(shadow(&s), photocraft_engine::layer_style::builtin_contour("Cone").unwrap());
+        assert_eq!(shadow(&s), brahma_engine::layer_style::builtin_contour("Cone").unwrap());
 
         // The Contour Editor: drag the second point to 10 % / 30 % (between its neighbours on
         // the measured Cone), make the first point a corner.
@@ -1768,7 +1768,7 @@ mod tests {
         assert!(!contour::set_point(&mut f, 99, 10.0, 10.0), "no such point");
         contour::close_editor(&mut f, true);
         apply(&f, |cmd, p| s.execute(cmd, p).map_err(|e| e.to_string())).unwrap();
-        let photocraft_doc::Contour::Custom { name, points, corners } = shadow(&s) else { panic!() };
+        let brahma_doc::Contour::Custom { name, points, corners } = shadow(&s) else { panic!() };
         assert_eq!(name, "Custom", "an edited preset is no longer called Cone");
         assert!((points[1].input - 0.1).abs() < 3e-3 && (points[1].output - 0.3).abs() < 3e-3, "{points:?}");
         assert_eq!(corners.len(), points.len());
@@ -1803,7 +1803,7 @@ mod tests {
     fn inner_glow_center_source_survives_ok() {
         let mut s = session();
         s.execute("layer.layerStyle.innerGlow", json!({"source": "center"})).unwrap();
-        let source = |s: &photocraft_engine::Session| {
+        let source = |s: &brahma_engine::Session| {
             let d = s.active().unwrap();
             let id = d.active_layer.unwrap();
             d.doc.layer(id).unwrap().effects.items.iter().find_map(|e| match e {
@@ -1826,7 +1826,7 @@ mod tests {
         // #350: the Angle slider was dead — the dialog never sent `useGlobalLight`, so the engine
         // defaulted it to true and the compositor used the fixed global light angle, ignoring the slider.
         let mut s = session();
-        let shadow = |s: &photocraft_engine::Session| {
+        let shadow = |s: &brahma_engine::Session| {
             let d = s.active().unwrap();
             let id = d.active_layer.unwrap();
             d.doc.layer(id).unwrap().effects.items.iter().find_map(|e| match e {
@@ -1896,12 +1896,12 @@ mod tests {
         set_param(&mut f, "fx1", "technique", json!("chiselHard"));
         apply(&f, |cmd, p| s.execute(cmd, p).map_err(|e| e.to_string())).unwrap();
         let Effect::BevelEmboss(b) = &s.active().unwrap().doc.layer(id).unwrap().effects.items[0] else { panic!("expected bevel") };
-        assert_eq!(b.technique, photocraft_doc::effects::BevelTechnique::ChiselHard);
+        assert_eq!(b.technique, brahma_doc::effects::BevelTechnique::ChiselHard);
     }
 
     #[test]
     fn unchanged_global_light_angle_is_not_applied() {
-        let layer = Layer::raster("x", photocraft_doc::PixelFormat::RGBA8);
+        let layer = Layer::raster("x", brahma_doc::PixelFormat::RGBA8);
         let mut f = initial_fields(&layer, None, 47.5);
         add_instance(&mut f, "bevelEmboss");
         assert_eq!(effects_of(&f)[0]["params"]["angle"].as_f64(), Some(47.5), "a fresh effect starts from the shared light",);
@@ -1946,7 +1946,7 @@ mod tests {
 
     #[test]
     fn local_angles_stay_independent_and_enabling_global_light_uses_shared_angle() {
-        let layer = Layer::raster("x", photocraft_doc::PixelFormat::RGBA8);
+        let layer = Layer::raster("x", brahma_doc::PixelFormat::RGBA8);
         let mut f = initial_fields(&layer, Some("dropShadow"), 120.0);
         add_instance(&mut f, "innerShadow");
         set_param(&mut f, "fx2", "useGlobalLight", json!(false));
@@ -1970,7 +1970,7 @@ mod tests {
         set_param(&mut f, "fx1", "opacity", json!(100.0));
         let pixel = |f: &Map<String, Value>, x, y| {
             let preview = preview_document(&st.doc, &s.patterns, f).unwrap();
-            photocraft_compose::flatten(&preview).get(x, y)
+            brahma_compose::flatten(&preview).get(x, y)
         };
         set_param(&mut f, "fx1", "angle", json!(0.0));
         assert!(pixel(&f, 14, 28)[0] < 0.01, "light from right casts shadow left");
@@ -2019,17 +2019,17 @@ mod tests {
         f.insert("preview".into(), json!(true));
         let shown = preview_document(&st.doc, &s.patterns, &f).unwrap();
         let d = s.active().unwrap();
-        let color = |doc: &photocraft_doc::Document| match &doc.layer(id).unwrap().effects.items[0] {
+        let color = |doc: &brahma_doc::Document| match &doc.layer(id).unwrap().effects.items[0] {
             Effect::ColorOverlay { color, .. } => *color,
             other => panic!("{other:?}"),
         };
-        assert_eq!(color(&shown), photocraft_color::Color::rgb(0.0, 1.0, 0.0));
+        assert_eq!(color(&shown), brahma_color::Color::rgb(0.0, 1.0, 0.0));
         assert_ne!(color(&d.doc), color(&shown), "the document itself is untouched until OK");
         // OK commits regardless of the checkbox.
         f.insert("preview".into(), json!(false));
         apply(&f, |cmd, p| s.execute(cmd, p).map_err(|e| e.to_string())).unwrap();
         let d = s.active().unwrap();
-        assert_eq!(color(&d.doc), photocraft_color::Color::rgb(0.0, 1.0, 0.0), "OK commits with Preview off");
+        assert_eq!(color(&d.doc), brahma_color::Color::rgb(0.0, 1.0, 0.0), "OK commits with Preview off");
     }
 
     /// #3648's steps in one dialog session: disable the stroke row, add a Color Overlay,
@@ -2084,7 +2084,7 @@ mod tests {
 
     #[test]
     fn new_style_saves_pending_state_and_a_swatch_apply_restores_it() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
         app.run("file.new", json!({"width": 16, "height": 16})).unwrap();
         app.run("layer.new.layer", json!({})).unwrap();
         let id = app.session.active().unwrap().active_layer.unwrap();
@@ -2121,7 +2121,7 @@ mod tests {
 
     #[test]
     fn style_click_does_not_mutate_document_until_confirm() {
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
         app.run("file.new", json!({"width": 16, "height": 16})).unwrap();
         app.run("layer.new.layer", json!({})).unwrap();
         let id = app.session.active().unwrap().active_layer.unwrap();

@@ -1,5 +1,5 @@
 use super::*;
-use photocraft_doc::Document;
+use brahma_doc::Document;
 
 fn doc(s: &Session) -> &Document {
     &s.active().unwrap().doc
@@ -9,12 +9,12 @@ fn layer(s: &Session, id: u64) -> &Layer {
     doc(s).layer(LayerId(id)).unwrap()
 }
 
-fn composite(s: &Session) -> photocraft_compose::Buffer {
+fn composite(s: &Session) -> brahma_compose::Buffer {
     let d = doc(s);
-    photocraft_compose::render(d, d.bounds())
+    brahma_compose::render(d, d.bounds())
 }
 
-fn max_diff(a: &photocraft_compose::Buffer, b: &photocraft_compose::Buffer) -> f32 {
+fn max_diff(a: &brahma_compose::Buffer, b: &brahma_compose::Buffer) -> f32 {
     a.px.iter().zip(&b.px).flat_map(|(p, q)| p.iter().zip(q).map(|(x, y)| (x - y).abs())).fold(0.0, f32::max)
 }
 

@@ -323,7 +323,7 @@ mod tests {
     #[test]
     fn tiny_panel_strips_keep_tabs_and_overflow_inside_the_available_area() {
         let ctx = egui::Context::default();
-        crate::PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::Pro);
+        crate::BrahmaApp::setup_context(&ctx, crate::theme::ThemeKind::Pro);
         for width in [0.0, 1.0, 5.0, 18.0, 19.0, 80.0, 180.0, 300.0] {
             let area = Rect::from_min_size(pos2(20.0, 20.0), vec2(width, 26.0));
             let mut selected = 3;
@@ -350,7 +350,7 @@ mod tests {
     fn overflow_icon_and_hover_paint_stay_inside_a_tiny_button() {
         for scale in [1.0, 2.0] {
             let ctx = egui::Context::default();
-            crate::PhotocraftApp::setup_context(&ctx, crate::theme::ThemeKind::Pro);
+            crate::BrahmaApp::setup_context(&ctx, crate::theme::ThemeKind::Pro);
             ctx.set_pixels_per_point(scale);
             for width in [1.0, 5.0, 11.0, 12.0, 18.0] {
                 let rect = Rect::from_min_size(pos2(20.25, 20.25), vec2(width, 26.0));

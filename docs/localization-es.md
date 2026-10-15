@@ -1,82 +1,82 @@
-# Spanish terminology and dynamic UI labels
+# spanish terminology and dynamic ui labels
 
-This note goes with the review and completion of the Spanish catalog
-(`crates/ui-egui/src/i18n/es.tsv`). It already covered every key measured by
+this note goes with the review and completion of the spanish catalog
+(`crates/ui-egui/src/i18n/es.tsv`). it already covered every key measured by
 `cargo xtask i18n-coverage`; the terminology review aligned its wording with the vocabulary a
-Spanish-speaking image editor already knows, fixed mistranslations, and made the register
-consistent. A later pass added the 1,276 runtime-only labels it still lacked. No proprietary
+spanish-speaking image editor already knows, fixed mistranslations, and made the register
+consistent. a later pass added the 1,276 runtime-only labels it still lacked. no proprietary
 translation resources, fonts, screenshots or user documents are included: every translation was
-written from the meaning of PhotoCraft's own English label.
+written from the meaning of brahma's own english label.
 
-## Register and style
+## register and style
 
-- **Formal "usted"**, as in Photoshop's Spanish UI: «Haga clic», «Seleccione», «¿Desea guardar…?».
-  The catalog mixed «usted» and «tú»; every user-facing instruction now uses «usted».
-- **Sentence case** after the first word, except panel and tool names, which keep their capital
-  as in Photoshop: «Panel Carácter», «Herramienta Pluma».
-- Quotation marks are «angulares»: «{name}».
-- Neutral Spanish, matching Adobe's single Spanish catalog (for example «coma flotante»).
+- **formal "usted"**, as in photoshop's spanish ui: «haga clic», «seleccione», «¿desea guardar…?».
+  the catalog mixed «usted» and «tú»; every user-facing instruction now uses «usted».
+- **sentence case** after the first word, except panel and tool names, which keep their capital
+  as in photoshop: «panel carácter», «herramienta pluma».
+- quotation marks are «angulares»: «{name}».
+- neutral spanish, matching adobe's single spanish catalog (for example «coma flotante»).
 
-## Dynamic UI coverage
+## dynamic ui coverage
 
-After merging the newer upstream catalog rows, the catalog has 4,010 entries. It covers the
-complete Italian runtime key set and retains two Spanish profile-prompt labels that other
-catalogs also use. The additional labels include filter and adjustment parameters and choices,
-Filter Gallery names, Camera Raw, Lighting Effects, History and Layers controls, metadata,
-dialogs, status wrappers and System Info labels. Before this pass, those controls fell back to
-English because many are assembled dynamically and cannot be found by the static coverage scan.
+after merging the newer upstream catalog rows, the catalog has 4,010 entries. it covers the
+complete italian runtime key set and retains two spanish profile-prompt labels that other
+catalogs also use. the additional labels include filter and adjustment parameters and choices,
+filter gallery names, camera raw, lighting effects, history and layers controls, metadata,
+dialogs, status wrappers and system info labels. before this pass, those controls fell back to
+english because many are assembled dynamically and cannot be found by the static coverage scan.
 
 `spanish_covers_generated_filter_options_and_gallery_names` in `filter_dialog.rs` enumerates the
-generated filter and adjustment surface and fails if a future label has no Spanish row. A few
+generated filter and adjustment surface and fails if a future label has no spanish row. a few
 unused legacy labels are retained so the complete catalogs stay aligned.
 
-## Terminology
+## terminology
 
-| English source | Spanish UI | Was |
+| english source | spanish ui | was |
 |---|---|---|
-| Artboard | Mesa de trabajo | Lienzo (clashed with *Canvas*) |
-| Pattern (fill, overlay, stamp) | Motivo | Patrón |
-| Preset | Ajuste preestablecido | Preajuste |
-| Keyboard Shortcuts | Métodos abreviados de teclado | Atajos de teclado |
-| Grid | Cuadrícula | Rejilla |
-| Slice | Sector | Sección |
-| Plug-ins | Plugins | Complementos |
-| Scratch Disks | Discos de memoria virtual | Discos temporales |
-| Puppet Warp | Deformación de posición libre | Deformación de clavos |
-| Pin (Puppet Warp) | Chincheta | Pin |
-| Dodge / Burn (tools) | Sobreexponer / Subexponer | **swapped** |
-| Color Dodge / Color Burn | Sobreexposición / Subexposición de color | **swapped** |
-| Linear Dodge (Add) / Linear Burn | Sobreexposición lineal (añadir) / Subexposición lineal | |
-| Hard Light / Pin Light / Hard Mix | Luz fuerte / Luz focal / Mezcla definida | Luz dura / Luz puntual / Mezcla dura |
-| Pass Through (group) | Pasar a través | Herencia |
-| Clone Stamp / Pattern Stamp | Tampón de clonar / Tampón de motivo | Sello… |
-| Feather | Calar | Desvanecer (clashed with *Fade*) |
-| Fade | Transición | Desvanecer |
-| Color Range | Gama de colores | Intervalo de colores |
-| Select and Mask | Seleccionar y aplicar máscara | Selección y máscara |
-| Selective Color | Corrección selectiva | Color selectivo |
-| Shadows/Highlights; Highlights | Sombras/iluminaciones; Iluminaciones | Sombras/luces; Luces |
-| Color Lookup | Consulta de colores | Búsqueda de color |
-| Content-Aware Fill / Scale / Move | Relleno / Escala según el contenido; Mover con detección de contenido | Relleno de contenido… |
-| Adaptive Wide Angle | Gran angular adaptable | Ángulo ancho adaptativo |
-| Constrain proportions | Restringir proporciones | **Construir** proporciones |
-| Render (filter menu) | Interpretar | Renderizar |
-| Smart Sharpen | Enfoque suavizado | Enfoque inteligente |
-| Blend If | Fusionar si | Combinar si |
-| Knockout (blending options) | Extraer | Cobertura |
-| Lights / Darks (Camera Raw) | Claros / Oscuros | Tonos claros / Tonos oscuros |
-| Master (Hue/Saturation) | Todos | General |
+| artboard | mesa de trabajo | lienzo (clashed with *canvas*) |
+| pattern (fill, overlay, stamp) | motivo | patrón |
+| preset | ajuste preestablecido | preajuste |
+| keyboard shortcuts | métodos abreviados de teclado | atajos de teclado |
+| grid | cuadrícula | rejilla |
+| slice | sector | sección |
+| plug-ins | plugins | complementos |
+| scratch disks | discos de memoria virtual | discos temporales |
+| puppet warp | deformación de posición libre | deformación de clavos |
+| pin (puppet warp) | chincheta | pin |
+| dodge / burn (tools) | sobreexponer / subexponer | **swapped** |
+| color dodge / color burn | sobreexposición / subexposición de color | **swapped** |
+| linear dodge (add) / linear burn | sobreexposición lineal (añadir) / subexposición lineal | |
+| hard light / pin light / hard mix | luz fuerte / luz focal / mezcla definida | luz dura / luz puntual / mezcla dura |
+| pass through (group) | pasar a través | herencia |
+| clone stamp / pattern stamp | tampón de clonar / tampón de motivo | sello… |
+| feather | calar | desvanecer (clashed with *fade*) |
+| fade | transición | desvanecer |
+| color range | gama de colores | intervalo de colores |
+| select and mask | seleccionar y aplicar máscara | selección y máscara |
+| selective color | corrección selectiva | color selectivo |
+| shadows/highlights; highlights | sombras/iluminaciones; iluminaciones | sombras/luces; luces |
+| color lookup | consulta de colores | búsqueda de color |
+| content-aware fill / scale / move | relleno / escala según el contenido; mover con detección de contenido | relleno de contenido… |
+| adaptive wide angle | gran angular adaptable | ángulo ancho adaptativo |
+| constrain proportions | restringir proporciones | **construir** proporciones |
+| render (filter menu) | interpretar | renderizar |
+| smart sharpen | enfoque suavizado | enfoque inteligente |
+| blend if | fusionar si | combinar si |
+| knockout (blending options) | extraer | cobertura |
+| lights / darks (camera raw) | claros / oscuros | tonos claros / tonos oscuros |
+| master (hue/saturation) | todos | general |
 
-Menu names that are also actions keep Photoshop's distinction: **Vista** (the *View* menu, not
-«Ver»), **Volver** (*Revert*), **Borrar** (*Clear*), **Cortar** (*Trim*, unlike *Crop* «Recortar»),
-**Descubrir** (*Reveal*), **Purgar** (*Purge*). Product and technology names (Photomerge, Camera
-Raw, droplet, OpenType, sRGB, Wayland) are not translated.
+menu names that are also actions keep photoshop's distinction: **vista** (the *view* menu, not
+«ver»), **volver** (*revert*), **borrar** (*clear*), **cortar** (*trim*, unlike *crop* «recortar»),
+**descubrir** (*reveal*), **purgar** (*purge*). product and technology names (photomerge, camera
+raw, droplet, OpenType, srgb, wayland) are not translated.
 
-## Out of scope
+## out of scope
 
-Engine-generated error details, status text and parameter help that do not pass through the UI
-catalog remain English in every language (see
-[`localization-parity.md`](localization-parity.md)). User document, layer and preset names and
-automation command IDs also remain unchanged. The completion was contributed by
-@gorevyoneticisi with OpenAI Codex as an AI contributor under the repository's MIT OR
-Apache-2.0 terms; a review by a native speaker is still welcome.
+engine-generated error details, status text and parameter help that do not pass through the ui
+catalog remain english in every language (see
+[`localization-parity.md`](localization-parity.md)). user document, layer and preset names and
+automation command ids also remain unchanged. the completion was contributed by
+@gorevyoneticisi with openai codex as an ai contributor under the repository's MIT or
+apache-2.0 terms; a review by a native speaker is still welcome.

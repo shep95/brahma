@@ -140,14 +140,14 @@ fn color_list_is_new_guides() {
     assert_eq!((custom.len(), custom[9].0.as_str(), custom[9].1), (10, "#123456", "Custom"));
 }
 
-fn harness(app: PhotocraftApp) -> egui_kittest::Harness<'static, PhotocraftApp> {
+fn harness(app: BrahmaApp) -> egui_kittest::Harness<'static, BrahmaApp> {
     let mut initialized = false;
     egui_kittest::Harness::builder().with_size(egui::vec2(1400.0, 900.0)).build_ui_state(
         move |ui, app| {
             if initialized {
                 crate::dialogs::show(app, ui.ctx());
             } else {
-                PhotocraftApp::setup_context(ui.ctx(), Default::default());
+                BrahmaApp::setup_context(ui.ctx(), Default::default());
                 initialized = true;
             }
         },
@@ -155,10 +155,10 @@ fn harness(app: PhotocraftApp) -> egui_kittest::Harness<'static, PhotocraftApp> 
     )
 }
 
-fn app() -> PhotocraftApp {
-    let mut session = photocraft_engine::Session::new();
+fn app() -> BrahmaApp {
+    let mut session = brahma_engine::Session::new();
     session.execute("file.new", json!({"width":1200,"height":800})).unwrap();
-    PhotocraftApp::new(session, crate::Services::default())
+    BrahmaApp::new(session, crate::Services::default())
 }
 
 #[test]
@@ -178,10 +178,10 @@ fn alt_reset_restores_factory_layout() {
     assert!(app.ui.dialogs.iter().any(|d| d.id == id));
 }
 
-fn draw(app: &mut PhotocraftApp, id: u64) {
+fn draw(app: &mut BrahmaApp, id: u64) {
     let mut f = app.ui.dialog_mut(id).unwrap().fields.clone();
     let ctx = egui::Context::default();
-    PhotocraftApp::setup_context(&ctx, Default::default());
+    BrahmaApp::setup_context(&ctx, Default::default());
     ctx.run_ui(egui::RawInput { screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(800.0, 600.0))), ..Default::default() }, |ui| {
         body(app, ui, &mut f, false);
     })

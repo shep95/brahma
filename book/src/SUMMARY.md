@@ -1,58 +1,58 @@
-# Summary
+# summary
 
-[PhotoCraft Documentation](README.md)
+[brahma documentation](README.md)
 
-# Getting started
+# getting started
 
-- [Installation](getting-started/installation.md)
-- [Building](getting-started/building.md)
-- [Contributing](getting-started/contributing.md)
+- [installation](getting-started/installation.md)
+- [building](getting-started/building.md)
+- [contributing](getting-started/contributing.md)
 
-# Architecture
+# architecture
 
-- [Overview](architecture/overview.md)
-- [Crates and dependency layers](architecture/crates.md)
-- [Command engine](architecture/command-engine.md)
-- [Rendering](architecture/rendering.md)
-- [Automation architecture](architecture/automation.md)
+- [overview](architecture/overview.md)
+- [crates and dependency layers](architecture/crates.md)
+- [command engine](architecture/command-engine.md)
+- [rendering](architecture/rendering.md)
+- [automation architecture](architecture/automation.md)
 
-# Formats
+# formats
 
-- [Overview](formats/overview.md)
+- [overview](formats/overview.md)
 - [PSD and PSB](formats/psd-psb.md)
-- [Raster formats](formats/raster-formats.md)
+- [raster formats](formats/raster-formats.md)
 - [SVG](formats/svg.md)
-- [Affinity documents](formats/affinity.md)
-- [The `.pcraft` format](formats/pcraft.md)
+- [affinity documents](formats/affinity.md)
+- [the `.pcraft` format](formats/pcraft.md)
 
-# Automation
+# automation
 
-- [Overview](automation/overview.md)
-- [Command-line interface](automation/cli.md)
-- [Control protocol](automation/control-protocol.md)
+- [overview](automation/overview.md)
+- [command-line interface](automation/cli.md)
+- [control protocol](automation/control-protocol.md)
 - [MCP](automation/mcp.md)
-- [Automation security model](automation/security-model.md)
+- [automation security model](automation/security-model.md)
 
-# Security
+# security
 
-- [Overview](security/overview.md)
-- [Threat model](security/threat-model.md)
-- [Trust boundaries](security/trust-boundaries.md)
-- [Secure file handling](security/secure-file-handling.md)
-- [Parser hardening](security/parser-hardening.md)
-- [Fuzzing and regression testing](security/fuzzing.md)
-- [Automation security](security/automation-security.md)
-- [Vulnerability reporting](security/vulnerability-reporting.md)
+- [overview](security/overview.md)
+- [threat model](security/threat-model.md)
+- [trust boundaries](security/trust-boundaries.md)
+- [secure file handling](security/secure-file-handling.md)
+- [parser hardening](security/parser-hardening.md)
+- [fuzzing and regression testing](security/fuzzing.md)
+- [automation security](security/automation-security.md)
+- [vulnerability reporting](security/vulnerability-reporting.md)
 
-# Development
+# development
 
-- [Testing](development/testing.md)
-- [Fuzzing](development/fuzzing.md)
-- [Dependencies](development/dependencies.md)
-- [Release security](development/release-security.md)
+- [testing](development/testing.md)
+- [fuzzing](development/fuzzing.md)
+- [dependencies](development/dependencies.md)
+- [release security](development/release-security.md)
 
-# Project
+# project
 
-- [Roadmap](project/roadmap.md)
-- [Credits](project/credits.md)
-- [Licenses](project/licenses.md)
+- [roadmap](project/roadmap.md)
+- [credits](project/credits.md)
+- [licenses](project/licenses.md)

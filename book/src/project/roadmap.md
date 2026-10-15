@@ -1,8 +1,8 @@
-# Roadmap
+# roadmap
 
-The live product roadmap, milestone definitions, parity measurements, and current focus are maintained in [`docs/roadmap.md`](https://github.com/storytold/photocraft/blob/main/docs/roadmap.md). Menu coverage is generated into [`docs/parity-checklist.md`](https://github.com/storytold/photocraft/blob/main/docs/parity-checklist.md) by `cargo xtask parity`.
+the live product roadmap, milestone definitions, parity measurements, and current focus are maintained in [`docs/roadmap.md`](https://github.com/shep95/brahma/blob/main/docs/roadmap.md). menu coverage is generated into [`docs/parity-checklist.md`](https://github.com/shep95/brahma/blob/main/docs/parity-checklist.md) by `cargo xtask parity`.
 
-Security hardening is cross-cutting rather than a replacement for those product milestones. The current security sequence is:
+security hardening is cross-cutting rather than a replacement for those product milestones. the current security sequence is:
 
 1. threat model and reporting policy;
 2. authenticated control sessions;
@@ -12,4 +12,4 @@ Security hardening is cross-cutting rather than a replacement for those product 
 6. broader parser fuzzing and malicious-input regression corpora;
 7. dependency policy and release SBOM/provenance.
 
-Only the documentation foundation in item 1 is established by this book. Later controls remain proposed until implemented and tested.
+only the documentation foundation in item 1 is established by this book. later controls remain proposed until implemented and tested.

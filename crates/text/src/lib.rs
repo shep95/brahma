@@ -1,4 +1,4 @@
-//! Photocraft's type engine.
+//! Brahma's type engine.
 //!
 //! * [`fonts::FontDb`]: bundled fonts (Inter, JetBrains Mono; always available, including on the
 //!   web), optional system fonts from platform directory scans plus Fontconfig's Linux file list,
@@ -8,11 +8,11 @@
 //! * [`layout`]: shaping and line layout with [parley] (HarfRust shaping, bidi, line breaking),
 //!   point and paragraph (box) text, per-run styles, Photoshop leading/indent/spacing rules.
 //! * [`render`]: anti-aliased rasterization (exact-area accumulation, f32 coverage) into a
-//!   [`photocraft_raster::Surface`] at any depth and colour model.
+//!   [`brahma_raster::Surface`] at any depth and colour model.
 //! * [`psd`]: the PSD `TySh` block and its `EngineData` (text, fonts, runs, paragraphs, box).
 //!
 //! The usual entry point is [`TextEngine::render_layer`], which refreshes a
-//! [`photocraft_doc::TextLayer`]'s cache from its style model.
+//! [`brahma_doc::TextLayer`]'s cache from its style model.
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
@@ -32,8 +32,8 @@ pub mod served;
 pub mod spell;
 pub mod warp;
 
-use photocraft_color::PixelFormat;
-use photocraft_doc::TextLayer;
+use brahma_color::PixelFormat;
+use brahma_doc::TextLayer;
 
 pub use craft_fonts::{CRAFT_FONTS, CraftFont};
 pub use fonts::{FaceInfo, FontDb, ResolvedFont};
@@ -106,10 +106,10 @@ impl TextEngine {
                 if e > s {
                     let mut style = r.style.clone();
                     if unkern {
-                        style.kerning = photocraft_doc::text::Kerning::Off;
+                        style.kerning = brahma_doc::text::Kerning::Off;
                         style.kern = 0.0;
                     }
-                    plain.runs.push(photocraft_doc::text::TextRun { len: e - s, style });
+                    plain.runs.push(brahma_doc::text::TextRun { len: e - s, style });
                 }
             };
             push(start, at.clamp(start, end), false);
@@ -131,7 +131,7 @@ impl TextEngine {
     }
 
     /// Re-renders `layer.cache` from its model. Returns the document-space rectangle drawn.
-    pub fn render_layer(&mut self, layer: &mut TextLayer, dpi: f32, format: PixelFormat) -> photocraft_geom::Rect {
+    pub fn render_layer(&mut self, layer: &mut TextLayer, dpi: f32, format: PixelFormat) -> brahma_geom::Rect {
         let (_, r) = self.render(layer, dpi, format);
         layer.cache = Some(r.surface);
         r.rect
@@ -141,9 +141,9 @@ impl TextEngine {
 static SHARED: warm::Warm<std::sync::Mutex<TextEngine>> = warm::Warm::new();
 
 /// Whether [`shared`] scans the installed fonts (native builds, outside tests, unless
-/// `PHOTOCRAFT_NO_SYSTEM_FONTS` is set). Without the scan it is cheap to build.
+/// `BRAHMA_NO_SYSTEM_FONTS` is set). Without the scan it is cheap to build.
 fn uses_system_fonts() -> bool {
-    cfg!(not(target_arch = "wasm32")) && !cfg!(test) && std::env::var_os("PHOTOCRAFT_NO_SYSTEM_FONTS").is_none()
+    cfg!(not(target_arch = "wasm32")) && !cfg!(test) && std::env::var_os("BRAHMA_NO_SYSTEM_FONTS").is_none()
 }
 
 fn new_shared() -> std::sync::Mutex<TextEngine> {
@@ -196,7 +196,7 @@ pub fn set_shared_missing_glyph_protection(on: bool) {
         // The waiting thread reads the newest setting when it applies it.
         return;
     }
-    let spawned = std::thread::Builder::new().name("photocraft-glyph-protection".into()).spawn(|| apply_glyph_protection(shared()));
+    let spawned = std::thread::Builder::new().name("brahma-glyph-protection".into()).spawn(|| apply_glyph_protection(shared()));
     if spawned.is_err() {
         // No thread: apply it here, as before.
         GLYPH_PROTECTION_WAITING.store(false, std::sync::atomic::Ordering::SeqCst);
@@ -249,7 +249,7 @@ mod warm {
                     drop(scan);
                     Some(self.get_or_init(init))
                 }
-                None => match std::thread::Builder::new().name("photocraft-font-scan".into()).spawn(move || {
+                None => match std::thread::Builder::new().name("brahma-font-scan".into()).spawn(move || {
                     self.get_or_init(init);
                 }) {
                     Ok(worker) => {

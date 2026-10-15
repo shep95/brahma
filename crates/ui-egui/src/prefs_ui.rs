@@ -3,22 +3,22 @@
 //! [`crate::Services`], applying the interface theme, autosave and crash recovery, and the
 //! history log.
 //!
-//! The values live in the engine ([`photocraft_engine::prefs::Preferences`], so agents read and
+//! The values live in the engine ([`brahma_engine::prefs::Preferences`], so agents read and
 //! change them with `prefs.get` / `prefs.set`); this module only edits a working copy in a dialog
 //! and commits it with those commands on Apply or OK.
 
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
 use egui::{Color32, RichText, Sense, vec2};
-use photocraft_doc::DocId;
-use photocraft_engine::jobs::{JobEvent, JobId, JobOutcome, Started};
+use brahma_doc::DocId;
+use brahma_engine::jobs::{JobEvent, JobId, JobOutcome, Started};
 #[cfg(test)]
-use photocraft_engine::prefs::Theme;
-use photocraft_engine::prefs::{self, AppearanceMode, DarkTheme, LightTheme, SECTIONS, Theme as SavedTheme};
-use photocraft_engine::snap::{SnapLine, SnapTargets};
+use brahma_engine::prefs::Theme;
+use brahma_engine::prefs::{self, AppearanceMode, DarkTheme, LightTheme, SECTIONS, Theme as SavedTheme};
+use brahma_engine::snap::{SnapLine, SnapTargets};
 use serde_json::{Map, Value, json};
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::state::DialogKind;
 use crate::theme::{ThemeKind, Tokens};
 
@@ -56,7 +56,7 @@ pub struct Runtime {
 }
 
 /// The GPU canvas colours from Preferences › Transparency & Gamut.
-pub fn canvas_style(app: &PhotocraftApp) -> crate::gpu_canvas::CanvasStyle {
+pub fn canvas_style(app: &BrahmaApp) -> crate::gpu_canvas::CanvasStyle {
     let t = &app.session.prefs().transparency_and_gamut;
     let [l, d] = t.colors();
     let f = |c: [u8; 3]| c.map(|v| v as f32 / 255.0);
@@ -71,7 +71,7 @@ pub fn canvas_style(app: &PhotocraftApp) -> crate::gpu_canvas::CanvasStyle {
 }
 
 /// Pasteboard colour from Preferences › Interface (`None` = the theme's default canvas).
-pub fn pasteboard_color(app: &PhotocraftApp) -> Option<Color32> {
+pub fn pasteboard_color(app: &BrahmaApp) -> Option<Color32> {
     use prefs::CanvasColor;
     let i = &app.session.prefs().interface;
     Some(match i.canvas_color {
@@ -113,7 +113,7 @@ fn selected_theme(interface: &prefs::Interface, system: Option<egui::Theme>) -> 
     }
 }
 
-pub(crate) fn cycle_appearance(app: &mut PhotocraftApp, ctx: &egui::Context) {
+pub(crate) fn cycle_appearance(app: &mut BrahmaApp, ctx: &egui::Context) {
     let next = match app.session.prefs().interface.appearance_mode {
         AppearanceMode::Auto => AppearanceMode::Light,
         AppearanceMode::Light => AppearanceMode::Dark,
@@ -136,7 +136,7 @@ const BRIGHTNESSES: [ThemeKind; 4] = [ThemeKind::Pro, ThemeKind::ProMedium, Them
 /// Photoshop's four brightnesses from the theme on screen, stopping at either end, as in
 /// Photoshop. Another theme steps from the nearest brightness: Medium Gray for a dark one, Light
 /// Gray for a light one. The choice is saved like picking it in Preferences › Interface.
-pub(crate) fn step_brightness(app: &mut PhotocraftApp, ctx: &egui::Context, lighter: bool) -> Result<(), String> {
+pub(crate) fn step_brightness(app: &mut BrahmaApp, ctx: &egui::Context, lighter: bool) -> Result<(), String> {
     let current = app.ui.theme;
     let at = BRIGHTNESSES.iter().position(|k| *k == current).unwrap_or(if crate::theme::Tokens::for_kind(current).dark() { 1 } else { 2 });
     let next = if lighter { (at + 1).min(BRIGHTNESSES.len() - 1) } else { at.saturating_sub(1) };
@@ -176,7 +176,7 @@ fn favorite_theme_groups(favorites: &[SavedTheme]) -> (Vec<ThemeKind>, Vec<Theme
 }
 
 /// Right-click menu on the top-right appearance button. A plain click still cycles modes.
-pub(crate) fn appearance_context_menu(app: &mut PhotocraftApp, ui: &mut egui::Ui) {
+pub(crate) fn appearance_context_menu(app: &mut BrahmaApp, ui: &mut egui::Ui) {
     if ui.button(tl!("Appearance Settings…")).clicked() {
         open_preferences(app, "interface");
         ui.close();
@@ -203,13 +203,13 @@ pub(crate) fn appearance_context_menu(app: &mut PhotocraftApp, ui: &mut egui::Ui
     }
 }
 
-fn system_theme(app: &PhotocraftApp, ctx: &egui::Context) -> Option<egui::Theme> {
+fn system_theme(app: &BrahmaApp, ctx: &egui::Context) -> Option<egui::Theme> {
     app.services.system_theme.as_ref().and_then(|read| read(ctx)).or_else(|| ctx.system_theme())
 }
 
 /// View › Rulers follows `unitsAndRulers.showRulers` when the preference changes (at launch, from
 /// `prefs.set` or a reset), so documents open with the rulers as last set.
-fn sync_rulers(app: &mut PhotocraftApp) {
+fn sync_rulers(app: &mut BrahmaApp) {
     let want = app.session.prefs().units_and_rulers.show_rulers;
     if app.prefs_rt.show_rulers != Some(want) {
         app.ui.extras.rulers = want;
@@ -218,7 +218,7 @@ fn sync_rulers(app: &mut PhotocraftApp) {
 }
 
 /// View › Rulers was toggled: remember it for the next launch (Photoshop keeps the last state).
-pub(crate) fn remember_rulers(app: &mut PhotocraftApp, on: bool) {
+pub(crate) fn remember_rulers(app: &mut BrahmaApp, on: bool) {
     if app.session.prefs().units_and_rulers.show_rulers != on {
         app.session.prefs.edit(|p| p.units_and_rulers.show_rulers = on);
     }
@@ -228,7 +228,7 @@ pub(crate) fn remember_rulers(app: &mut PhotocraftApp, on: bool) {
 // ------------------------------------------------------------------ lifecycle
 
 /// Load saved preferences once, when the app is created. Recovery starts during frame upkeep.
-pub fn load(app: &mut PhotocraftApp) {
+pub fn load(app: &mut BrahmaApp) {
     if app.prefs_rt.loaded {
         return;
     }
@@ -252,7 +252,7 @@ pub fn load(app: &mut PhotocraftApp) {
 
 /// Discover recovery entries after construction, then decode one at a time without blocking
 /// the window. Only the completed job's apply step touches the session.
-fn recovery(app: &mut PhotocraftApp) {
+fn recovery(app: &mut BrahmaApp) {
     if !app.prefs_rt.recovery_started {
         app.prefs_rt.recovery_started = true;
         if app.session.prefs().file_handling.recover_on_launch
@@ -264,7 +264,7 @@ fn recovery(app: &mut PhotocraftApp) {
     start_next_recovery(app);
 }
 
-fn start_next_recovery(app: &mut PhotocraftApp) {
+fn start_next_recovery(app: &mut BrahmaApp) {
     while app.prefs_rt.recovery_pending.is_none() {
         let Some(r) = app.prefs_rt.recovery_queue.pop_front() else { return };
         let label = format!("Recovering {}", r.name);
@@ -276,7 +276,7 @@ fn start_next_recovery(app: &mut PhotocraftApp) {
             move |ctx| {
                 ctx.check()?;
                 ctx.progress(0.0, "Loading recovery data");
-                let doc = (r.load)().map_err(photocraft_engine::EngineError::Other)?;
+                let doc = (r.load)().map_err(brahma_engine::EngineError::Other)?;
                 ctx.check()?;
                 Ok(doc)
             },
@@ -284,7 +284,7 @@ fn start_next_recovery(app: &mut PhotocraftApp) {
                 let active = s.active().map(|st| st.doc.id);
                 let first = s.documents().is_empty();
                 s.add_document(doc, r.path);
-                let st = s.active_mut().ok_or(photocraft_engine::EngineError::NoDocument)?;
+                let st = s.active_mut().ok_or(brahma_engine::EngineError::NoDocument)?;
                 st.saved_revision = 0;
                 let (id, revision) = (st.doc.id, st.revision);
                 if let Some(index) = active.and_then(|id| s.documents().iter().position(|st| st.doc.id == id)) {
@@ -301,7 +301,7 @@ fn start_next_recovery(app: &mut PhotocraftApp) {
     }
 }
 
-fn finish_recovery(app: &mut PhotocraftApp, key: &str, v: &Value) {
+fn finish_recovery(app: &mut BrahmaApp, key: &str, v: &Value) {
     let recovered = v
         .get("documentId")
         .and_then(Value::as_u64)
@@ -327,7 +327,7 @@ fn finish_recovery(app: &mut PhotocraftApp, key: &str, v: &Value) {
 
 /// Recovery uses the existing job polling/progress/cancel path. Its successful result adopts
 /// the original entry on the UI thread, using identity rather than a mutable tab position.
-pub(crate) fn on_recovery_event(app: &mut PhotocraftApp, e: &JobEvent) -> bool {
+pub(crate) fn on_recovery_event(app: &mut BrahmaApp, e: &JobEvent) -> bool {
     if !app.prefs_rt.recovery_pending.as_ref().is_some_and(|(job, _)| *job == e.id) {
         return false;
     }
@@ -349,7 +349,7 @@ pub(crate) fn on_recovery_event(app: &mut PhotocraftApp, e: &JobEvent) -> bool {
 
 /// Attach the brush preset store once its background load finishes, and surface write
 /// failures in the status bar.
-fn presets_store(app: &mut PhotocraftApp) {
+fn presets_store(app: &mut BrahmaApp) {
     if let Some(rx) = &app.services.preset_store {
         match rx.try_recv() {
             Ok(opened) => {
@@ -392,7 +392,7 @@ fn display_scale(pref: prefs::UiScale, native: Option<f32>) -> f32 {
     }
 }
 
-fn sync_display_scale(app: &PhotocraftApp, ctx: &egui::Context) {
+fn sync_display_scale(app: &BrahmaApp, ctx: &egui::Context) {
     let native = ctx.native_pixels_per_point();
     let native_scale = native.filter(|v| v.is_finite() && *v > 0.0).unwrap_or(1.0);
     let scale = display_scale(app.session.prefs().interface.ui_scale, native);
@@ -402,7 +402,7 @@ fn sync_display_scale(app: &PhotocraftApp, ctx: &egui::Context) {
 /// Interface › Show Tooltips and Tools › Show Tooltips (either one off hides them): egui never
 /// shows a tooltip whose delay is infinite. Re-checked every frame because a theme change
 /// rebuilds the style; that's one style read, and a write only when it differs.
-fn sync_tooltips(app: &PhotocraftApp, ctx: &egui::Context) {
+fn sync_tooltips(app: &BrahmaApp, ctx: &egui::Context) {
     let p = app.session.prefs();
     let delay = if p.interface.show_tooltips && p.tools.show_tooltips { crate::theme::TOOLTIP_DELAY } else { f32::INFINITY };
     if ctx.global_style().interaction.tooltip_delay != delay {
@@ -413,7 +413,7 @@ fn sync_tooltips(app: &PhotocraftApp, ctx: &egui::Context) {
 /// Interface › Enable Animations: off, egui's fades and slides take no time and scroll areas jump
 /// straight to their target (#3273). Re-checked every frame because a theme change rebuilds the
 /// style; both the dark and light styles are set, so a system appearance switch keeps it.
-fn sync_animations(app: &PhotocraftApp, ctx: &egui::Context) {
+fn sync_animations(app: &BrahmaApp, ctx: &egui::Context) {
     let on = app.session.prefs().interface.enable_animations;
     let time = if on { egui::Style::default().animation_time } else { 0.0 };
     if ctx.global_style().animation_time != time {
@@ -426,7 +426,7 @@ fn sync_animations(app: &PhotocraftApp, ctx: &egui::Context) {
 }
 
 /// Resolve the saved appearance mode without changing it or either theme slot.
-pub(crate) fn sync_appearance(app: &mut PhotocraftApp, ctx: &egui::Context) {
+pub(crate) fn sync_appearance(app: &mut BrahmaApp, ctx: &egui::Context) {
     // A restored or embedding-supplied pin must not suppress native appearance events.
     ctx.set_theme(egui::ThemePreference::System);
     // The native service also covers Wayland sessions where winit has no system theme.
@@ -437,7 +437,7 @@ pub(crate) fn sync_appearance(app: &mut PhotocraftApp, ctx: &egui::Context) {
 }
 
 /// Per-frame upkeep: theme sync, persistence, autosave and the history log.
-pub fn tick(app: &mut PhotocraftApp, ctx: &egui::Context) {
+pub fn tick(app: &mut BrahmaApp, ctx: &egui::Context) {
     if !app.prefs_rt.loaded {
         load(app);
     }
@@ -489,7 +489,7 @@ struct SaveRetry {
 /// Save changed preferences. A failed write stays pending and is retried with a backoff (a newer
 /// change retries sooner); the status bar reports the first failure and a notice a persistent
 /// one. Returns the seconds until the next retry while one is pending.
-fn persist(app: &mut PhotocraftApp, now: f64) -> Option<f64> {
+fn persist(app: &mut BrahmaApp, now: f64) -> Option<f64> {
     let rev = app.session.prefs.rev();
     if rev == app.prefs_rt.saved_rev {
         return None;
@@ -531,7 +531,7 @@ fn persist(app: &mut PhotocraftApp, now: f64) -> Option<f64> {
                 app.ui.status = crate::i18n::fmt(tl!(template), &[("error", &e)]);
                 app.ui.status_error = true;
             } else if failures == SAVE_NOTICE_AFTER {
-                let lines = vec![e, "PhotoCraft keeps retrying; until a save succeeds, preference changes are lost when it closes.".into()];
+                let lines = vec![e, "brahma keeps retrying; until a save succeeds, preference changes are lost when it closes.".into()];
                 let id = crate::notices::post(app, "Preferences can't be saved", lines, true, None);
                 app.prefs_rt.save_retry.notice = Some(id);
             }
@@ -542,7 +542,7 @@ fn persist(app: &mut PhotocraftApp, now: f64) -> Option<f64> {
 
 /// Write `ours` over the stored preferences, keeping what another instance (a second browser
 /// tab, another app window) changed there since this one last loaded or saved them.
-fn write_prefs(app: &mut PhotocraftApp, ours: &Value) -> Result<(), String> {
+fn write_prefs(app: &mut BrahmaApp, ours: &Value) -> Result<(), String> {
     let Some(save) = app.services.save_prefs.as_mut() else { return Ok(()) };
     let stored = app.services.load_prefs.as_mut().and_then(|load| load()).and_then(|t| serde_json::from_str::<Value>(&t).ok());
     let text = match (stored, &app.prefs_rt.saved_value) {
@@ -585,7 +585,7 @@ fn merge_changes(base: &Value, ours: &Value, theirs: &mut Value) {
 
 /// Write the preferences now, through the same merge as [`persist`], for recovery choices that
 /// need the result immediately. The pending revision stays unsaved when the write fails.
-pub(crate) fn save_preferences(app: &mut PhotocraftApp) -> Result<(), String> {
+pub(crate) fn save_preferences(app: &mut BrahmaApp) -> Result<(), String> {
     let rev = app.session.prefs.rev();
     let ours = app.session.prefs_value();
     write_prefs(app, &ours)?;
@@ -600,9 +600,9 @@ pub(crate) fn save_preferences(app: &mut PhotocraftApp) -> Result<(), String> {
 /// Linked smart objects follow their files while the document is open, as in Photoshop: every two
 /// seconds, and as soon as the window comes back to the front (after saving in another app), stamp
 /// the active document's linked files on a worker thread and re-render the layers of the ones that
-/// changed ([`photocraft_engine::link_watch`]).
+/// changed ([`brahma_engine::link_watch`]).
 #[cfg(not(target_arch = "wasm32"))]
-fn link_updates(app: &mut PhotocraftApp, ctx: &egui::Context) {
+fn link_updates(app: &mut BrahmaApp, ctx: &egui::Context) {
     match app.session.poll_link_scan() {
         Some(Ok(r)) => {
             if let Some(n) = r["updated"].as_array().map(Vec::len).filter(|n| *n > 0) {
@@ -622,7 +622,7 @@ fn link_updates(app: &mut PhotocraftApp, ctx: &egui::Context) {
     let focused = ctx.input(|i| i.focused);
     let was_focused: bool = ctx.data(|d| d.get_temp(focus_key)).unwrap_or(focused);
     ctx.data_mut(|d| d.insert_temp(focus_key, focused));
-    let has_links = app.session.active().is_some_and(|d| !photocraft_engine::link_watch::linked_files(&d.doc).is_empty());
+    let has_links = app.session.active().is_some_and(|d| !brahma_engine::link_watch::linked_files(&d.doc).is_empty());
     if !has_links {
         return;
     }
@@ -636,7 +636,7 @@ fn link_updates(app: &mut PhotocraftApp, ctx: &egui::Context) {
 }
 
 /// Background autosave of documents with unsaved changes every N minutes (File Handling).
-fn autosave(app: &mut PhotocraftApp) {
+fn autosave(app: &mut BrahmaApp) {
     let fh = &app.session.prefs().file_handling;
     let (on, minutes) = (fh.autosave, fh.autosave_minutes.max(1));
     if app.services.autosave.is_none() {
@@ -716,12 +716,12 @@ fn autosave(app: &mut PhotocraftApp) {
 }
 
 /// Force the autosave timer to fire on the next tick (tests, `prefs` changes).
-pub fn autosave_now(app: &mut PhotocraftApp) {
+pub fn autosave_now(app: &mut BrahmaApp) {
     app.prefs_rt.next_autosave_ms = f64::MIN_POSITIVE;
 }
 
 /// History Log preference: append executed commands to a text file.
-fn history_log(app: &mut PhotocraftApp) {
+fn history_log(app: &mut BrahmaApp) {
     let n = app.session.journal.len();
     if n <= app.prefs_rt.log_len {
         app.prefs_rt.log_len = n;
@@ -736,7 +736,7 @@ fn history_log(app: &mut PhotocraftApp) {
     let Some(append) = app.services.append_text.as_mut() else { return };
     let mut text = String::new();
     for (id, params) in &app.session.journal[start..] {
-        let label = photocraft_engine::commands::find(id).map_or(id.as_str(), |c| c.label).trim_end_matches('…');
+        let label = brahma_engine::commands::find(id).map_or(id.as_str(), |c| c.label).trim_end_matches('…');
         match hl.detail {
             prefs::LogDetail::SessionsOnly => {
                 if matches!(id.as_str(), "file.new" | "file.open" | "file.close" | "file.openAs") {
@@ -758,7 +758,7 @@ pub use crate::shortcuts::{default_shortcut, effective_shortcut};
 
 /// Every shortcut-bearing command (engine registry plus shell commands): (id, label, menu path,
 /// default shortcut), menu items first in Photoshop order.
-pub fn shortcut_items(app: &PhotocraftApp) -> Vec<(String, String, Vec<String>, Option<String>)> {
+pub fn shortcut_items(app: &BrahmaApp) -> Vec<(String, String, Vec<String>, Option<String>)> {
     let mut out: Vec<(String, String, Vec<String>, Option<String>)> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     for it in crate::menus::menu_items(app) {
@@ -771,10 +771,10 @@ pub fn shortcut_items(app: &PhotocraftApp) -> Vec<(String, String, Vec<String>, 
     // Commands without a menu item: the colour and fill keys (D, X, ⌥⌫…) sit under Tools, as
     // Photoshop lists its colour keys in the Tools shortcut set, after the rest; then the held
     // temporary tools (#249).
-    let tools_key = |id: &str| id.starts_with("tools.") || photocraft_engine::fill_key_cmds::IDS.contains(&id);
+    let tools_key = |id: &str| id.starts_with("tools.") || brahma_engine::fill_key_cmds::IDS.contains(&id);
     let mut tools = Vec::new();
     let mut layer = Vec::new();
-    for c in photocraft_engine::command_specs() {
+    for c in brahma_engine::command_specs() {
         if seen.insert(c.id.to_string()) && c.shortcut.is_some() {
             let item = (c.id.to_string(), c.label.to_string(), c.menu.iter().map(|s| s.to_string()).collect::<Vec<_>>(), c.shortcut.map(Into::into));
             if c.menu.is_empty() && tools_key(c.id) {
@@ -848,7 +848,7 @@ pub fn is_modifier_key(key: egui::Key) -> bool {
 
 /// Shell front ends for Edit-menu commands invoked without parameters (dialogs, pickers).
 /// `None` when `id` isn't handled here.
-pub fn invoke(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
+pub fn invoke(app: &mut BrahmaApp, ctx: &egui::Context, id: &str, params: &Value) -> Option<Result<Value, String>> {
     let empty = params.as_object().is_none_or(|o| o.is_empty());
     if !empty {
         return None;
@@ -880,7 +880,7 @@ pub fn invoke(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &V
         }
         "edit.fade" | "edit.findAndReplaceText" | "edit.defineBrushPreset" | "edit.defineCustomShape" | "edit.autoAlignLayers" | "edit.autoBlendLayers" => {
             if !app.session.is_enabled(id) {
-                return Some(Err(photocraft_engine::commands::find(id)
+                return Some(Err(brahma_engine::commands::find(id)
                     .map_or("not available".into(), |c| format!("{} is not available right now", c.label.trim_end_matches('…')))));
             }
             let d = crate::filter_dialog::open(app, id);
@@ -917,7 +917,7 @@ pub fn invoke(app: &mut PhotocraftApp, ctx: &egui::Context, id: &str, params: &V
     }
 }
 
-fn open_kind(app: &mut PhotocraftApp, kind: &str, label: &str, fields: Value) -> u64 {
+fn open_kind(app: &mut BrahmaApp, kind: &str, label: &str, fields: Value) -> u64 {
     let mut f = Map::new();
     f.insert("__prefsui".into(), json!(kind));
     f.insert("__label".into(), json!(label));
@@ -943,12 +943,12 @@ fn preference_values(p: &prefs::Preferences) -> Map<String, Value> {
 }
 
 /// Compare the editable sections, excluding settings managed outside Preferences.
-pub fn preferences_changed(app: &PhotocraftApp, fields: &Map<String, Value>) -> bool {
+pub fn preferences_changed(app: &BrahmaApp, fields: &Map<String, Value>) -> bool {
     is_preferences(fields) && fields.get("values").and_then(Value::as_object).is_some_and(|values| *values != preference_values(app.session.prefs()))
 }
 
 /// Commit the working copy and keep the current section open. Failure leaves the draft intact.
-pub fn apply(app: &mut PhotocraftApp, id: u64) -> Result<Value, String> {
+pub fn apply(app: &mut BrahmaApp, id: u64) -> Result<Value, String> {
     let d = app.ui.dialogs.iter().find(|d| d.id == id).ok_or_else(|| format!("no dialog {id}"))?;
     if d.kind != DialogKind::Command || !is_preferences(&d.fields) {
         return Err("Apply is only available for Preferences".into());
@@ -973,7 +973,7 @@ pub fn width(fields: &Map<String, Value>, available: f32) -> Option<f32> {
 }
 
 /// Open Edit › Preferences on `section`.
-pub fn open_preferences(app: &mut PhotocraftApp, section: &str) -> u64 {
+pub fn open_preferences(app: &mut BrahmaApp, section: &str) -> u64 {
     let section = if SECTIONS.iter().any(|(id, _)| *id == section) { section } else { "general" };
     let working = preference_values(app.session.prefs());
     let order = field_order(app.session.prefs(), &working);
@@ -999,7 +999,7 @@ fn field_order(p: &prefs::Preferences, sections: &Map<String, Value>) -> Value {
 }
 
 /// Open Keyboard Shortcuts and Menus on a tab (0 shortcuts, 1 menus, 2 toolbar).
-pub fn open_shortcuts(app: &mut PhotocraftApp, tab: u64) -> u64 {
+pub fn open_shortcuts(app: &mut BrahmaApp, tab: u64) -> u64 {
     let p = app.session.prefs();
     let fields = json!({
         "tab": tab,
@@ -1021,7 +1021,7 @@ pub fn open_shortcuts(app: &mut PhotocraftApp, tab: u64) -> u64 {
 /// Cancel back to `open_prompt`.
 /// `names` carries the embedded and working profile names and the Color Settings policy a
 /// remembered choice is saved to (`policyKey`, null for a mode without one).
-pub fn open_mismatch(app: &mut PhotocraftApp, message: &str, action: &str, missing: bool, marker: &str, names: Value) -> u64 {
+pub fn open_mismatch(app: &mut BrahmaApp, message: &str, action: &str, missing: bool, marker: &str, names: Value) -> u64 {
     let mut fields = json!({"message": message, "action": action, "missing": missing, "remember": false});
     if let (Some(f), Value::Object(n)) = (fields.as_object_mut(), names) {
         f.extend(n);
@@ -1033,7 +1033,7 @@ pub fn open_mismatch(app: &mut PhotocraftApp, message: &str, action: &str, missi
 // ------------------------------------------------------------------ bodies
 
 /// Render one of our dialogs' bodies.
-pub fn body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
+pub fn body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     match f.get("__prefsui").and_then(Value::as_str).unwrap_or("") {
         "prefs" => {
             f.insert("__gpuInfo".into(), json!(app.perf.gpu_info.lines()));
@@ -1053,6 +1053,13 @@ fn humanize(key: &str) -> String {
         "appearanceMode" => return "Appearance Mode".into(),
         "exrAcesCg" => return "Open color-less EXR as ACEScg".into(),
         "darkTheme" => return "Dark Theme".into(),
+        "aiProvider" => return "AI provider".into(),
+        "aiModel" => return "Model (blank = provider default)".into(),
+        "anthropicApiKey" => return "Anthropic API key".into(),
+        "openaiApiKey" => return "OpenAI API key".into(),
+        "googleApiKey" => return "Google AI API key".into(),
+        "customBaseUrl" => return "Custom endpoint base URL (OpenAI-compatible)".into(),
+        "customApiKey" => return "Custom endpoint API key".into(),
         "lightTheme" => return "Light Theme".into(),
         _ => {}
     }
@@ -1223,8 +1230,15 @@ fn prefs_body(ui: &mut egui::Ui, f: &mut Map<String, Value>, system: Option<egui
                     f.get("__order").and_then(|o| o.get(&section)).and_then(|v| serde_json::from_value(v.clone()).ok()).unwrap_or_default();
                 if !has_visible_fields(&values, &section) {
                     ui.add_space(4.0);
-                    ui.label(RichText::new(tl!("These settings aren't available in PhotoCraft yet.")).color(t.text_faint));
+                    ui.label(RichText::new(tl!("These settings aren't available in brahma yet.")).color(t.text_faint));
                 } else if let Some(obj) = values.get_mut(&section).and_then(Value::as_object_mut) {
+                    if section == "integrations" {
+                        ui.label(
+                            RichText::new(tl!("Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up."))
+                                .color(t.text_faint),
+                        );
+                        ui.add_space(6.0);
+                    }
                     section_fields(ui, &section, obj, &order, lang, system, filter);
                     if section == "fileHandling" {
                         ui.label(
@@ -1590,7 +1604,7 @@ fn field_rows(ui: &mut egui::Ui, section: &str, obj: &mut Map<String, Value>, ke
                 let c = prefs::parse_hex(s).unwrap_or([128, 128, 128]);
                 let mut rgb = c;
                 ui.horizontal(|ui| {
-                    // PhotoCraft's Color Picker, as everywhere else (#2144).
+                    // brahma's Color Picker, as everywhere else (#2144).
                     if crate::widgets::color_swatch_button(ui, egui::Color32::from_rgb(rgb[0], rgb[1], rgb[2]), &label).clicked() {
                         ui.ctx().data_mut(|d| d.insert_temp(egui::Id::new(PICK_ID), (path.clone(), label.clone())));
                     }
@@ -1602,7 +1616,9 @@ fn field_rows(ui: &mut egui::Ui, section: &str, obj: &mut Map<String, Value>, ke
             Value::String(s) => {
                 ui.label(RichText::new(tl!(&label)).color(t.text_dim));
                 let mut s = s.clone();
-                ui.add(egui::TextEdit::singleline(&mut s).desired_width(260.0));
+                // The user's own AI keys (Preferences › AI Integrations) are typed hidden, like a password.
+                let secret = k.ends_with("ApiKey");
+                ui.add(egui::TextEdit::singleline(&mut s).desired_width(260.0).password(secret));
                 obj.insert(k, json!(s));
             }
             Value::Number(n) => {
@@ -1658,7 +1674,7 @@ fn field_rows(ui: &mut egui::Ui, section: &str, obj: &mut Map<String, Value>, ke
 
 /// Keyboard Shortcuts and Menus: a searchable list of commands by menu with editable shortcuts
 /// (click a shortcut, press keys; ⌫ removes it), menu visibility and colours, toolbar tools.
-fn shortcuts_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
+fn shortcuts_body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let mut tab = f.get("tab").and_then(Value::as_u64).unwrap_or(0);
     ui.horizontal(|ui| {
@@ -1853,7 +1869,7 @@ fn shortcuts_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String
                     });
                 } else {
                     // Edit › Menus, Keyboard Shortcuts, Preferences, Save and Exit always stay (#5096).
-                    let hideable = photocraft_engine::prefs::MenuCustomization::hideable(id);
+                    let hideable = brahma_engine::prefs::MenuCustomization::hideable(id);
                     let mut visible = !hideable || !hidden.contains(id);
                     ui.add_enabled_ui(hideable, |ui| crate::widgets::checkbox(ui, &mut visible, tl!("Visible")));
                     if visible {
@@ -1899,7 +1915,7 @@ fn shortcuts_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String
             if ui.button(tl!("Reset All to Defaults")).clicked() {
                 overrides.clear();
                 alt_overrides.clear();
-                message = tl!("All shortcuts reset to PhotoCraft defaults.").into();
+                message = tl!("All shortcuts reset to brahma defaults.").into();
                 message_warning = false;
             }
             // A Photoshop set (`.kys`) fills the overrides; the file arrives after this frame
@@ -1958,7 +1974,7 @@ fn toolbar_tab(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     f.insert("toolbarHidden".into(), json!(hidden));
 }
 
-fn presets_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
+fn presets_body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) {
     let t = Tokens::get(ui.ctx());
     let mut kind = f.get("kind").and_then(Value::as_str).unwrap_or("brushes").to_string();
     ui.horizontal(|ui| {
@@ -2058,7 +2074,7 @@ fn mismatch_body(ui: &mut egui::Ui, f: &mut Map<String, Value>) {
 // ------------------------------------------------------------------ confirm
 
 /// OK on one of our dialogs.
-pub fn confirm(app: &mut PhotocraftApp, f: &Map<String, Value>) -> Result<Value, String> {
+pub fn confirm(app: &mut BrahmaApp, f: &Map<String, Value>) -> Result<Value, String> {
     match f.get("__prefsui").and_then(Value::as_str).unwrap_or("") {
         "prefs" => {
             let values = f.get("values").cloned().unwrap_or(Value::Null);
@@ -2205,7 +2221,7 @@ mod tests {
 
     #[test]
     fn quick_export_controls_match_selected_format() {
-        let mut obj = serde_json::to_value(photocraft_engine::prefs::Export::default()).unwrap().as_object().unwrap().clone();
+        let mut obj = serde_json::to_value(brahma_engine::prefs::Export::default()).unwrap().as_object().unwrap().clone();
         assert!(!export_field_visible(&obj, "jpegQuality"));
         assert!(!export_field_visible(&obj, "webpLossless"));
         assert!(!export_field_visible(&obj, "webpQuality"));
@@ -2294,7 +2310,7 @@ mod tests {
     #[test]
     fn breeze_themes_are_chosen_by_preference_and_fix_the_matching_mode() {
         let ctx = egui::Context::default();
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         for (id, kind, mode) in [
             ("breezeLight", ThemeKind::BreezeLight, AppearanceMode::Light),
             ("breezeDark", ThemeKind::BreezeDark, AppearanceMode::Dark),
@@ -2327,7 +2343,7 @@ mod tests {
     #[test]
     fn appearance_button_cycles_modes_without_losing_theme_choices() {
         let ctx = egui::Context::default();
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         app.run("prefs.set", json!({"values": {"interface.darkTheme": "studio", "interface.lightTheme": "classic"}})).unwrap();
         for (mode, visible) in
             [(AppearanceMode::Auto, ThemeKind::Studio), (AppearanceMode::Light, ThemeKind::Classic), (AppearanceMode::Dark, ThemeKind::Studio)]
@@ -2343,10 +2359,10 @@ mod tests {
     #[test]
     fn darken_and_lighten_interface_step_through_photoshops_brightnesses_and_stop_at_the_ends() {
         let ctx = egui::Context::default();
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         sync_appearance(&mut app, &ctx);
         assert_eq!(app.ui.theme, ThemeKind::ProMedium, "Photoshop's default brightness");
-        let press = |app: &mut PhotocraftApp, id: &str| crate::menus::invoke(app, &ctx, id, json!({})).unwrap();
+        let press = |app: &mut BrahmaApp, id: &str| crate::menus::invoke(app, &ctx, id, json!({})).unwrap();
         for expected in [ThemeKind::ProLightGray, ThemeKind::ProLight, ThemeKind::ProLight] {
             press(&mut app, "view.lightenInterface");
             assert_eq!(app.ui.theme, expected);
@@ -2380,9 +2396,9 @@ mod tests {
             assert_eq!(crate::shortcuts::default_shortcut(id).as_deref(), Some(shortcut), "{id}");
         }
         let ctx = egui::Context::default();
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         sync_appearance(&mut app, &ctx);
-        let press = |app: &mut PhotocraftApp, key| {
+        let press = |app: &mut BrahmaApp, key| {
             let modifiers = egui::Modifiers::COMMAND | egui::Modifiers::SHIFT;
             let raw = egui::RawInput {
                 events: vec![egui::Event::ModifiersChanged(modifiers), egui::Event::Key { key, physical_key: None, pressed: true, repeat: false, modifiers }],
@@ -2399,7 +2415,7 @@ mod tests {
         assert_eq!(app.ui.theme, ThemeKind::ProLightGray);
     }
 
-    fn appearance_frame(app: &mut PhotocraftApp, ctx: &egui::Context, appearance: Option<egui::Theme>) {
+    fn appearance_frame(app: &mut BrahmaApp, ctx: &egui::Context, appearance: Option<egui::Theme>) {
         ctx.run_ui(egui::RawInput { system_theme: appearance, ..Default::default() }, |ui| tick(app, ui.ctx())).textures_delta.clear();
     }
 
@@ -2422,7 +2438,7 @@ mod tests {
         for (dark, light) in [(ThemeKind::ProMedium, ThemeKind::StudioLight), (ThemeKind::SolarizedDark, ThemeKind::Adwaita)] {
             let (mut app, store) = app_with_store();
             let ctx = egui::Context::default();
-            PhotocraftApp::setup_context(&ctx, Default::default());
+            BrahmaApp::setup_context(&ctx, Default::default());
             app.run("prefs.set", json!({"values": {"interface.appearanceMode": "auto", "interface.darkTheme": dark.id(), "interface.lightTheme": light.id()}}))
                 .unwrap();
             appearance_frame(&mut app, &ctx, Some(egui::Theme::Light));
@@ -2446,7 +2462,7 @@ mod tests {
             for (appearance, expected) in [(Some(egui::Theme::Light), light), (Some(egui::Theme::Dark), dark), (None, dark)] {
                 let (mut restarted, store) = app_with_saved(Some(saved.clone()));
                 let fresh = egui::Context::default();
-                PhotocraftApp::setup_context(&fresh, Default::default());
+                BrahmaApp::setup_context(&fresh, Default::default());
                 appearance_frame(&mut restarted, &fresh, appearance);
                 assert_palette(&fresh, expected);
                 assert_eq!(restarted.ui.theme, expected);
@@ -2466,7 +2482,7 @@ mod tests {
     fn manual_theme_tokens_and_global_styles_stay_fixed_across_os_changes() {
         let (mut app, store) = app_with_store();
         let ctx = egui::Context::default();
-        PhotocraftApp::setup_context(&ctx, Default::default());
+        BrahmaApp::setup_context(&ctx, Default::default());
         for kind in ThemeKind::ALL {
             app.run("prefs.set", json!({"path": "interface.theme", "value": kind.id()})).unwrap();
             appearance_frame(&mut app, &ctx, Some(egui::Theme::Dark));
@@ -2495,7 +2511,7 @@ mod tests {
         appearance_frame(&mut app, &ctx, Some(egui::Theme::Light));
         assert_palette(&ctx, ThemeKind::ProLight);
         assert_eq!(app.session.prefs().interface.appearance_mode, AppearanceMode::Auto);
-        // A restored pin must also clear when the concrete PhotoCraft palette stays the same.
+        // A restored pin must also clear when the concrete brahma palette stays the same.
         ctx.set_theme(egui::ThemePreference::Dark);
         appearance_frame(&mut app, &ctx, Some(egui::Theme::Light));
         assert_eq!(ctx.options(|o| o.theme_preference), egui::ThemePreference::System);
@@ -2509,7 +2525,7 @@ mod tests {
     fn system_theme_menu_choice_stays_checked_as_the_appearance_changes() {
         let (mut app, store) = app_with_store();
         let ctx = egui::Context::default();
-        PhotocraftApp::setup_context(&ctx, Default::default());
+        BrahmaApp::setup_context(&ctx, Default::default());
         app.run("prefs.set", json!({"values": {"interface.darkTheme": "solarizedDark", "interface.lightTheme": "adwaita"}})).unwrap();
         appearance_frame(&mut app, &ctx, Some(egui::Theme::Light));
         crate::menus::invoke(&mut app, &ctx, "window.theme.system", json!({})).unwrap();
@@ -2554,7 +2570,7 @@ mod tests {
         let interface = app.session.prefs().interface.clone();
         open_preferences(&mut app, "interface");
         let mut h = Harness::builder().with_size(vec2(1280.0, 800.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.input_mut().system_theme = Some(egui::Theme::Light);
@@ -2577,7 +2593,7 @@ mod tests {
         let saved = store.lock().unwrap().clone().unwrap();
         let (mut restarted, reloaded) = app_with_saved(Some(saved.clone()));
         let fresh = egui::Context::default();
-        PhotocraftApp::setup_context(&fresh, Default::default());
+        BrahmaApp::setup_context(&fresh, Default::default());
         appearance_frame(&mut restarted, &fresh, Some(egui::Theme::Dark));
         assert_palette(&fresh, ThemeKind::SolarizedDark);
         assert_eq!(restarted.session.prefs().interface.appearance_mode, AppearanceMode::Auto);
@@ -2593,7 +2609,7 @@ mod tests {
         let (mut app, _) = app_with_store();
         open_preferences(&mut app, "interface");
         let mut h = Harness::builder().with_size(vec2(1280.0, 800.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.run_steps(4);
@@ -2619,7 +2635,7 @@ mod tests {
         app.run("prefs.set", json!({"values": {"interface.language": "en"}})).unwrap();
         open_preferences(&mut app, "interface");
         let mut h = Harness::builder().with_size(vec2(1000.0, 750.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.run_steps(4);
@@ -2645,13 +2661,13 @@ mod tests {
             let id = open_preferences(&mut app, "interface");
             app.ui.dialog_mut(id).unwrap().fields.insert("__search".into(), json!(search));
             let mut h = Harness::builder().with_size(vec2(1000.0, 750.0)).build_eframe(move |cc| {
-                PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+                BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
                 app
             });
             h.run_steps(4);
             h
         };
-        let shown = |h: &Harness<'_, PhotocraftApp>, label: &str| h.query_all_by_label(label).next().is_some();
+        let shown = |h: &Harness<'_, BrahmaApp>, label: &str| h.query_all_by_label(label).next().is_some();
 
         let h = render("language");
         assert!(shown(&h, "Language") && shown(&h, "Presentation"));
@@ -2675,7 +2691,7 @@ mod tests {
     /// language that claims complete menus (Japanese, Traditional Chinese, ...).
     #[test]
     fn preference_labels_are_translated() {
-        let session = photocraft_engine::Session::new();
+        let session = brahma_engine::Session::new();
         let v: Value = serde_json::from_str(&session.prefs_to_json()).expect("prefs json");
         for lang in crate::i18n::Lang::all().filter(|l| l.complete_menus()) {
             let mut missing = Vec::new();
@@ -2699,17 +2715,17 @@ mod tests {
         }
     }
 
-    fn app_with_store() -> (PhotocraftApp, Arc<Mutex<Option<String>>>) {
+    fn app_with_store() -> (BrahmaApp, Arc<Mutex<Option<String>>>) {
         app_with_saved(None)
     }
 
-    fn app_with_saved(text: Option<String>) -> (PhotocraftApp, Arc<Mutex<Option<String>>>) {
+    fn app_with_saved(text: Option<String>) -> (BrahmaApp, Arc<Mutex<Option<String>>>) {
         let store: Arc<Mutex<Option<String>>> = Arc::new(Mutex::new(text));
         (app_on(&store, Arc::default()), store)
     }
 
     /// An app whose preferences live in `store`; writes fail while `fail` is set.
-    fn app_on(store: &Arc<Mutex<Option<String>>>, fail: Arc<std::sync::atomic::AtomicBool>) -> PhotocraftApp {
+    fn app_on(store: &Arc<Mutex<Option<String>>>, fail: Arc<std::sync::atomic::AtomicBool>) -> BrahmaApp {
         let (a, b) = (store.clone(), store.clone());
         let services = crate::Services {
             load_prefs: Some(Box::new(move || a.lock().unwrap().clone())),
@@ -2722,7 +2738,7 @@ mod tests {
             })),
             ..Default::default()
         };
-        PhotocraftApp::new(photocraft_engine::Session::new(), services)
+        BrahmaApp::new(brahma_engine::Session::new(), services)
     }
 
     fn stored(store: &Arc<Mutex<Option<String>>>) -> Value {
@@ -2882,7 +2898,7 @@ mod tests {
     fn ui_font_size_commands_follow_themes_and_dpi_and_reset_live() {
         let (mut app, _) = app_with_store();
         let ctx = egui::Context::default();
-        PhotocraftApp::setup_context(&ctx, ThemeKind::Pro);
+        BrahmaApp::setup_context(&ctx, ThemeKind::Pro);
         let mut input = egui::RawInput::default();
         input.viewports.get_mut(&egui::ViewportId::ROOT).unwrap().native_pixels_per_point = Some(1.5);
         for (theme, scale, expected) in
@@ -3172,10 +3188,12 @@ mod tests {
         let values = prefs::Preferences::default().to_json();
         assert!(has_visible_fields(&values, "general"));
         assert!(has_visible_fields(&values, "fileHandling"));
-        // Every setting of these sections is still unimplemented.
-        for section in ["integrations", "scratchDisks"] {
-            assert!(!has_visible_fields(&values, section), "{section}");
-        }
+        // Every setting of this section is still unimplemented.
+        assert!(!has_visible_fields(&values, "scratchDisks"));
+        // AI Integrations shows the bring-your-own-key fields; the agent-control rows stay hidden.
+        assert!(has_visible_fields(&values, "integrations"));
+        assert!(prefs::is_hidden("integrations.allowAgentControl"));
+        assert!(!prefs::is_hidden("integrations.anthropicApiKey"));
         // "Fill new type layers with placeholder text" and "Use Escape to Commit" are live; other Type rows stay hidden.
         assert!(has_visible_fields(&values, "type"));
         assert!(!prefs::is_hidden("type.fillNewTypeLayersWithPlaceholder"));
@@ -3227,11 +3245,11 @@ mod tests {
 
     #[test]
     fn brush_preset_store_attaches_when_loaded_and_persists() {
-        use photocraft_engine::preset_store::{MemBackend, open};
+        use brahma_engine::preset_store::{MemBackend, open};
         let mem = MemBackend::default();
         let ctx = egui::Context::default();
         let (tx, rx) = std::sync::mpsc::channel();
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services { preset_store: Some(rx), ..Default::default() });
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services { preset_store: Some(rx), ..Default::default() });
         // Still loading: presets made now are kept and written once the store arrives.
         tick(&mut app, &ctx);
         app.run("brush.presets.save", json!({"name": "Early"})).unwrap();
@@ -3240,7 +3258,7 @@ mod tests {
         tick(&mut app, &ctx);
         assert!(app.services.preset_store.is_none() && app.session.preset_store.is_some());
         app.run("brush.presets.save", json!({"name": "Late"})).unwrap();
-        let mut s2 = photocraft_engine::Session::new();
+        let mut s2 = brahma_engine::Session::new();
         assert!(s2.attach_preset_store(open(Box::new(mem))).is_empty());
         for n in ["Early", "Late"] {
             assert!(s2.tools.presets.iter().any(|p| p.name == n), "{n}");
@@ -3282,7 +3300,7 @@ mod tests {
         app.run("prefs.set", json!({"values": {"interface.language": "en", "type.smartQuotes": false}})).unwrap();
         let id = open_preferences(&mut app, "interface");
         let mut h = Harness::builder().with_size(vec2(1280.0, 800.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.run_steps(4);
@@ -3344,7 +3362,7 @@ mod tests {
         app.custom_titlebar = true;
         let id = open_preferences(&mut app, "interface");
         let mut h = Harness::builder().with_size(vec2(1280.0, 800.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.run_steps(4);
@@ -3490,7 +3508,7 @@ mod tests {
     fn shortcut_dialog_moves_and_keeps_alternate_keys() {
         let (mut app, _) = app_with_store();
         let ctx = egui::Context::default();
-        let open = |app: &mut PhotocraftApp| crate::menus::invoke(app, &ctx, "edit.keyboardShortcuts", json!({})).unwrap()["dialog"].as_u64().unwrap();
+        let open = |app: &mut BrahmaApp| crate::menus::invoke(app, &ctx, "edit.keyboardShortcuts", json!({})).unwrap()["dialog"].as_u64().unwrap();
         assert_eq!(crate::shortcuts::effective_alternates(&app, "edit.copy"), ["F3"]);
         assert_eq!(crate::shortcuts::effective_alternates(&app, "view.zoomIn"), ["Cmd++"]);
         // F2 (Cut's alternate) given to Rename Layer is taken from Cut, which keeps ⌘X.
@@ -3550,7 +3568,7 @@ mod tests {
         let id = crate::menus::invoke(&mut app, &ctx, "edit.keyboardShortcuts", json!({})).unwrap()["dialog"].as_u64().unwrap();
         app.ui.dialog_mut(id).unwrap().fields.insert("overrides".into(), json!("bogus"));
         let mut h = egui_kittest::Harness::builder().with_size(vec2(1280.0, 800.0)).build_eframe(move |cc| {
-            PhotocraftApp::setup_context(&cc.egui_ctx, Default::default());
+            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
             app
         });
         h.run_steps(4);
@@ -3582,13 +3600,13 @@ mod tests {
         let saved: Saved = Arc::default();
         let s2 = saved.clone();
         let services = crate::Services {
-            autosave: Some(Box::new(move |doc: &Arc<photocraft_doc::Document>, rev: u64, _path: Option<&str>| {
+            autosave: Some(Box::new(move |doc: &Arc<brahma_doc::Document>, rev: u64, _path: Option<&str>| {
                 s2.lock().unwrap().push((doc.id.0, rev));
                 Ok(())
             })),
             ..Default::default()
         };
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), services);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), services);
         let ctx = egui::Context::default();
         app.run("file.new", json!({"width": 8, "height": 8})).unwrap();
         tick(&mut app, &ctx);
@@ -3629,7 +3647,7 @@ mod tests {
         type Log = Arc<Mutex<Vec<String>>>;
         let log: Log = Arc::default();
         let (l1, l2, l3) = (log.clone(), log.clone(), log.clone());
-        use photocraft_doc::{Color, ColorMode, Document, SampleType, Size};
+        use brahma_doc::{Color, ColorMode, Document, SampleType, Size};
         let doc = || Document::with_background("R", Size::new(4, 4), ColorMode::Rgb, SampleType::U8, Color::WHITE);
         let services = crate::Services {
             autosave: Some(Box::new(move |d: &Arc<Document>, _: u64, _: Option<&str>| {
@@ -3643,7 +3661,7 @@ mod tests {
             adopt_autosave: Some(Box::new(move |id: u64, key: &str| l3.lock().unwrap().push(format!("adopt {id} {key}")))),
             ..Default::default()
         };
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), services);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), services);
         let ctx = egui::Context::default();
         tick(&mut app, &ctx);
         let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);

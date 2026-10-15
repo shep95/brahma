@@ -4,8 +4,8 @@
 use super::*;
 use serde_json::json;
 
-fn app() -> PhotocraftApp {
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Default::default());
+fn app() -> BrahmaApp {
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
     app.run("file.new", json!({"width": 64, "height": 48, "mode": "gray"})).unwrap();
     app
 }

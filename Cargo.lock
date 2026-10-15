@@ -731,6 +731,468 @@ dependencies = [
 ]
 
 [[package]]
+name = "brahma"
+version = "0.9.0"
+dependencies = [
+ "arboard",
+ "async-io",
+ "brahma-automation",
+ "brahma-cms",
+ "brahma-codecs",
+ "brahma-color",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-engine",
+ "brahma-format",
+ "brahma-geom",
+ "brahma-io",
+ "brahma-raster",
+ "brahma-tablet",
+ "brahma-ui-egui",
+ "core-graphics2",
+ "dispatch2",
+ "eframe",
+ "egui",
+ "fmv-macos-events",
+ "futures-lite",
+ "log",
+ "muda",
+ "objc2 0.6.4",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "open",
+ "resvg",
+ "rfd",
+ "ron",
+ "serde_json",
+ "winit",
+ "winresource",
+ "winsafe",
+ "wl-clipboard-rs",
+ "x11rb",
+ "xcap",
+ "zbus",
+]
+
+[[package]]
+name = "brahma-affinity"
+version = "0.9.0"
+dependencies = [
+ "crc32fast",
+ "flate2",
+ "proptest",
+ "ruzstd",
+]
+
+[[package]]
+name = "brahma-algo"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "brahma-raster",
+ "rayon",
+ "rustfft",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "brahma-automation"
+version = "0.9.0"
+dependencies = [
+ "base64 0.22.1",
+ "brahma-codecs",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-engine",
+ "brahma-format",
+ "brahma-geom",
+ "brahma-io",
+ "cap-std",
+ "getrandom 0.3.4",
+ "rmcp",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "brahma-cli"
+version = "0.9.0"
+dependencies = [
+ "brahma-automation",
+ "brahma-codecs",
+ "brahma-engine",
+ "brahma-format",
+ "brahma-io",
+ "serde_json",
+ "tokio",
+ "winresource",
+]
+
+[[package]]
+name = "brahma-cms"
+version = "0.9.0"
+dependencies = [
+ "moxcms",
+ "rayon",
+]
+
+[[package]]
+name = "brahma-codecs"
+version = "0.9.0"
+dependencies = [
+ "brahma-heif",
+ "exr",
+ "flate2",
+ "half",
+ "image",
+ "image-webp",
+ "jpeg-encoder",
+ "png 0.18.1",
+ "proptest",
+ "rayon",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tiff",
+ "zune-core 0.5.3",
+ "zune-jpeg 0.5.15",
+]
+
+[[package]]
+name = "brahma-color"
+version = "0.9.0"
+dependencies = [
+ "brahma-cms",
+ "serde",
+]
+
+[[package]]
+name = "brahma-compose"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-doc",
+ "brahma-geom",
+ "brahma-paint",
+ "brahma-raster",
+ "brahma-vector",
+ "criterion",
+ "proptest",
+ "rayon",
+]
+
+[[package]]
+name = "brahma-doc"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "brahma-raster",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "brahma-engine"
+version = "0.9.0"
+dependencies = [
+ "blake3",
+ "brahma-affinity",
+ "brahma-algo",
+ "brahma-cms",
+ "brahma-codecs",
+ "brahma-color",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-format",
+ "brahma-geom",
+ "brahma-io",
+ "brahma-ops",
+ "brahma-paint",
+ "brahma-plugins",
+ "brahma-psd",
+ "brahma-raster",
+ "brahma-raw",
+ "brahma-text",
+ "brahma-vector",
+ "craft-print",
+ "exr",
+ "flate2",
+ "rayon",
+ "roxmltree",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "wat",
+]
+
+[[package]]
+name = "brahma-format"
+version = "0.9.0"
+dependencies = [
+ "blake3",
+ "brahma-codecs",
+ "brahma-color",
+ "brahma-doc",
+ "brahma-geom",
+ "brahma-raster",
+ "crc32fast",
+ "flate2",
+ "libc",
+ "proptest",
+ "rustix 1.1.5",
+ "ruzstd",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "brahma-geom"
+version = "0.9.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "brahma-gpu"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-geom",
+ "brahma-raster",
+ "brahma-vector",
+ "half",
+ "log",
+ "pollster 1.0.1",
+ "rayon",
+ "wgpu",
+]
+
+[[package]]
+name = "brahma-heif"
+version = "0.9.0"
+dependencies = [
+ "heic-rs",
+]
+
+[[package]]
+name = "brahma-io"
+version = "0.9.0"
+dependencies = [
+ "blake3",
+ "brahma-affinity",
+ "brahma-algo",
+ "brahma-cms",
+ "brahma-codecs",
+ "brahma-color",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-format",
+ "brahma-geom",
+ "brahma-paint",
+ "brahma-psd",
+ "brahma-raster",
+ "brahma-raw",
+ "brahma-text",
+ "brahma-vector",
+ "crc32fast",
+ "flate2",
+ "proptest",
+ "resvg",
+ "roxmltree",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "brahma-ops"
+version = "0.9.0"
+dependencies = [
+ "brahma-doc",
+]
+
+[[package]]
+name = "brahma-paint"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "brahma-raster",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "brahma-plugins"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "brahma-raster",
+ "rayon",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "wasmi",
+ "wat",
+]
+
+[[package]]
+name = "brahma-psd"
+version = "0.9.0"
+dependencies = [
+ "brahma-psd",
+ "flate2",
+ "proptest",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "brahma-raster"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "proptest",
+ "serde",
+]
+
+[[package]]
+name = "brahma-raw"
+version = "0.9.0"
+dependencies = [
+ "brahma-raw",
+ "flate2",
+ "image",
+ "jxl-oxide",
+ "png 0.18.1",
+ "rayon",
+ "zune-core 0.5.3",
+ "zune-jpeg 0.5.15",
+ "zune-jpegxl",
+]
+
+[[package]]
+name = "brahma-tablet"
+version = "0.9.0"
+dependencies = [
+ "block2 0.6.2",
+ "objc2 0.6.4",
+ "objc2-app-kit 0.3.2",
+ "objc2-core-graphics",
+ "objc2-foundation 0.3.2",
+ "x11rb",
+]
+
+[[package]]
+name = "brahma-testkit"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-geom",
+ "brahma-raster",
+ "memory-stats",
+ "serde_json",
+]
+
+[[package]]
+name = "brahma-text"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-doc",
+ "brahma-geom",
+ "brahma-psd",
+ "brahma-raster",
+ "flate2",
+ "parley",
+ "skrifa",
+]
+
+[[package]]
+name = "brahma-ui-egui"
+version = "0.9.0"
+dependencies = [
+ "base64 0.22.1",
+ "brahma-algo",
+ "brahma-cms",
+ "brahma-codecs",
+ "brahma-color",
+ "brahma-compose",
+ "brahma-doc",
+ "brahma-engine",
+ "brahma-format",
+ "brahma-geom",
+ "brahma-gpu",
+ "brahma-io",
+ "brahma-paint",
+ "brahma-plugins",
+ "brahma-psd",
+ "brahma-raster",
+ "brahma-raw",
+ "brahma-testkit",
+ "brahma-text",
+ "brahma-vector",
+ "craft-print",
+ "craft-ui",
+ "eframe",
+ "egui",
+ "egui_extras",
+ "egui_kittest",
+ "epaint_default_fonts",
+ "flate2",
+ "log",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sys-locale",
+ "toml",
+ "winsafe",
+]
+
+[[package]]
+name = "brahma-vector"
+version = "0.9.0"
+dependencies = [
+ "brahma-color",
+ "brahma-doc",
+ "brahma-geom",
+ "brahma-raster",
+ "rayon",
+]
+
+[[package]]
+name = "brahma-web"
+version = "0.9.0"
+dependencies = [
+ "brahma-codecs",
+ "brahma-doc",
+ "brahma-engine",
+ "brahma-io",
+ "brahma-paint",
+ "brahma-psd",
+ "brahma-ui-egui",
+ "eframe",
+ "egui",
+ "js-sys",
+ "log",
+ "rfd",
+ "serde_json",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "brotli-decompressor"
 version = "5.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4609,468 +5071,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e57fef6bc5981e38c2ce2d63bfa546861309f875b8a75f092d1d54ae2d64f266"
 dependencies = [
  "siphasher",
-]
-
-[[package]]
-name = "photocraft"
-version = "0.9.0"
-dependencies = [
- "arboard",
- "async-io",
- "core-graphics2",
- "dispatch2",
- "eframe",
- "egui",
- "fmv-macos-events",
- "futures-lite",
- "log",
- "muda",
- "objc2 0.6.4",
- "objc2-app-kit 0.3.2",
- "objc2-foundation 0.3.2",
- "open",
- "photocraft-automation",
- "photocraft-cms",
- "photocraft-codecs",
- "photocraft-color",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-engine",
- "photocraft-format",
- "photocraft-geom",
- "photocraft-io",
- "photocraft-raster",
- "photocraft-tablet",
- "photocraft-ui-egui",
- "resvg",
- "rfd",
- "ron",
- "serde_json",
- "winit",
- "winresource",
- "winsafe",
- "wl-clipboard-rs",
- "x11rb",
- "xcap",
- "zbus",
-]
-
-[[package]]
-name = "photocraft-affinity"
-version = "0.9.0"
-dependencies = [
- "crc32fast",
- "flate2",
- "proptest",
- "ruzstd",
-]
-
-[[package]]
-name = "photocraft-algo"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-geom",
- "photocraft-raster",
- "rayon",
- "rustfft",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "photocraft-automation"
-version = "0.9.0"
-dependencies = [
- "base64 0.22.1",
- "cap-std",
- "getrandom 0.3.4",
- "photocraft-codecs",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-engine",
- "photocraft-format",
- "photocraft-geom",
- "photocraft-io",
- "rmcp",
- "schemars",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
-name = "photocraft-cli"
-version = "0.9.0"
-dependencies = [
- "photocraft-automation",
- "photocraft-codecs",
- "photocraft-engine",
- "photocraft-format",
- "photocraft-io",
- "serde_json",
- "tokio",
- "winresource",
-]
-
-[[package]]
-name = "photocraft-cms"
-version = "0.9.0"
-dependencies = [
- "moxcms",
- "rayon",
-]
-
-[[package]]
-name = "photocraft-codecs"
-version = "0.9.0"
-dependencies = [
- "exr",
- "flate2",
- "half",
- "image",
- "image-webp",
- "jpeg-encoder",
- "photocraft-heif",
- "png 0.18.1",
- "proptest",
- "rayon",
- "serde_json",
- "thiserror 2.0.21",
- "tiff",
- "zune-core 0.5.3",
- "zune-jpeg 0.5.15",
-]
-
-[[package]]
-name = "photocraft-color"
-version = "0.9.0"
-dependencies = [
- "photocraft-cms",
- "serde",
-]
-
-[[package]]
-name = "photocraft-compose"
-version = "0.9.0"
-dependencies = [
- "criterion",
- "photocraft-color",
- "photocraft-doc",
- "photocraft-geom",
- "photocraft-paint",
- "photocraft-raster",
- "photocraft-vector",
- "proptest",
- "rayon",
-]
-
-[[package]]
-name = "photocraft-doc"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-geom",
- "photocraft-raster",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "photocraft-engine"
-version = "0.9.0"
-dependencies = [
- "blake3",
- "craft-print",
- "exr",
- "flate2",
- "photocraft-affinity",
- "photocraft-algo",
- "photocraft-cms",
- "photocraft-codecs",
- "photocraft-color",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-format",
- "photocraft-geom",
- "photocraft-io",
- "photocraft-ops",
- "photocraft-paint",
- "photocraft-plugins",
- "photocraft-psd",
- "photocraft-raster",
- "photocraft-raw",
- "photocraft-text",
- "photocraft-vector",
- "rayon",
- "roxmltree",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "wat",
-]
-
-[[package]]
-name = "photocraft-format"
-version = "0.9.0"
-dependencies = [
- "blake3",
- "crc32fast",
- "flate2",
- "libc",
- "photocraft-codecs",
- "photocraft-color",
- "photocraft-doc",
- "photocraft-geom",
- "photocraft-raster",
- "proptest",
- "rustix 1.1.5",
- "ruzstd",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "photocraft-geom"
-version = "0.9.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "photocraft-gpu"
-version = "0.9.0"
-dependencies = [
- "half",
- "log",
- "photocraft-color",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-geom",
- "photocraft-raster",
- "photocraft-vector",
- "pollster 1.0.1",
- "rayon",
- "wgpu",
-]
-
-[[package]]
-name = "photocraft-heif"
-version = "0.9.0"
-dependencies = [
- "heic-rs",
-]
-
-[[package]]
-name = "photocraft-io"
-version = "0.9.0"
-dependencies = [
- "blake3",
- "crc32fast",
- "flate2",
- "photocraft-affinity",
- "photocraft-algo",
- "photocraft-cms",
- "photocraft-codecs",
- "photocraft-color",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-format",
- "photocraft-geom",
- "photocraft-paint",
- "photocraft-psd",
- "photocraft-raster",
- "photocraft-raw",
- "photocraft-text",
- "photocraft-vector",
- "proptest",
- "resvg",
- "roxmltree",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "photocraft-ops"
-version = "0.9.0"
-dependencies = [
- "photocraft-doc",
-]
-
-[[package]]
-name = "photocraft-paint"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-geom",
- "photocraft-raster",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "photocraft-plugins"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-geom",
- "photocraft-raster",
- "rayon",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "wasmi",
- "wat",
-]
-
-[[package]]
-name = "photocraft-psd"
-version = "0.9.0"
-dependencies = [
- "flate2",
- "photocraft-psd",
- "proptest",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "photocraft-raster"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-geom",
- "proptest",
- "serde",
-]
-
-[[package]]
-name = "photocraft-raw"
-version = "0.9.0"
-dependencies = [
- "flate2",
- "image",
- "jxl-oxide",
- "photocraft-raw",
- "png 0.18.1",
- "rayon",
- "zune-core 0.5.3",
- "zune-jpeg 0.5.15",
- "zune-jpegxl",
-]
-
-[[package]]
-name = "photocraft-tablet"
-version = "0.9.0"
-dependencies = [
- "block2 0.6.2",
- "objc2 0.6.4",
- "objc2-app-kit 0.3.2",
- "objc2-core-graphics",
- "objc2-foundation 0.3.2",
- "x11rb",
-]
-
-[[package]]
-name = "photocraft-testkit"
-version = "0.9.0"
-dependencies = [
- "memory-stats",
- "photocraft-color",
- "photocraft-geom",
- "photocraft-raster",
- "serde_json",
-]
-
-[[package]]
-name = "photocraft-text"
-version = "0.9.0"
-dependencies = [
- "flate2",
- "parley",
- "photocraft-color",
- "photocraft-doc",
- "photocraft-geom",
- "photocraft-psd",
- "photocraft-raster",
- "skrifa",
-]
-
-[[package]]
-name = "photocraft-ui-egui"
-version = "0.9.0"
-dependencies = [
- "base64 0.22.1",
- "craft-print",
- "craft-ui",
- "eframe",
- "egui",
- "egui_extras",
- "egui_kittest",
- "epaint_default_fonts",
- "flate2",
- "log",
- "photocraft-algo",
- "photocraft-cms",
- "photocraft-codecs",
- "photocraft-color",
- "photocraft-compose",
- "photocraft-doc",
- "photocraft-engine",
- "photocraft-format",
- "photocraft-geom",
- "photocraft-gpu",
- "photocraft-io",
- "photocraft-paint",
- "photocraft-plugins",
- "photocraft-psd",
- "photocraft-raster",
- "photocraft-raw",
- "photocraft-testkit",
- "photocraft-text",
- "photocraft-vector",
- "rayon",
- "serde",
- "serde_json",
- "sys-locale",
- "toml",
- "winsafe",
-]
-
-[[package]]
-name = "photocraft-vector"
-version = "0.9.0"
-dependencies = [
- "photocraft-color",
- "photocraft-doc",
- "photocraft-geom",
- "photocraft-raster",
- "rayon",
-]
-
-[[package]]
-name = "photocraft-web"
-version = "0.9.0"
-dependencies = [
- "eframe",
- "egui",
- "js-sys",
- "log",
- "photocraft-codecs",
- "photocraft-doc",
- "photocraft-engine",
- "photocraft-io",
- "photocraft-paint",
- "photocraft-psd",
- "photocraft-ui-egui",
- "rfd",
- "serde_json",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]

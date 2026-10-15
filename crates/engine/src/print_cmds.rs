@@ -16,8 +16,8 @@ use std::io::Write as _;
 
 mod windows_marks;
 
-use photocraft_color::ColorMode;
-use photocraft_doc::{Document, LayerContent, SmartSource};
+use brahma_color::ColorMode;
+use brahma_doc::{Document, LayerContent, SmartSource};
 use serde_json::{Value, json};
 
 use crate::commands::CommandSpec;
@@ -227,8 +227,8 @@ fn print_image(doc: &Document, p: &Value, cmd: &str) -> Result<(PrintImage, Valu
         t.execute("image.mode.rgb", json!({}))?;
     }
     match handling {
-        "photocraftManages" | "photoshopManages" => {
-            let profile = p.get("printerProfile").and_then(Value::as_str).ok_or_else(|| bad(cmd, "\"photocraftManages\" needs a \"printerProfile\""))?;
+        "brahmaManages" | "photoshopManages" => {
+            let profile = p.get("printerProfile").and_then(Value::as_str).ok_or_else(|| bad(cmd, "\"brahmaManages\" needs a \"printerProfile\""))?;
             let intent = p.get("intent").and_then(Value::as_str).unwrap_or("relative");
             let bpc = p.get("bpc").and_then(Value::as_bool).unwrap_or(true);
             t.execute("edit.convertToProfile", json!({"profile": profile, "intent": intent, "bpc": bpc}))?;
@@ -237,15 +237,15 @@ fn print_image(doc: &Document, p: &Value, cmd: &str) -> Result<(PrintImage, Valu
             info["bpc"] = json!(bpc);
         }
         "printerManages" | "noColorManagement" => {}
-        "separations" => return Err(bad(cmd, "Separations printing is not supported; use photocraftManages with a CMYK printer profile")),
-        h => return Err(bad(cmd, format!("unknown colorHandling `{h}` (printerManages|photocraftManages|noColorManagement)"))),
+        "separations" => return Err(bad(cmd, "Separations printing is not supported; use brahmaManages with a CMYK printer profile")),
+        h => return Err(bad(cmd, format!("unknown colorHandling `{h}` (printerManages|brahmaManages|noColorManagement)"))),
     }
     let d = &t.active().ok_or(EngineError::NoDocument)?.doc;
     let icc = if handling == "noColorManagement" { None } else { d.icc_profile.as_ref().map(|v| v.to_vec()) };
     // RGB and Grayscale: the composite over white is the print image (no layer flatten).
     if matches!(d.mode, ColorMode::Rgb | ColorMode::Grayscale) {
         let gray = d.mode == ColorMode::Grayscale;
-        let buf = photocraft_compose::flatten(d).over_background([1.0, 1.0, 1.0]);
+        let buf = brahma_compose::flatten(d).over_background([1.0, 1.0, 1.0]);
         let to8 = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
         let data: Vec<u8> =
             if gray { buf.px.iter().map(|p| to8(p[0])).collect() } else { buf.px.iter().flat_map(|p| [to8(p[0]), to8(p[1]), to8(p[2])]).collect() };
@@ -410,7 +410,7 @@ fn render_and_spool(doc: &Document, p: &Value, cmd: &str) -> Result<Value> {
         printer: p.get("printer").and_then(Value::as_str).filter(|v| !v.is_empty()).map(str::to_string),
         copies,
         title: doc.name.clone(),
-        // PhotoCraft already placed and scaled the image on its physical sheet. Scaling again
+        // brahma already placed and scaled the image on its physical sheet. Scaling again
         // in the driver would change the preview, print resolution and crop-mark positions.
         scaling: craft_print::Scaling::Exact,
         ..Default::default()
@@ -439,7 +439,7 @@ fn render_and_spool(doc: &Document, p: &Value, cmd: &str) -> Result<Value> {
 /// draws RGB/gray and vector marks only; it must never silently omit requested page content.
 fn native_rgb_compatible(page: &PrintPage, handling: &str) -> bool {
     matches!(page.image.channels, 1 | 3)
-        && (page.image.icc.is_none() || matches!(handling, "photocraftManages" | "photoshopManages" | "noColorManagement"))
+        && (page.image.icc.is_none() || matches!(handling, "brahmaManages" | "photoshopManages" | "noColorManagement"))
         && page.description.as_deref().is_none_or(str::is_empty)
         && page.label.as_deref().is_none_or(str::is_empty)
 }
@@ -516,7 +516,7 @@ fn print_windows(page: &PrintPage, p: &Value, title: &str, copies: u32) -> Resul
     let rect = page_rect_top_left(page);
     let primitives = windows_marks::primitives(page.marks, rect);
     let color_policy = match p.get("colorHandling").and_then(Value::as_str) {
-        Some("photocraftManages" | "photoshopManages") => craft_print::rgb::ColorPolicy::ApplicationManaged,
+        Some("brahmaManages" | "photoshopManages") => craft_print::rgb::ColorPolicy::ApplicationManaged,
         Some("noColorManagement") => craft_print::rgb::ColorPolicy::Unmanaged,
         _ => craft_print::rgb::ColorPolicy::DriverManaged,
     };
@@ -555,19 +555,19 @@ fn printer_page(_: &mut Session, p: &Value) -> Result<Value> {
 static PRINTING_DISABLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// Refuse to spool anything from this process from now on (tests, fuzzing). The
-/// `PHOTOCRAFT_NO_PRINT` environment variable does the same for a whole shell (CI).
+/// `BRAHMA_NO_PRINT` environment variable does the same for a whole shell (CI).
 pub fn disable_printing() {
     PRINTING_DISABLED.store(true, std::sync::atomic::Ordering::Relaxed);
 }
 
-/// Whether spooling is blocked by [`disable_printing`] or `PHOTOCRAFT_NO_PRINT`.
+/// Whether spooling is blocked by [`disable_printing`] or `BRAHMA_NO_PRINT`.
 pub fn printing_disabled() -> bool {
-    PRINTING_DISABLED.load(std::sync::atomic::Ordering::Relaxed) || std::env::var_os("PHOTOCRAFT_NO_PRINT").is_some_and(|v| !v.is_empty() && v != "0")
+    PRINTING_DISABLED.load(std::sync::atomic::Ordering::Relaxed) || std::env::var_os("BRAHMA_NO_PRINT").is_some_and(|v| !v.is_empty() && v != "0")
 }
 
 fn require_printing_enabled() -> Result<()> {
     if printing_disabled() {
-        Err(other("printing is disabled in this process (photocraft_engine::print_cmds::disable_printing or PHOTOCRAFT_NO_PRINT); use dryRun: true"))
+        Err(other("printing is disabled in this process (brahma_engine::print_cmds::disable_printing or BRAHMA_NO_PRINT); use dryRun: true"))
     } else {
         Ok(())
     }
@@ -616,7 +616,7 @@ fn package(s: &mut Session, p: &Value) -> Result<Value> {
     let links_dir = join(&folder, "Links");
     // Copy every linked file once; relink the copy of the document to the copies.
     let mut copied: Vec<(String, String)> = Vec::new();
-    let mut relinks: Vec<(photocraft_doc::LayerId, String)> = Vec::new();
+    let mut relinks: Vec<(brahma_doc::LayerId, String)> = Vec::new();
     let mut missing = Vec::new();
     for (_, _, l) in doc.walk() {
         let LayerContent::Smart(so) = &l.content else { continue };
@@ -663,7 +663,7 @@ pub fn paths_to_ai(doc: &Document, which: &str) -> Result<(String, usize)> {
     let dpi = f64::from(doc.resolution_dpi.max(1.0));
     let k = 72.0 / dpi;
     let (w, h) = (f64::from(doc.size.width) * k, f64::from(doc.size.height) * k);
-    let mut chosen: Vec<(String, &photocraft_doc::Path)> = Vec::new();
+    let mut chosen: Vec<(String, &brahma_doc::Path)> = Vec::new();
     match which {
         "all" => {
             chosen.extend(doc.paths.iter().map(|p| (p.name.clone(), &p.path)));
@@ -675,7 +675,7 @@ pub fn paths_to_ai(doc: &Document, which: &str) -> Result<(String, usize)> {
         name => chosen.extend(doc.paths.iter().filter(|p| p.name == name).map(|p| (p.name.clone(), &p.path))),
     }
     let mut s = String::new();
-    s.push_str("%!PS-Adobe-2.0 EPSF-1.2\n%%Creator: PhotoCraft\n");
+    s.push_str("%!PS-Adobe-2.0 EPSF-1.2\n%%Creator: brahma\n");
     s.push_str(&format!("%%Title: ({})\n", doc.name.replace([')', '('], "_")));
     s.push_str(&format!(
         "%%BoundingBox: 0 0 {} {}\n%%HiResBoundingBox: 0 0 {w:.4} {h:.4}\n%AI3_Cropmarks: 0 0 {w:.4} {h:.4}\n",
@@ -750,7 +750,7 @@ pub fn specs() -> Vec<CommandSpec> {
             CommandSpec { id: $id, label: $label, menu: $menu, shortcut: $sc, params: $params, enabled: $enabled, journal: true, run: $run }
         };
     }
-    const PRINT_PARAMS: &str = r##"{"printerSettings":hex? (Windows driver settings),"printer":name? (default printer),"copies":1..999=1,"paper":"letter|legal|tabloid|a3|a4|a5|4x6|5x7"|[w,h] pt="letter","orientation":"portrait|landscape"="portrait","center":bool=true,"top":in?,"left":in?,"scale":%=100,"scaleToFit":bool=false,"colorHandling":"printerManages|photocraftManages|noColorManagement"="printerManages","printerProfile":profile? (photocraftManages),"intent":"perceptual|relative|saturation|absolute"="relative","bpc":bool=true,"cornerCropMarks":bool,"centerCropMarks":bool,"registrationMarks":bool,"description":bool,"labels":bool,"emulsionDown":bool=false (mirror the page left to right, for sublimation and other transfer printing),"output":pdf path? (print to PDF; then "send" defaults to false),"send":bool?,"dryRun":bool=false (render the PDF, report the backend command, don't spool; write a PDF only at an explicit output path)} → {pdf:path|null (null without explicit output), imageRect, command:diagnostic array|null, sent}"##;
+    const PRINT_PARAMS: &str = r##"{"printerSettings":hex? (Windows driver settings),"printer":name? (default printer),"copies":1..999=1,"paper":"letter|legal|tabloid|a3|a4|a5|4x6|5x7"|[w,h] pt="letter","orientation":"portrait|landscape"="portrait","center":bool=true,"top":in?,"left":in?,"scale":%=100,"scaleToFit":bool=false,"colorHandling":"printerManages|brahmaManages|noColorManagement"="printerManages","printerProfile":profile? (brahmaManages),"intent":"perceptual|relative|saturation|absolute"="relative","bpc":bool=true,"cornerCropMarks":bool,"centerCropMarks":bool,"registrationMarks":bool,"description":bool,"labels":bool,"emulsionDown":bool=false (mirror the page left to right, for sublimation and other transfer printing),"output":pdf path? (print to PDF; then "send" defaults to false),"send":bool?,"dryRun":bool=false (render the PDF, report the backend command, don't spool; write a PDF only at an explicit output path)} → {pdf:path|null (null without explicit output), imageRect, command:diagnostic array|null, sent}"##;
 
     vec![
         spec!("file.print", "Print…", &["File"], Some("Cmd+P"), PRINT_PARAMS, native_doc, print),

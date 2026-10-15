@@ -1,7 +1,7 @@
 [workspace]
 resolver = "3"
 members = ["crates/*", "apps/*", "xtask"]
-default-members = ["crates/*", "apps/photocraft", "apps/photocraft-cli", "xtask"]
+default-members = ["crates/*", "apps/brahma", "apps/brahma-cli", "xtask"]
 
 [workspace.package]
 version = "0.9.0"
@@ -12,30 +12,30 @@ rust-version = "1.95"
 [workspace.dependencies]
 craft-ui = { git = "https://github.com/storytold/craft-libs", rev = "5c874d51eeb3de70e735c8ce87a59a7dedd47675", features = ["serde"] }
 # internal
-photocraft-geom = { path = "crates/geom" }
-photocraft-color = { path = "crates/color" }
-photocraft-cms = { path = "crates/cms" }
-photocraft-raster = { path = "crates/raster" }
-photocraft-doc = { path = "crates/doc" }
-photocraft-ops = { path = "crates/ops" }
-photocraft-psd = { path = "crates/psd" }
-photocraft-codecs = { path = "crates/codecs" }
-photocraft-raw = { path = "crates/raw" }
-photocraft-affinity = { path = "crates/affinity" }
-photocraft-compose = { path = "crates/compose" }
-photocraft-gpu = { path = "crates/gpu" }
-photocraft-paint = { path = "crates/paint" }
-photocraft-algo = { path = "crates/algo" }
-photocraft-io = { path = "crates/io" }
-photocraft-text = { path = "crates/text" }
-photocraft-vector = { path = "crates/vector" }
-photocraft-format = { path = "crates/format" }
-photocraft-automation = { path = "crates/automation" }
-photocraft-plugins = { path = "crates/plugins" }
-photocraft-engine = { path = "crates/engine" }
-photocraft-ui-egui = { path = "crates/ui-egui" }
-photocraft-testkit = { path = "crates/testkit" }
-photocraft-tablet = { path = "crates/tablet" }
+brahma-geom = { path = "crates/geom" }
+brahma-color = { path = "crates/color" }
+brahma-cms = { path = "crates/cms" }
+brahma-raster = { path = "crates/raster" }
+brahma-doc = { path = "crates/doc" }
+brahma-ops = { path = "crates/ops" }
+brahma-psd = { path = "crates/psd" }
+brahma-codecs = { path = "crates/codecs" }
+brahma-raw = { path = "crates/raw" }
+brahma-affinity = { path = "crates/affinity" }
+brahma-compose = { path = "crates/compose" }
+brahma-gpu = { path = "crates/gpu" }
+brahma-paint = { path = "crates/paint" }
+brahma-algo = { path = "crates/algo" }
+brahma-io = { path = "crates/io" }
+brahma-text = { path = "crates/text" }
+brahma-vector = { path = "crates/vector" }
+brahma-format = { path = "crates/format" }
+brahma-automation = { path = "crates/automation" }
+brahma-plugins = { path = "crates/plugins" }
+brahma-engine = { path = "crates/engine" }
+brahma-ui-egui = { path = "crates/ui-egui" }
+brahma-testkit = { path = "crates/testkit" }
+brahma-tablet = { path = "crates/tablet" }
 
 # external
 craft-print = { git = "https://github.com/storytold/craft-libs", rev = "3d37da389a3618ab9b76109da11416e9ca4ea719" }
@@ -82,9 +82,9 @@ debug = "line-tables-only"
 lto = "thin"
 codegen-units = 1
 
-# The browser build (apps/photocraft-web, `data-cargo-profile` in its index.html). Hosts cap the
+# The browser build (apps/brahma-web, `data-cargo-profile` in its index.html). Hosts cap the
 # size of a single file (Cloudflare Pages/Workers: 25 MiB), and the wasm is downloaded on every
-# visit, so this profile optimizes for size: fat LTO, opt-level "z" for PhotoCraft's own crates,
+# visit, so this profile optimizes for size: fat LTO, opt-level "z" for brahma's own crates,
 # "s" for dependencies and for the crates that decode files, and 3 for pixel processing (filters
 # and compositing). Dependencies stay at "s": at "z" the whole wasm grows (by 0.4 MB, measured).
 # panic stays the target default (wasm32-unknown-unknown aborts; AGENTS.md's `panic = "unwind"`
@@ -100,25 +100,25 @@ strip = "debuginfo"
 opt-level = "s"
 
 # Decoding and rasterizing keep their speed.
-[profile.wasm-release.package.photocraft-codecs]
+[profile.wasm-release.package.brahma-codecs]
 opt-level = "s"
-[profile.wasm-release.package.photocraft-raw]
+[profile.wasm-release.package.brahma-raw]
 opt-level = "s"
-[profile.wasm-release.package.photocraft-heif]
+[profile.wasm-release.package.brahma-heif]
 opt-level = "s"
-[profile.wasm-release.package.photocraft-vector]
+[profile.wasm-release.package.brahma-vector]
 opt-level = "s"
 
 # Large crates off the per-frame and per-pixel paths: the document model, file parsers run once
 # per open/save, JSON (settings, presets, control channel), SVG parsing, and shader translation
 # (runs when a pipeline is created). "z" keeps the wasm well under the size gate.
-[profile.wasm-release.package.photocraft-doc]
+[profile.wasm-release.package.brahma-doc]
 opt-level = "z"
-[profile.wasm-release.package.photocraft-psd]
+[profile.wasm-release.package.brahma-psd]
 opt-level = "z"
-[profile.wasm-release.package.photocraft-format]
+[profile.wasm-release.package.brahma-format]
 opt-level = "z"
-[profile.wasm-release.package.photocraft-affinity]
+[profile.wasm-release.package.brahma-affinity]
 opt-level = "z"
 [profile.wasm-release.package.serde_json]
 opt-level = "z"
@@ -128,16 +128,16 @@ opt-level = "z"
 opt-level = "z"
 
 # Pixel processing keeps its speed-oriented optimization level.
-[profile.wasm-release.package.photocraft-raster]
+[profile.wasm-release.package.brahma-raster]
 opt-level = 3
-[profile.wasm-release.package.photocraft-color]
+[profile.wasm-release.package.brahma-color]
 opt-level = 3
-[profile.wasm-release.package.photocraft-cms]
+[profile.wasm-release.package.brahma-cms]
 opt-level = 3
-[profile.wasm-release.package.photocraft-compose]
+[profile.wasm-release.package.brahma-compose]
 opt-level = 3
-[profile.wasm-release.package.photocraft-algo]
+[profile.wasm-release.package.brahma-algo]
 opt-level = 3
-[profile.wasm-release.package.photocraft-paint]
+[profile.wasm-release.package.brahma-paint]
 opt-level = 3
 

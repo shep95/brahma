@@ -1,7 +1,7 @@
-use photocraft_color::{ColorMode, PixelFormat, SampleType};
-use photocraft_doc::{Document, LayerContent, LayerId, Pattern};
-use photocraft_geom::Rect;
-use photocraft_raster::Surface;
+use brahma_color::{ColorMode, PixelFormat, SampleType};
+use brahma_doc::{Document, LayerContent, LayerId, Pattern};
+use brahma_geom::Rect;
+use brahma_raster::Surface;
 use serde_json::{Value, json};
 
 use crate::Session;

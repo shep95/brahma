@@ -1,8 +1,8 @@
-//! Image › Trap. Trapping is a CMYK prepress step (see `photocraft_algo::trap`). Photoshop requires
+//! Image › Trap. Trapping is a CMYK prepress step (see `brahma_algo::trap`). Photoshop requires
 //! a flattened CMYK image; we trap the active pixel layer's inks over the canvas. One history step.
 
-use photocraft_color::ColorMode;
-use photocraft_doc::LayerContent;
+use brahma_color::ColorMode;
+use brahma_doc::LayerContent;
 use serde_json::{Value, json};
 
 use crate::commands::CommandSpec;
@@ -38,7 +38,7 @@ fn trap(s: &mut Session, p: &Value) -> Result<Value> {
         let ch = surf.channels();
         let (w, h) = (bounds.width() as usize, bounds.height() as usize);
         let mut data = surf.read_region(bounds);
-        photocraft_algo::trap::trap(&mut data, w, h, ch, width);
+        brahma_algo::trap::trap(&mut data, w, h, ch, width);
         surf.write_region(bounds, &data);
         Ok(())
     })?;
@@ -61,7 +61,7 @@ pub fn specs() -> Vec<CommandSpec> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use photocraft_geom::Rect;
+    use brahma_geom::Rect;
 
     #[test]
     fn traps_a_cmyk_document() {

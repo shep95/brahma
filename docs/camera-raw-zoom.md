@@ -1,46 +1,46 @@
-# Camera Raw preview navigation
+# camera raw preview navigation
 
-The Camera Raw dialog's preview has Zoom, Hand, Fit in View, 100%, and zoom preset
+the camera raw dialog's preview has zoom, hand, fit in view, 100%, and zoom preset
 controls at the bottom left.
 
-Choose **Fit in View**, or press **Ctrl+0** on Windows/Linux (**Command+0** on macOS),
+choose **fit in view**, or press **ctrl+0** on windows/linux (**command+0** on macos),
 to fit the whole image inside the preview.
 
-At **100%**, one source pixel maps to one physical display pixel, including HiDPI.
-The native preview refines the processed source in the background so texture,
+at **100%**, one source pixel maps to one physical display pixel, including hidpi.
+the native preview refines the processed source in the background so texture,
 sharpening, and grain can be inspected beyond the reduced proxy's resolution.
 
-## Controls
+## controls
 
-| Action | Windows / Linux | macOS |
+| action | windows / linux | macos |
 |---|---|---|
-| Select Zoom | Z | Z |
-| Scrub zoom in / out | Left-drag right / left with Zoom | Same |
-| Toggle Fit / 100% | Click with Zoom | Same |
-| Zoom a selected region | Ctrl+drag | Command+drag |
-| Select Hand | H | H |
-| Temporary pan | Space+drag, or middle-button drag | Same |
-| Pointer-anchored zoom | Alt+wheel, or pinch | Option+wheel, or pinch |
-| Zoom in / out | Ctrl+plus / minus | Command+plus / minus |
-| Fit in View | Ctrl+0 | Command+0 |
-| Actual size | Ctrl+Alt+0 | Command+Option+0 |
-| Zoom presets | Bottom-left dropdown or right-click menu | Same |
+| select zoom | z | z |
+| scrub zoom in / out | left-drag right / left with zoom | same |
+| toggle fit / 100% | click with zoom | same |
+| zoom a selected region | ctrl+drag | command+drag |
+| select hand | h | h |
+| temporary pan | space+drag, or middle-button drag | same |
+| pointer-anchored zoom | alt+wheel, or pinch | option+wheel, or pinch |
+| zoom in / out | ctrl+plus / minus | command+plus / minus |
+| fit in view | ctrl+0 | command+0 |
+| actual size | ctrl+alt+0 | command+option+0 |
+| zoom presets | bottom-left dropdown or right-click menu | same |
 
-Zoom and pan are view state: they do not change filter parameters or document
-history. Before/After keeps the same position; colour probes and clipping overlays
-follow the image coordinates. Cancel discards the filter; OK applies it through
-the existing Camera Raw command.
+zoom and pan are view state: they do not change filter parameters or document
+history. before/after keeps the same position; colour probes and clipping overlays
+follow the image coordinates. cancel discards the filter; ok applies it through
+the existing camera raw command.
 
-## Preview limits
+## preview limits
 
-The fast proxy remains available while native refinement is pending. Processed
+the fast proxy remains available while native refinement is pending. processed
 full-resolution refinement is limited to 64 megapixels because the existing
-engine allocates full-image temporary buffers. Larger sources and failed
-refinement retain the proxy with a notification. Only the visible crop is uploaded
+engine allocates full-image temporary buffers. larger sources and failed
+refinement retain the proxy with a notification. only the visible crop is uploaded
 to the GPU (at most 16,777,216 pixels and the device texture-size limit).
-The initial preview domain is bounded to 512 megapixels, including sparse content
-outside the canvas. Histogram and vectorscope statistics remain proxy-based.
+the initial preview domain is bounded to 512 megapixels, including sparse content
+outside the canvas. histogram and vectorscope statistics remain proxy-based.
 WebAssembly retains the processed proxy until a browser worker path is available.
 
-Gesture references: [Adobe Camera Raw introduction](https://helpx.adobe.com/camera-raw/desktop/get-started/overview-and-setup/introduction-camera-raw.html)
-and [Julieanne Kost's Camera Raw shortcuts](https://jkost.com/blog/2022/10/225-shortcuts-tips-and-tricks-for-adobe-camera-raw.html).
+gesture references: adobe camera raw introduction
+and julieanne kost's camera raw shortcuts.

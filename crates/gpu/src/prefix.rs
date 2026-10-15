@@ -15,8 +15,8 @@
 //! rectangle afterwards: the rest of it misses once, like any fresh entry.
 use std::collections::HashMap;
 
-use photocraft_doc::{Document, Layer};
-use photocraft_geom::Rect;
+use brahma_doc::{Document, Layer};
+use brahma_geom::Rect;
 
 use crate::Tex;
 use crate::plan::{Checkpoint, Plan};
@@ -68,7 +68,7 @@ impl Prefix {
         self.bytes = 0;
     }
 
-    pub(crate) fn forget(&mut self, doc: photocraft_doc::DocId) {
+    pub(crate) fn forget(&mut self, doc: brahma_doc::DocId) {
         if self.context.as_ref().is_some_and(|d| d.id == doc) {
             self.clear();
         }
@@ -99,7 +99,7 @@ impl Prefix {
     }
 
     /// The document the cached composite belongs to, if any.
-    pub(crate) fn doc(&self) -> Option<photocraft_doc::DocId> {
+    pub(crate) fn doc(&self) -> Option<brahma_doc::DocId> {
         self.context.as_ref().map(|d| d.id)
     }
 

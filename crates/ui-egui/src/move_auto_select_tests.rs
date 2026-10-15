@@ -2,17 +2,17 @@
 //! visible layer with pixels under the pointer (or its outermost group in Group mode) and the drag
 //! then moves it; ⌘/Ctrl held at the press inverts the option for that click.
 
-use photocraft_doc::LayerId;
-use photocraft_geom::Rect;
+use brahma_doc::LayerId;
+use brahma_geom::Rect;
 use serde_json::json;
 
-use crate::PhotocraftApp;
+use crate::BrahmaApp;
 use crate::canvas::ToolEvent;
 use crate::state::{Tool, ToolOptions};
 
 /// A 64×64 document with two painted layers: A covers (8..24)², B covers (40..56)². B is active.
-fn app() -> (PhotocraftApp, LayerId, LayerId) {
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), crate::Services::default());
+fn app() -> (BrahmaApp, LayerId, LayerId) {
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
     app.session.execute("file.new", json!({"width": 64, "height": 64})).unwrap();
     app.sync_views();
     let mut ids = Vec::new();
@@ -33,15 +33,15 @@ fn app() -> (PhotocraftApp, LayerId, LayerId) {
     (app, ids[0], ids[1])
 }
 
-fn bounds(app: &PhotocraftApp, id: LayerId) -> Rect {
+fn bounds(app: &BrahmaApp, id: LayerId) -> Rect {
     app.session.active().unwrap().doc.layer(id).unwrap().surface().unwrap().content_bounds()
 }
 
-fn active(app: &PhotocraftApp) -> Option<LayerId> {
+fn active(app: &BrahmaApp) -> Option<LayerId> {
     app.session.active().unwrap().active_layer
 }
 
-fn drag(app: &mut PhotocraftApp, from: [f64; 2], by: [f64; 2], mods: egui::Modifiers) {
+fn drag(app: &mut BrahmaApp, from: [f64; 2], by: [f64; 2], mods: egui::Modifiers) {
     crate::canvas::tool_event(app, ToolEvent::Down { x: from[0], y: from[1], pressure: 1.0 }, mods);
     let mid = [from[0] + by[0] / 2.0, from[1] + by[1] / 2.0];
     crate::canvas::tool_event(app, ToolEvent::Move { x: mid[0], y: mid[1], pressure: 1.0 }, mods);
@@ -135,7 +135,7 @@ fn every_theme_shows_the_auto_select_toggle() {
     for theme in [crate::theme::ThemeKind::ProMedium, crate::theme::ThemeKind::Studio] {
         let (app, _, _) = app();
         let mut h = Harness::builder().with_size(egui::vec2(1400.0, 60.0)).build_ui_state(
-            |ui, app: &mut PhotocraftApp| {
+            |ui, app: &mut BrahmaApp| {
                 if !ui.ctx().fonts(|f| f.families().contains(&egui::FontFamily::Name("medium".into()))) {
                     return;
                 }
@@ -143,7 +143,7 @@ fn every_theme_shows_the_auto_select_toggle() {
             },
             app,
         );
-        PhotocraftApp::setup_context(&h.ctx, theme);
+        BrahmaApp::setup_context(&h.ctx, theme);
         h.run_steps(4);
         assert!(h.state().ui.tool_options.move_auto_select);
         h.get_by_label("Auto-Select:").click();
@@ -159,12 +159,12 @@ fn every_theme_shows_the_type_options() {
     use egui_kittest::Harness;
     use egui_kittest::kittest::{NodeT, Queryable};
     // The font menus show "Loading fonts…" until the font scan is done (#3021): wait for it.
-    let _ = photocraft_text::shared();
+    let _ = brahma_text::shared();
     for theme in crate::theme::ThemeKind::ALL {
         let (mut app, _, _) = app();
         app.ui.tool = Tool::Type;
         let mut h = Harness::builder().with_size(egui::vec2(1600.0, 60.0)).build_ui_state(
-            |ui, app: &mut PhotocraftApp| {
+            |ui, app: &mut BrahmaApp| {
                 if !ui.ctx().fonts(|f| f.families().contains(&egui::FontFamily::Name("medium".into()))) {
                     return;
                 }
@@ -172,7 +172,7 @@ fn every_theme_shows_the_type_options() {
             },
             app,
         );
-        PhotocraftApp::setup_context(&h.ctx, theme);
+        BrahmaApp::setup_context(&h.ctx, theme);
         h.run_steps(4);
         let combos: Vec<String> = h
             .query_all_by_role(egui::accesskit::Role::ComboBox)
@@ -193,7 +193,7 @@ fn every_theme_shows_the_gradient_options() {
         let (mut app, _, _) = app();
         app.ui.tool = Tool::Gradient;
         let mut h = Harness::builder().with_size(egui::vec2(1600.0, 60.0)).build_ui_state(
-            |ui, app: &mut PhotocraftApp| {
+            |ui, app: &mut BrahmaApp| {
                 if !ui.ctx().fonts(|f| f.families().contains(&egui::FontFamily::Name("medium".into()))) {
                     return;
                 }
@@ -201,7 +201,7 @@ fn every_theme_shows_the_gradient_options() {
             },
             app,
         );
-        PhotocraftApp::setup_context(&h.ctx, theme);
+        BrahmaApp::setup_context(&h.ctx, theme);
         h.run_steps(4);
         let combos: Vec<String> = h
             .query_all_by_role(egui::accesskit::Role::ComboBox)

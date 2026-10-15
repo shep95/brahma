@@ -5,7 +5,7 @@ use egui::accesskit::Role;
 use egui::{Key, Modifiers, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use photocraft_engine::prefs::FontPreview;
+use brahma_engine::prefs::FontPreview;
 
 struct State {
     current: String,
@@ -191,9 +191,9 @@ fn empty_font_list_ignores_navigation() {
 
 #[test]
 fn font_cycle_in_options_bar_edits_the_layer_and_can_be_undone() {
-    use crate::{PhotocraftApp, Services};
+    use crate::{BrahmaApp, Services};
     use serde_json::json;
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Services::default());
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), Services::default());
     app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
     app.run("type.create", json!({"text": "Sample", "font": "Inter", "size": 18})).unwrap();
     let mut h = Harness::builder().with_size(vec2(900.0, 700.0)).build_ui_state(
@@ -204,17 +204,17 @@ fn font_cycle_in_options_bar_edits_the_layer_and_can_be_undone() {
         },
         app,
     );
-    crate::PhotocraftApp::setup_context(&h.ctx, Default::default());
+    crate::BrahmaApp::setup_context(&h.ctx, Default::default());
     h.run_steps(4);
     h.query_all_by_role(Role::ComboBox).next().unwrap().click();
     h.run();
     h.get_by_role(Role::TextInput).type_text("JetBrains");
     h.key_press(Key::ArrowDown);
     h.run();
-    let font = |app: &PhotocraftApp| {
+    let font = |app: &BrahmaApp| {
         let doc = &app.session.active().unwrap().doc;
         match &doc.layer(app.session.active().unwrap().active_layer.unwrap()).unwrap().content {
-            photocraft_doc::LayerContent::Text(t) => t.font_family.clone(),
+            brahma_doc::LayerContent::Text(t) => t.font_family.clone(),
             _ => panic!("type layer"),
         }
     };
@@ -229,10 +229,10 @@ fn font_cycle_in_options_bar_edits_the_layer_and_can_be_undone() {
 
 #[test]
 fn hovering_a_font_does_not_pollute_history_and_clears_on_close() {
-    use crate::{PhotocraftApp, Services};
+    use crate::{BrahmaApp, Services};
     use serde_json::json;
 
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Services::default());
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), Services::default());
     app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
     app.run("type.create", json!({"text": "Sample", "font": "Inter", "size": 18})).unwrap();
 
@@ -256,7 +256,7 @@ fn hovering_a_font_does_not_pollute_history_and_clears_on_close() {
 
     // Verify the actual document layer still has the original font
     let original_font = match &app.session.active().unwrap().doc.layer(layer_id).unwrap().content {
-        photocraft_doc::LayerContent::Text(t) => t.font_family.clone(),
+        brahma_doc::LayerContent::Text(t) => t.font_family.clone(),
         _ => panic!("type layer"),
     };
     assert_eq!(original_font, "Inter", "Hovering does not commit the font to the document");
@@ -272,12 +272,12 @@ fn hovering_a_font_does_not_pollute_history_and_clears_on_close() {
 
 #[test]
 fn options_bar_hover_previews_on_canvas_without_committing() {
-    use crate::{PhotocraftApp, Services};
-    use photocraft_doc::LayerContent;
+    use crate::{BrahmaApp, Services};
+    use brahma_doc::LayerContent;
     use serde_json::json;
 
     struct PreviewApp {
-        app: PhotocraftApp,
+        app: BrahmaApp,
     }
 
     impl eframe::App for PreviewApp {
@@ -291,8 +291,8 @@ fn options_bar_hover_previews_on_canvas_without_committing() {
     }
 
     let mut h = Harness::builder().with_size(vec2(900.0, 700.0)).build_eframe(|cc| {
-        PhotocraftApp::setup_context(&cc.egui_ctx, crate::theme::ThemeKind::ALL[0]);
-        PreviewApp { app: PhotocraftApp::new(photocraft_engine::Session::new(), Services::default()) }
+        BrahmaApp::setup_context(&cc.egui_ctx, crate::theme::ThemeKind::ALL[0]);
+        PreviewApp { app: BrahmaApp::new(brahma_engine::Session::new(), Services::default()) }
     });
     h.state_mut().app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
     h.state_mut().app.run("type.create", json!({"text": "Sample", "font": "Inter", "size": 18})).unwrap();
@@ -337,7 +337,7 @@ fn options_bar_hover_previews_on_canvas_without_committing() {
     assert_eq!(committed_text.char_runs()[0].style.font_family, "JetBrains Mono");
     assert_eq!(key, 0, "selection replaces the preview with committed content");
     assert_eq!(h.state().app.session.active().unwrap().history.entries().len(), 3, "selection adds one history step");
-    let committed_font = |app: &PhotocraftApp| {
+    let committed_font = |app: &BrahmaApp| {
         let LayerContent::Text(text) = &app.session.active().unwrap().doc.layer(layer).unwrap().content else {
             panic!("type layer");
         };
@@ -351,10 +351,10 @@ fn options_bar_hover_previews_on_canvas_without_committing() {
 
 #[test]
 fn hovering_a_font_previews_only_the_selected_characters() {
-    use crate::{PhotocraftApp, Services};
+    use crate::{BrahmaApp, Services};
     use serde_json::json;
 
-    let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Services::default());
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), Services::default());
     app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
     app.run("type.create", json!({"text": "abcdef", "font": "Inter", "size": 18})).unwrap();
     let layer = app.session.active().unwrap().active_layer.unwrap();
@@ -373,8 +373,8 @@ fn hovering_a_font_previews_only_the_selected_characters() {
 
     crate::type_font_preview::set(&mut app, "Inter".into());
     let (preview, _) = crate::type_font_preview::display_doc(&mut app, 0).expect("preview document");
-    let fonts = |doc: &photocraft_doc::Document| {
-        let photocraft_doc::LayerContent::Text(text) = &doc.layer(layer).unwrap().content else {
+    let fonts = |doc: &brahma_doc::Document| {
+        let brahma_doc::LayerContent::Text(text) = &doc.layer(layer).unwrap().content else {
             panic!("type layer");
         };
         text.char_runs().into_iter().flat_map(|run| std::iter::repeat_n(run.style.font_family, run.len)).collect::<Vec<_>>()
@@ -495,14 +495,14 @@ fn wheel_family_index_clamps_to_the_ends() {
 /// after the options bar; hovering a font in the options bar still previews it on the canvas.
 #[test]
 fn options_bar_hover_previews_with_the_character_picker_also_shown() {
-    use crate::{PhotocraftApp, Services};
-    use photocraft_doc::LayerContent;
+    use crate::{BrahmaApp, Services};
+    use brahma_doc::LayerContent;
     use serde_json::json;
 
     let theme = crate::theme::ThemeKind::Pro;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).with_max_steps(64).build_eframe(move |cc| {
-        PhotocraftApp::setup_context(&cc.egui_ctx, theme);
-        let mut app = PhotocraftApp::new(photocraft_engine::Session::new(), Services::default());
+        BrahmaApp::setup_context(&cc.egui_ctx, theme);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), Services::default());
         app.ui.theme = theme;
         app.run("file.new", json!({"width": 200, "height": 100})).unwrap();
         app.run("type.create", json!({"text": "Sample", "font": "Inter", "size": 18})).unwrap();
@@ -512,7 +512,7 @@ fn options_bar_hover_previews_with_the_character_picker_also_shown() {
     });
     h.run_steps(8);
     let layer = h.state().session.active().unwrap().active_layer.unwrap();
-    let font = |h: &mut Harness<'static, PhotocraftApp>| {
+    let font = |h: &mut Harness<'static, BrahmaApp>| {
         let (shown, _) = crate::canvas::display_doc(h.state_mut(), 0);
         let LayerContent::Text(t) = &shown.layer(layer).unwrap().content else { panic!("type layer") };
         t.char_runs()[0].style.font_family.clone()
