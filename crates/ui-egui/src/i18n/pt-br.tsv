@@ -3967,3 +3967,13 @@ layerLabel	No Color	Sem cor
 	Clear Selected Guides	Limpar guias selecionadas
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Traga sua própria IA. Suas chaves de API ficam salvas apenas neste dispositivo, nas preferências do brahma, e são enviadas somente ao provedor que você escolher. Sem conta, sem cadastro.
 	Not a web link: {url}	Não é um link da web: {url}
+	AI provider	Provedor de IA
+	Anthropic API key	Chave de API da Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Chave de API do endpoint personalizado
+	Custom endpoint base URL (OpenAI-compatible)	URL base do endpoint personalizado (compatível com OpenAI)
+	Google AI API key	Chave de API do Google AI
+	Google	Google
+	Model (blank = provider default)	Modelo (vazio = padrão do provedor)
+	OpenAI API key	Chave de API da OpenAI
+	OpenAI	OpenAI

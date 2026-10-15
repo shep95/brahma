@@ -4250,3 +4250,13 @@ shape	Appearance	Izgled
 	Clear Selected Guides	Ukloni izabrane vodilje
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Donesite svoj AI. Vaši API ključevi čuvaju se samo na ovom uređaju, u podešavanjima brahma, i šalju se samo provajderu koji izaberete. Bez naloga, bez registracije.
 	Not a web link: {url}	Nije veb veza: {url}
+	AI provider	AI provajder
+	Anthropic API key	Anthropic API ključ
+	Anthropic	Anthropic
+	Custom endpoint API key	API ključ prilagođene krajnje tačke
+	Custom endpoint base URL (OpenAI-compatible)	Osnovni URL prilagođene krajnje tačke (OpenAI-kompatibilan)
+	Google AI API key	Google AI API ključ
+	Google	Google
+	Model (blank = provider default)	Model (prazno = podrazumevani kod provajdera)
+	OpenAI API key	OpenAI API ključ
+	OpenAI	OpenAI

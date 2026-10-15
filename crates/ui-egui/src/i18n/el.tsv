@@ -3877,3 +3877,13 @@ curves	Smooth	Εξομάλυνση
 	Clear Selected Guides	Απαλοιφή επιλεγμένων οδηγών
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Φέρτε τη δική σας AI. Τα κλειδιά API αποθηκεύονται μόνο σε αυτή τη συσκευή, στις προτιμήσεις του brahma, και στέλνονται μόνο στον πάροχο που επιλέγετε. Χωρίς λογαριασμό, χωρίς εγγραφή.
 	Not a web link: {url}	Δεν είναι σύνδεσμος ιστού: {url}
+	AI provider	Πάροχος AI
+	Anthropic API key	Κλειδί API Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Κλειδί API προσαρμοσμένου τερματικού
+	Custom endpoint base URL (OpenAI-compatible)	Βασικό URL προσαρμοσμένου τερματικού (συμβατό με OpenAI)
+	Google AI API key	Κλειδί API Google AI
+	Google	Google
+	Model (blank = provider default)	Μοντέλο (κενό = προεπιλογή παρόχου)
+	OpenAI API key	Κλειδί API OpenAI
+	OpenAI	OpenAI

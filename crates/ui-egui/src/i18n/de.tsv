@@ -3179,3 +3179,13 @@ curves	Smooth	Glätten
 	Clear Selected Guides	Ausgewählte Hilfslinien löschen
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Eigene KI mitbringen. Ihre API-Schlüssel werden nur auf diesem Gerät in den Einstellungen von brahma gespeichert und nur an den gewählten Anbieter gesendet. Kein Konto, keine Registrierung.
 	Not a web link: {url}	Kein Weblink: {url}
+	AI provider	KI-Anbieter
+	Anthropic API key	Anthropic-API-Schlüssel
+	Anthropic	Anthropic
+	Custom endpoint API key	API-Schlüssel des eigenen Endpunkts
+	Custom endpoint base URL (OpenAI-compatible)	Basis-URL des eigenen Endpunkts (OpenAI-kompatibel)
+	Google AI API key	Google-AI-API-Schlüssel
+	Google	Google
+	Model (blank = provider default)	Modell (leer = Standard des Anbieters)
+	OpenAI API key	OpenAI-API-Schlüssel
+	OpenAI	OpenAI

@@ -3785,3 +3785,13 @@ navigator	Zoom	Zvětšení
 	Clear Selected Guides	Vymazat vybraná vodítka
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Přineste si vlastní AI. Vaše klíče API se ukládají pouze v tomto zařízení, v předvolbách brahma, a odesílají se jen poskytovateli, kterého zvolíte. Žádný účet, žádná registrace.
 	Not a web link: {url}	Není webový odkaz: {url}
+	AI provider	Poskytovatel AI
+	Anthropic API key	Klíč API Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Klíč API vlastního koncového bodu
+	Custom endpoint base URL (OpenAI-compatible)	Základní URL vlastního koncového bodu (kompatibilní s OpenAI)
+	Google AI API key	Klíč API Google AI
+	Google	Google
+	Model (blank = provider default)	Model (prázdné = výchozí poskytovatele)
+	OpenAI API key	Klíč API OpenAI
+	OpenAI	OpenAI

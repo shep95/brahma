@@ -2777,3 +2777,13 @@ curves	Smooth	平滑
 	Clear Selected Guides	清除所選參考線
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	自備 AI。您的 API 金鑰只儲存在本裝置的 brahma 偏好設定中，只會傳送給您選擇的服務商。無需帳戶，無需註冊。
 	Not a web link: {url}	不是網頁連結：{url}
+	AI provider	AI 服務商
+	Anthropic API key	Anthropic API 金鑰
+	Anthropic	Anthropic
+	Custom endpoint API key	自訂端點 API 金鑰
+	Custom endpoint base URL (OpenAI-compatible)	自訂端點基礎 URL（相容 OpenAI）
+	Google AI API key	Google AI API 金鑰
+	Google	Google
+	Model (blank = provider default)	模型（留空 = 服務商預設）
+	OpenAI API key	OpenAI API 金鑰
+	OpenAI	OpenAI

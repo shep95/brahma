@@ -4096,3 +4096,13 @@ cameraRaw	Yellow	Sárga
 	Clear Selected Guides	Kijelölt segédvonalak törlése
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Hozd a saját MI-det. Az API-kulcsaid csak ezen az eszközön, a brahma beállításaiban tárolódnak, és csak a választott szolgáltatónak kerülnek elküldésre. Nincs fiók, nincs regisztráció.
 	Not a web link: {url}	Nem webes hivatkozás: {url}
+	AI provider	MI-szolgáltató
+	Anthropic API key	Anthropic API-kulcs
+	Anthropic	Anthropic
+	Custom endpoint API key	Egyéni végpont API-kulcsa
+	Custom endpoint base URL (OpenAI-compatible)	Egyéni végpont alap-URL-je (OpenAI-kompatibilis)
+	Google AI API key	Google AI API-kulcs
+	Google	Google
+	Model (blank = provider default)	Modell (üres = a szolgáltató alapértelmezése)
+	OpenAI API key	OpenAI API-kulcs
+	OpenAI	OpenAI

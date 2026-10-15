@@ -3168,3 +3168,13 @@ curves	Smooth	Haluskan
 	Clear Selected Guides	Hapus Panduan Terpilih
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Bawa AI Anda sendiri. Kunci API Anda hanya disimpan di perangkat ini, dalam preferensi brahma, dan hanya dikirim ke penyedia yang Anda pilih. Tanpa akun, tanpa pendaftaran.
 	Not a web link: {url}	Bukan tautan web: {url}
+	AI provider	Penyedia AI
+	Anthropic API key	Kunci API Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Kunci API endpoint kustom
+	Custom endpoint base URL (OpenAI-compatible)	URL dasar endpoint kustom (kompatibel OpenAI)
+	Google AI API key	Kunci API Google AI
+	Google	Google
+	Model (blank = provider default)	Model (kosong = bawaan penyedia)
+	OpenAI API key	Kunci API OpenAI
+	OpenAI	OpenAI

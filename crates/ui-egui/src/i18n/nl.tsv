@@ -3937,3 +3937,13 @@ curves	Smooth	Vloeiend maken
 	Clear Selected Guides	Geselecteerde hulplijnen wissen
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Breng je eigen AI mee. Je API-sleutels worden alleen op dit apparaat bewaard, in de voorkeuren van brahma, en alleen naar de gekozen aanbieder gestuurd. Geen account, geen registratie.
 	Not a web link: {url}	Geen weblink: {url}
+	AI provider	AI-aanbieder
+	Anthropic API key	Anthropic-API-sleutel
+	Anthropic	Anthropic
+	Custom endpoint API key	API-sleutel van eigen eindpunt
+	Custom endpoint base URL (OpenAI-compatible)	Basis-URL van eigen eindpunt (OpenAI-compatibel)
+	Google AI API key	Google AI-API-sleutel
+	Google	Google
+	Model (blank = provider default)	Model (leeg = standaard van aanbieder)
+	OpenAI API key	OpenAI-API-sleutel
+	OpenAI	OpenAI

@@ -3907,3 +3907,13 @@ cameraData	Lens	Lens
 	Clear Selected Guides	Seçili Kılavuzları Temizle
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Kendi yapay zekânızı getirin. API anahtarlarınız yalnızca bu cihazda, brahma tercihlerinde saklanır ve yalnızca seçtiğiniz sağlayıcıya gönderilir. Hesap yok, kayıt yok.
 	Not a web link: {url}	Web bağlantısı değil: {url}
+	AI provider	Yapay zekâ sağlayıcısı
+	Anthropic API key	Anthropic API anahtarı
+	Anthropic	Anthropic
+	Custom endpoint API key	Özel uç nokta API anahtarı
+	Custom endpoint base URL (OpenAI-compatible)	Özel uç nokta temel URL'si (OpenAI uyumlu)
+	Google AI API key	Google AI API anahtarı
+	Google	Google
+	Model (blank = provider default)	Model (boş = sağlayıcının varsayılanı)
+	OpenAI API key	OpenAI API anahtarı
+	OpenAI	OpenAI

@@ -13,7 +13,7 @@ use brahma_doc::{Color, ColorMode, Document, SampleType, Size};
 use brahma_engine::Session;
 use serde_json::Value;
 
-const USE: &str = "Use the embedded profile (Adobe RGB (1998)-compatible (Brahma))";
+const USE: &str = "Use the embedded profile (Adobe RGB (1998)-compatible (brahma))";
 const CONVERT: &str = "Convert to the working space (sRGB IEC61966-2.1)";
 const DISCARD: &str = "Discard the embedded profile (don't color manage)";
 

@@ -4139,3 +4139,13 @@ navigator	Zoom	Zoom
 	Clear Selected Guides	Borrar guías seleccionadas
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Trae tu propia IA. Tus claves API se guardan solo en este dispositivo, en las preferencias de brahma, y se envían solo al proveedor que elijas. Sin cuenta ni registro.
 	Not a web link: {url}	No es un enlace web: {url}
+	AI provider	Proveedor de IA
+	Anthropic API key	Clave API de Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Clave API del punto de conexión personalizado
+	Custom endpoint base URL (OpenAI-compatible)	URL base del punto de conexión personalizado (compatible con OpenAI)
+	Google AI API key	Clave API de Google AI
+	Google	Google
+	Model (blank = provider default)	Modelo (vacío = predeterminado del proveedor)
+	OpenAI API key	Clave API de OpenAI
+	OpenAI	OpenAI

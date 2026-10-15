@@ -3355,3 +3355,13 @@ curves	Smooth	매끄럽게
 	Clear Selected Guides	선택한 안내선 지우기
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	나만의 AI 가져오기. API 키는 이 기기의 brahma 환경설정에만 저장되며, 선택한 제공자에게만 전송됩니다. 계정도 가입도 필요 없습니다.
 	Not a web link: {url}	웹 링크가 아닙니다: {url}
+	AI provider	AI 제공자
+	Anthropic API key	Anthropic API 키
+	Anthropic	Anthropic
+	Custom endpoint API key	사용자 지정 엔드포인트 API 키
+	Custom endpoint base URL (OpenAI-compatible)	사용자 지정 엔드포인트 기본 URL(OpenAI 호환)
+	Google AI API key	Google AI API 키
+	Google	Google
+	Model (blank = provider default)	모델(비워 두면 제공자 기본값)
+	OpenAI API key	OpenAI API 키
+	OpenAI	OpenAI

@@ -1112,6 +1112,7 @@ fn choice_label(v: &str) -> String {
         "metal" => "Metal".into(),
         "gl" => "OpenGL".into(),
         "cpu" => "CPU (no GPU acceleration)".into(),
+        "openai" => "OpenAI".into(),
         v => humanize(v),
     }
 }
@@ -2295,7 +2296,7 @@ mod tests {
     #[test]
     fn appearance_resolves_both_saved_themes_and_follows_system() {
         let mut interface = prefs::Interface { appearance_mode: AppearanceMode::Auto, ..prefs::Interface::default() };
-        assert_eq!(selected_theme(&interface, Some(egui::Theme::Dark)), ThemeKind::ProMedium);
+        assert_eq!(selected_theme(&interface, Some(egui::Theme::Dark)), ThemeKind::Pro);
         assert_eq!(selected_theme(&interface, Some(egui::Theme::Light)), ThemeKind::ProLight);
         interface.dark_theme = DarkTheme::Studio;
         interface.light_theme = LightTheme::Classic;
@@ -2361,9 +2362,9 @@ mod tests {
         let ctx = egui::Context::default();
         let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         sync_appearance(&mut app, &ctx);
-        assert_eq!(app.ui.theme, ThemeKind::ProMedium, "Photoshop's default brightness");
+        assert_eq!(app.ui.theme, ThemeKind::Pro, "brahma's default: the darkest brightness");
         let press = |app: &mut BrahmaApp, id: &str| crate::menus::invoke(app, &ctx, id, json!({})).unwrap();
-        for expected in [ThemeKind::ProLightGray, ThemeKind::ProLight, ThemeKind::ProLight] {
+        for expected in [ThemeKind::ProMedium, ThemeKind::ProLightGray, ThemeKind::ProLight, ThemeKind::ProLight] {
             press(&mut app, "view.lightenInterface");
             assert_eq!(app.ui.theme, expected);
         }
@@ -2483,6 +2484,9 @@ mod tests {
         let (mut app, store) = app_with_store();
         let ctx = egui::Context::default();
         BrahmaApp::setup_context(&ctx, Default::default());
+        // Start away from the default theme so the first choice below is a change that gets saved.
+        app.run("prefs.set", json!({"path": "interface.theme", "value": "classic"})).unwrap();
+        appearance_frame(&mut app, &ctx, Some(egui::Theme::Dark));
         for kind in ThemeKind::ALL {
             app.run("prefs.set", json!({"path": "interface.theme", "value": kind.id()})).unwrap();
             appearance_frame(&mut app, &ctx, Some(egui::Theme::Dark));
@@ -2517,7 +2521,7 @@ mod tests {
         assert_eq!(ctx.options(|o| o.theme_preference), egui::ThemePreference::System);
         assert_palette(&ctx, ThemeKind::ProLight);
         appearance_frame(&mut app, &ctx, Some(egui::Theme::Dark));
-        assert_palette(&ctx, ThemeKind::ProMedium);
+        assert_palette(&ctx, ThemeKind::Pro);
         assert_eq!(app.session.prefs().interface.appearance_mode, AppearanceMode::Auto);
     }
 

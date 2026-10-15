@@ -3181,3 +3181,13 @@ curves	Smooth	Lisser
 	Clear Selected Guides	Effacer les repères sélectionnés
 	Bring your own AI. Your API keys are saved only on this device, in brahma's preferences, and are sent only to the provider you pick. There is no account and no sign-up.	Apportez votre propre IA. Vos clés API sont enregistrées uniquement sur cet appareil, dans les préférences de brahma, et envoyées seulement au fournisseur choisi. Ni compte ni inscription.
 	Not a web link: {url}	Pas un lien web : {url}
+	AI provider	Fournisseur d'IA
+	Anthropic API key	Clé API Anthropic
+	Anthropic	Anthropic
+	Custom endpoint API key	Clé API du point de terminaison personnalisé
+	Custom endpoint base URL (OpenAI-compatible)	URL de base du point de terminaison personnalisé (compatible OpenAI)
+	Google AI API key	Clé API Google AI
+	Google	Google
+	Model (blank = provider default)	Modèle (vide = défaut du fournisseur)
+	OpenAI API key	Clé API OpenAI
+	OpenAI	OpenAI
