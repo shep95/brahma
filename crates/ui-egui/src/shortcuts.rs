@@ -58,7 +58,7 @@ pub fn pretty(s: &str) -> String {
         }
         parts.push("+");
     }
-    parts
+    let joined = parts
         .into_iter()
         .map(|p| match (p, mac) {
             ("Cmd", true) => "⌘".to_string(),
@@ -70,7 +70,9 @@ pub fn pretty(s: &str) -> String {
             (other, _) => other.to_string(),
         })
         .collect::<Vec<_>>()
-        .join(if mac { "" } else { "+" })
+        .join(if mac { "" } else { "+" });
+    // The lower-case house style applies to shortcut hints too (`ctrl+shift+n`), when it is on.
+    crate::i18n::lower(&joined).to_string()
 }
 
 /// The command's effective shortcut in the platform's notation (`Ctrl+N`), or `None` when
