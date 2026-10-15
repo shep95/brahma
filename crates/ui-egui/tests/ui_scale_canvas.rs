@@ -18,8 +18,11 @@ type Harness = egui_kittest::Harness<'static, BrahmaApp>;
 fn harness(gpu: bool) -> Option<Harness> {
     let built = std::panic::catch_unwind(|| {
         egui_kittest::Harness::builder().with_size(egui::vec2(1200.0, 800.0)).with_pixels_per_point(1.0).with_max_steps(64).wgpu().build_eframe(|cc| {
-            BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
+            // These pixel measurements tell the document from the pasteboard by brightness, which
+            // needs a pasteboard lighter than the document's shadow: the Pro Medium one (#282828).
+            BrahmaApp::setup_context(&cc.egui_ctx, brahma_ui_egui::theme::ThemeKind::ProMedium);
             let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
+            app.run("prefs.set", json!({"path": "interface.theme", "value": "proMedium"})).expect("theme");
             if let Some(rs) = cc.wgpu_render_state.as_ref().filter(|_| gpu) {
                 app.set_wgpu(rs.clone());
             }

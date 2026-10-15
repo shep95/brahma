@@ -196,6 +196,52 @@ pub struct Tokens {
     pub scrim: Color32,
 }
 
+/// Photoshop's Spectrum-dark grammar as the other Pro brightnesses inherit it: flat charcoal
+/// panels, blue accent. The Pro theme itself is brahma's warm near-black (see [`Tokens::for_kind`]);
+/// the medium, light-grey and light brightnesses stay on this neutral base.
+fn pro_base(kind: ThemeKind) -> Tokens {
+    Tokens {
+        kind,
+        chrome: Color32::from_rgb(50, 50, 50),
+        canvas: Color32::from_rgb(40, 40, 40),
+        canvas_dot: Color32::from_rgb(40, 40, 40),
+        dock: Color32::from_rgb(30, 30, 30),
+        card: Color32::from_rgb(50, 50, 50),
+        card_border: Color32::from_rgb(30, 30, 30),
+        field: Color32::from_rgb(36, 36, 36),
+        field_border: Color32::from_rgb(74, 74, 74),
+        hover: Color32::from_rgb(66, 66, 66),
+        pressed: Color32::from_rgb(78, 78, 78),
+        text: Color32::from_rgb(222, 222, 222),
+        text_dim: Color32::from_rgb(178, 178, 178),
+        text_faint: Color32::from_rgb(128, 128, 128),
+        icon: Color32::from_rgb(200, 200, 200),
+        accent: Color32::from_rgb(55, 142, 240),
+        accent_soft: Color32::from_rgb(78, 78, 78),
+        accent_border: Color32::from_rgb(55, 142, 240),
+        accent_text: Color32::WHITE,
+        separator: Color32::from_rgb(30, 30, 30),
+        shadow: Color32::from_black_alpha(150),
+        primary_bg: Color32::from_rgb(55, 142, 240),
+        primary_text: Color32::WHITE,
+        danger: Color32::from_rgb(236, 91, 98),
+        warning: Color32::from_rgb(232, 176, 70),
+        radius_sm: 3.0,
+        radius: 4.0,
+        radius_lg: 6.0,
+        bevel: false,
+        pro: true,
+        round_chips: false,
+        tab_strip: Color32::from_rgb(38, 38, 38),
+        row_selected: Color32::from_rgb(82, 82, 82),
+        histogram_bg: Color32::from_rgb(40, 40, 40),
+        histogram_level: 225,
+        caption_close: Color32::from_rgb(196, 43, 28),
+        caption_close_text: Color32::WHITE,
+        scrim: Color32::from_black_alpha(110),
+    }
+}
+
 impl Tokens {
     /// Tool outlines need contrast on arbitrary document pixels, independently of UI theme.
     pub(crate) fn cursor_outline() -> [Color32; 2] {
@@ -223,7 +269,7 @@ impl Tokens {
                 separator: Color32::from_rgb(62, 62, 62),
                 tab_strip: Color32::from_rgb(74, 74, 74),
                 row_selected: Color32::from_rgb(107, 107, 107),
-                ..Tokens::for_kind(ThemeKind::Pro)
+                ..pro_base(kind)
             },
             // Photoshop's medium-light brightness: #B8B8B8 panels, dark text, a mid-grey canvas.
             ThemeKind::ProLightGray => Tokens {
@@ -248,7 +294,7 @@ impl Tokens {
                 shadow: Color32::from_black_alpha(70),
                 tab_strip: Color32::from_rgb(170, 170, 170),
                 row_selected: Color32::from_rgb(212, 212, 212),
-                ..Tokens::for_kind(ThemeKind::Pro)
+                ..pro_base(kind)
             },
             // Photoshop's lightest brightness: #F0F0F0 panels, dark text, a light-grey canvas.
             ThemeKind::ProLight => Tokens {
@@ -273,7 +319,7 @@ impl Tokens {
                 shadow: Color32::from_black_alpha(50),
                 tab_strip: Color32::from_rgb(226, 226, 226),
                 row_selected: Color32::from_rgb(204, 204, 204),
-                ..Tokens::for_kind(ThemeKind::Pro)
+                ..pro_base(kind)
             },
             ThemeKind::Pro => Tokens {
                 kind,
@@ -297,7 +343,7 @@ impl Tokens {
                 accent_border: Color32::from_rgb(201, 168, 90),
                 accent_text: Color32::from_rgb(20, 19, 16),
                 separator: Color32::from_rgb(12, 11, 9),
-                shadow: Color32::from_black_alpha(170),
+                shadow: Color32::from_black_alpha(150),
                 primary_bg: Color32::from_rgb(201, 168, 90),
                 primary_text: Color32::from_rgb(20, 19, 16),
                 danger: Color32::from_rgb(214, 96, 90),
@@ -314,7 +360,7 @@ impl Tokens {
                 histogram_level: 225,
                 caption_close: Color32::from_rgb(166, 52, 40),
                 caption_close_text: Color32::WHITE,
-                scrim: Color32::from_black_alpha(120),
+                scrim: Color32::from_black_alpha(110),
             },
             ThemeKind::Studio => Tokens {
                 kind,
