@@ -13,6 +13,30 @@ static site in `photocraft-web-<version>/`:
 
 There is no server-side code. Upload the folder's contents anywhere that serves static files.
 
+## Vercel
+
+The repository deploys to [Vercel](https://vercel.com) as a static site with no extra setup:
+`vercel.json` at the root sets the build command to `packaging/web/vercel-build.sh`, the output
+directory to `dist/web`, and the header rules below (wasm MIME type, immutable caching for the
+hashed assets, `no-cache` for `index.html`). Compression and HTTPS come from Vercel itself, so
+WebGPU and the clipboard work out of the box.
+
+1. Import the GitHub repository in the Vercel dashboard (**Add New… → Project**), or run
+   `vercel` from the repository root. Leave the framework preset as "Other"; the settings come
+   from `vercel.json`.
+2. Deploy. The build script installs a stable Rust toolchain with the `wasm32-unknown-unknown`
+   target and the pinned Trunk, then runs the same `trunk build --release` as `package.sh`.
+   The first build compiles the whole workspace to wasm and takes a while (tens of minutes);
+   Vercel's build time limit is 45 minutes.
+
+The build links with thin LTO and two Cargo jobs to stay inside the builder's memory, like the
+Docker build. The wasm is a little larger than the release zip's fat-LTO build. To change this,
+set `CARGO_PROFILE_WASM_RELEASE_LTO=fat` and/or `CARGO_BUILD_JOBS` in the project's environment
+variables (Vercel Pro builders with more memory handle fat LTO). The About dialog shows the
+deployed commit through `VERCEL_GIT_COMMIT_SHA`. To serve extra fonts, add a `fonts/` folder (see
+[Fonts](#fonts)) to `apps/photocraft-web/` and reference it from `index.html` with a
+`<link data-trunk rel="copy-dir" href="fonts" />` tag.
+
 ## Docker
 
 > The Docker recipe (`Dockerfile`, `.dockerignore`, `packaging/web/nginx.conf`) is

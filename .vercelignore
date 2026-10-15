@@ -1,0 +1,9 @@
+# Only sources are needed; the build runs on Vercel (packaging/web/vercel-build.sh).
+target
+dist
+corpus
+book/output
+packaging/macos
+packaging/windows
+packaging/linux
+packaging/freebsd
