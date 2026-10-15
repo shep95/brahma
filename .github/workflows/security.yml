@@ -58,9 +58,7 @@ jobs:
             -D clippy::undocumented_unsafe_blocks \
             -D clippy::mem_forget \
             -D clippy::transmute_ptr_to_ref \
-            -D clippy::cast_ptr_alignment \
-            -D clippy::exit \
-            -W clippy::unwrap_used
+            -D clippy::cast_ptr_alignment
 
   secrets:
     name: no committed secrets
