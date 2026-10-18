@@ -26,10 +26,11 @@ else
 fi
 rustc --version
 
+# The static musl build: the glibc build needs a newer glibc than Vercel's build image ships.
 if ! command -v trunk >/dev/null 2>&1 || [ "$(trunk --version | awk '{print $2}')" != "$TRUNK_VERSION" ]; then
   echo "==> installing trunk $TRUNK_VERSION"
   arch="$(uname -m)"
-  curl -fsSL "https://github.com/trunk-rs/trunk/releases/download/v${TRUNK_VERSION}/trunk-${arch}-unknown-linux-gnu.tar.gz" \
+  curl -fsSL "https://github.com/trunk-rs/trunk/releases/download/v${TRUNK_VERSION}/trunk-${arch}-unknown-linux-musl.tar.gz" \
     | tar -xz -C "$CARGO_HOME/bin" trunk
 fi
 trunk --version
