@@ -8,7 +8,7 @@
 # Memory: Vercel builders have limited RAM, so the wasm is linked with thin LTO (as in the
 # Dockerfile) and a small number of parallel jobs. Override with CARGO_PROFILE_WASM_RELEASE_LTO
 # and CARGO_BUILD_JOBS in the Vercel project's environment variables.
-set -euo pipefail
+set -euxo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # Must match TRUNK_VERSION in .github/workflows/ci.yml and release.yml.
@@ -17,14 +17,23 @@ export CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
 export RUSTUP_HOME="${RUSTUP_HOME:-$HOME/.rustup}"
 export PATH="$CARGO_HOME/bin:$PATH"
 
-if ! command -v cargo >/dev/null 2>&1; then
-  echo "==> installing Rust (stable, wasm32-unknown-unknown)"
+# The workspace needs rust >= rust-version in Cargo.toml (edition 2024). The build image may
+# ship an older rustc, so install our own stable toolchain unless the one on PATH is new enough.
+NEED="$(sed -n 's/^rust-version = "\(.*\)"/\1/p' "$ROOT/Cargo.toml" | head -n1)"
+have_rust() {
+  command -v rustc >/dev/null 2>&1 && command -v rustup >/dev/null 2>&1 || return 1
+  local v; v="$(rustc --version | awk '{print $2}')"
+  [ "$(printf '%s\n%s\n' "$NEED" "$v" | sort -V | head -n1)" = "$NEED" ]
+}
+if ! have_rust; then
+  echo "==> installing Rust (stable, wasm32-unknown-unknown; need >= $NEED)"
   curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal \
     --default-toolchain stable --target wasm32-unknown-unknown --no-modify-path
-else
-  rustup target add wasm32-unknown-unknown
+  hash -r
 fi
+rustup target add wasm32-unknown-unknown
 rustc --version
+cargo --version
 
 # The static musl build: the glibc build needs a newer glibc than Vercel's build image ships.
 if ! command -v trunk >/dev/null 2>&1 || [ "$(trunk --version | awk '{print $2}')" != "$TRUNK_VERSION" ]; then
