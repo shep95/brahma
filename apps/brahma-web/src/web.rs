@@ -9,7 +9,7 @@ use brahma_doc::Document;
 use brahma_ui_egui::i18n;
 use brahma_ui_egui::served_fonts;
 use brahma_ui_egui::theme::ThemeKind;
-use brahma_ui_egui::{FileDialogAnswer, FileDialogRequest, BrahmaApp, Services};
+use brahma_ui_egui::{BrahmaApp, FileDialogAnswer, FileDialogRequest, Services};
 use wasm_bindgen::JsCast as _;
 
 type Inbox = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
@@ -218,6 +218,35 @@ async fn fetch_bytes(url: &str, integrity: Option<&str>) -> Result<Vec<u8>, Stri
     Ok(js_sys::Uint8Array::new(&body).to_vec())
 }
 
+/// POST `req` for the assistant and read the status and body; a provider's error status is an
+/// answer, a network or CORS failure is an error.
+async fn fetch_post(req: &brahma_engine::ai_chat::HttpRequest) -> Result<(u16, String), String> {
+    use wasm_bindgen_futures::JsFuture;
+    let js = |e: wasm_bindgen::JsValue| format!("{e:?}");
+    let window = web_sys::window().ok_or("no window")?;
+    let headers = web_sys::Headers::new().map_err(js)?;
+    for (k, v) in &req.headers {
+        headers.set(k, v).map_err(js)?;
+    }
+    let init = web_sys::RequestInit::new();
+    init.set_method("POST");
+    init.set_headers(&headers);
+    init.set_body(&wasm_bindgen::JsValue::from_str(&req.body));
+    let resp: web_sys::Response = JsFuture::from(window.fetch_with_str_and_init(&req.url, &init))
+        .await
+        .map_err(|e| {
+            format!(
+                "the request could not be sent ({}); the provider may not allow calls from a browser page: a desktop build or a proxy endpoint works",
+                js(e)
+            )
+        })?
+        .dyn_into()
+        .map_err(|_| "not a Response")?;
+    let status = resp.status();
+    let text = JsFuture::from(resp.text().map_err(js)?).await.map_err(js)?;
+    Ok((status, text.as_string().unwrap_or_default()))
+}
+
 /// Wraps the app to read dropped files asynchronously (browsers can't read them synchronously,
 /// so the app's own drop path can't handle them) and feed them through the inbox.
 struct WebShell {
@@ -399,6 +428,11 @@ fn services(inbox: Inbox) -> Services {
             brahma_codecs::encode(&img, brahma_codecs::Format::Png, &EncodeOptions::default()).map_err(|e| e.to_string())
         })),
         inbox: Some(inbox),
+        http: Some(Box::new(|req, reply| {
+            wasm_bindgen_futures::spawn_local(async move {
+                reply(fetch_post(&req).await);
+            });
+        })),
         // Preferences live in the browser's localStorage.
         load_prefs: Some(Box::new(|| local_storage()?.get_item(PREFS_KEY).ok().flatten())),
         save_prefs: Some(Box::new(|text: &str| local_storage().ok_or("no localStorage")?.set_item(PREFS_KEY, text).map_err(|e| format!("{e:?}")))),
@@ -456,8 +490,8 @@ fn mime_for(name: &str) -> &'static str {
 /// Rust bindings to the browser's user-activated EyeDropper API; unsupported browsers keep
 /// the document picker and its normal canvas zoom. The browser owns its screen magnifier.
 fn screen_color_service() -> Option<brahma_ui_egui::screen_picker::Service> {
-    use js_sys::{Function, Reflect};
     use brahma_ui_egui::screen_picker::{Capture, Pending};
+    use js_sys::{Function, Reflect};
     use wasm_bindgen::{JsValue, closure::Closure};
     let window = web_sys::window()?;
     let constructor = Reflect::get(&window, &JsValue::from_str("EyeDropper")).ok()?.dyn_into::<Function>().ok()?;

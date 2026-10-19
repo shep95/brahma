@@ -4170,3 +4170,25 @@ navigator	Zoom	Zoom
 	Comfortable	Cómodo
 	Airy	Aireado
 	Corner Radius	Radio de esquinas
+	API key	Clave API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Pide una edición, una mirada o un consejo. El asistente puede ejecutar cualquier comando de brahma y ver el lienzo.
+	Assistant	Asistente
+	Base URL	URL base
+	Clear the conversation	Borrar la conversación
+	Pick a provider and paste your API key in the setup rows above.	Elige un proveedor y pega tu clave API en las filas de configuración de arriba.
+	Provider	Proveedor
+	Provider and key	Proveedor y clave
+	Send	Enviar
+	Show it the canvas	Mostrarle el lienzo
+	Stopped after too many steps; ask again to continue.	Detenido tras demasiados pasos; pregunta de nuevo para continuar.
+	Tell the assistant what to do…	Dile al asistente qué hacer…
+	This build has no network access for the assistant.	Esta compilación no tiene acceso a la red para el asistente.
+	Your key stays on this device and goes only to the provider you pick.	Tu clave se queda en este dispositivo y solo va al proveedor que elijas.
+	looked at the canvas	miró el lienzo
+	ran	ejecutó
+	read the document	leyó el documento
+	ready	listo
+	searched commands for	buscó comandos para
+	thinking…	pensando…
+	Preset provider id (see the assistant's provider list)	ID del proveedor predefinido (ver la lista de proveedores del asistente)
+	Preset provider API key	Clave API del proveedor predefinido

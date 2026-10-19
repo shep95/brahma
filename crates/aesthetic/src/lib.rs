@@ -31,6 +31,10 @@ pub use corpus::{Entry, search};
 pub use oklch::{Oklch, parse_hex};
 pub use rules::{Density, Layout, Motion, Palette, Register, Request, Surface, Swatch, Typography};
 
+/// The persona of brahma's built-in assistant: the voice and the principles distilled from the
+/// same research notes, as a system prompt. Plain text, so any provider can take it.
+pub const PERSONA: &str = include_str!("../data/persona.md");
+
 use serde::Serialize;
 
 /// A full recommendation: the four families plus the corpus entries that back it.

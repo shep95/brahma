@@ -72,6 +72,7 @@ pub const UI_COMMANDS: &[(&str, &str, &[&str], Option<&str>)] = &[
     ("window.toggle.brushSettings", "Brush Settings", &["Window"], Some("F5")),
     ("window.toggle.brushes", "Brushes", &["Window"], None),
     ("window.toggle.aestheticAdvisor", "Aesthetic Advisor", &["Window"], None),
+    ("window.toggle.assistant", "Assistant", &["Window"], None),
     ("window.toggle.navigator", "Navigator", &["Window"], None),
     ("window.toggle.toolbar", "Tools", &["Window"], None),
     // Photoshop's Tab and ⇧Tab: all panels (Tools, options bar and the dock), or only the dock.
@@ -699,6 +700,7 @@ pub(crate) fn invoke_unguarded(app: &mut BrahmaApp, ctx: &egui::Context, id: &st
                 "brushes" => &mut p.brushes,
                 "dock" => &mut p.dock,
                 "aestheticAdvisor" => &mut app.ui.aesthetic.open,
+                "assistant" => &mut app.ui.assistant.open,
                 _ => return Err(format!("unknown panel in {t}")),
             };
             *slot = !*slot;
@@ -909,6 +911,7 @@ fn checked(app: &BrahmaApp, id: &str) -> Option<bool> {
         "window.toggle.brushSettings" => p.brush_settings,
         "window.toggle.brushes" => p.brushes,
         "window.toggle.aestheticAdvisor" => app.ui.aesthetic.open,
+        "window.toggle.assistant" => app.ui.assistant.open,
         _ => return None,
     })
 }

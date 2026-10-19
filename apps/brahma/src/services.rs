@@ -273,12 +273,7 @@ fn save_through(
     Ok(r.warnings)
 }
 
-fn save_file(
-    doc: &Document,
-    path: &str,
-    settings: &brahma_ui_egui::ExportSettings,
-    ctl: &brahma_ui_egui::jobs_ui::SaveCtl,
-) -> Result<Vec<String>, String> {
+fn save_file(doc: &Document, path: &str, settings: &brahma_ui_egui::ExportSettings, ctl: &brahma_ui_egui::jobs_ui::SaveCtl) -> Result<Vec<String>, String> {
     save_through(doc, path, settings, ctl, |p, b, progress| write_atomic_progress(Path::new(p), b, progress))
 }
 
@@ -459,6 +454,7 @@ pub fn native(automation: Option<brahma_automation::AuthorizedWorkspace>) -> Ser
             brahma_codecs::encode(&img, brahma_codecs::Format::Png, &EncodeOptions::default()).map_err(|e| e.to_string())
         })),
         inbox: None,
+        http: Some(Box::new(http_post)),
         open_url: Some(Box::new(|url: &str| open::that(url).map_err(|e| e.to_string()))),
         beep: Some(platform_beep),
         clipboard_set_image: Some({
@@ -587,6 +583,30 @@ pub fn export_flat(doc: &Document, path: &str) -> Result<Vec<u8>, String> {
         _ => img,
     };
     brahma_codecs::encode(&img, format, &EncodeOptions::default()).map_err(|e| e.to_string())
+}
+
+/// The assistant's HTTP POST, on its own thread so a slow provider never blocks a frame. A 4xx
+/// or 5xx answer is still an answer (the provider's error text), not a transport failure.
+fn http_post(req: brahma_engine::ai_chat::HttpRequest, reply: brahma_ui_egui::HttpReply) {
+    let spawned = std::thread::Builder::new().name("assistant http".into()).spawn(move || {
+        let agent = ureq::AgentBuilder::new().timeout(std::time::Duration::from_secs(180)).build();
+        let mut r = agent.post(&req.url);
+        for (k, v) in &req.headers {
+            r = r.set(k, v);
+        }
+        let outcome = match r.send_string(&req.body) {
+            Ok(resp) => {
+                let status = resp.status();
+                resp.into_string().map(|body| (status, body)).map_err(|e| e.to_string())
+            }
+            Err(ureq::Error::Status(code, resp)) => Ok((code, resp.into_string().unwrap_or_default())),
+            Err(e) => Err(e.to_string()),
+        };
+        reply(outcome);
+    });
+    if let Err(e) = spawned {
+        log::error!("assistant: could not start the http thread: {e}");
+    }
 }
 
 #[cfg(test)]

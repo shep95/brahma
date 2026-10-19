@@ -3884,3 +3884,25 @@ curves	Smooth	スムーズ
 	Comfortable	快適
 	Airy	ゆったり
 	Corner Radius	角の半径
+	API key	APIキー
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	編集、確認、助言を頼めます。アシスタントはbrahmaのすべてのコマンドを実行し、キャンバスを見ることができます。
+	Assistant	アシスタント
+	Base URL	ベースURL
+	Clear the conversation	会話を消去
+	Pick a provider and paste your API key in the setup rows above.	プロバイダーを選び、上の設定欄にAPIキーを貼り付けてください。
+	Provider	プロバイダー
+	Provider and key	プロバイダーとキー
+	Send	送信
+	Show it the canvas	キャンバスを見せる
+	Stopped after too many steps; ask again to continue.	手順が多すぎたため停止しました。続けるにはもう一度頼んでください。
+	Tell the assistant what to do…	アシスタントへの指示を入力…
+	This build has no network access for the assistant.	このビルドにはアシスタント用のネットワークアクセスがありません。
+	Your key stays on this device and goes only to the provider you pick.	キーはこの端末に保存され、選んだプロバイダーにのみ送られます。
+	looked at the canvas	キャンバスを見ました
+	ran	実行:
+	read the document	ドキュメントを読みました
+	ready	準備完了
+	searched commands for	コマンドを検索:
+	thinking…	考え中…
+	Preset provider id (see the assistant's provider list)	プリセットプロバイダーのID（アシスタントのプロバイダー一覧を参照）
+	Preset provider API key	プリセットプロバイダーのAPIキー

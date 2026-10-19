@@ -3908,3 +3908,25 @@ curves	Smooth	Εξομάλυνση
 	Comfortable	Άνετο
 	Airy	Αέρινο
 	Corner Radius	Ακτίνα γωνιών
+	API key	Κλειδί API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Ζητήστε μια αλλαγή, μια ματιά ή μια συμβουλή. Ο βοηθός μπορεί να εκτελέσει κάθε εντολή του brahma και να δει τον καμβά.
+	Assistant	Βοηθός
+	Base URL	Βασικό URL
+	Clear the conversation	Καθαρισμός συνομιλίας
+	Pick a provider and paste your API key in the setup rows above.	Επιλέξτε πάροχο και επικολλήστε το κλειδί API στις γραμμές ρύθμισης παραπάνω.
+	Provider	Πάροχος
+	Provider and key	Πάροχος και κλειδί
+	Send	Αποστολή
+	Show it the canvas	Δείξε του τον καμβά
+	Stopped after too many steps; ask again to continue.	Σταμάτησε μετά από πολλά βήματα· ρωτήστε ξανά για συνέχεια.
+	Tell the assistant what to do…	Πείτε στον βοηθό τι να κάνει…
+	This build has no network access for the assistant.	Αυτή η έκδοση δεν έχει πρόσβαση δικτύου για τον βοηθό.
+	Your key stays on this device and goes only to the provider you pick.	Το κλειδί σας μένει σε αυτή τη συσκευή και πηγαίνει μόνο στον πάροχο που επιλέγετε.
+	looked at the canvas	κοίταξε τον καμβά
+	ran	εκτέλεσε
+	read the document	διάβασε το έγγραφο
+	ready	έτοιμο
+	searched commands for	αναζήτησε εντολές για
+	thinking…	σκέφτεται…
+	Preset provider id (see the assistant's provider list)	Αναγνωριστικό προεπιλεγμένου παρόχου (δείτε τη λίστα παρόχων του βοηθού)
+	Preset provider API key	Κλειδί API προεπιλεγμένου παρόχου

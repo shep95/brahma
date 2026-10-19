@@ -3907,3 +3907,25 @@ curves	Smooth	Згладити
 	Comfortable	Зручний
 	Airy	Повітряний
 	Corner Radius	Радіус кутів
+	API key	Ключ API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Попросіть правку, погляд або пораду. Асистент може виконати будь-яку команду brahma і бачить полотно.
+	Assistant	Асистент
+	Base URL	Базова URL
+	Clear the conversation	Очистити розмову
+	Pick a provider and paste your API key in the setup rows above.	Оберіть провайдера і вставте свій ключ API у рядки налаштування вище.
+	Provider	Провайдер
+	Provider and key	Провайдер і ключ
+	Send	Надіслати
+	Show it the canvas	Показати йому полотно
+	Stopped after too many steps; ask again to continue.	Зупинено після надто багатьох кроків; запитайте знову, щоб продовжити.
+	Tell the assistant what to do…	Скажіть асистенту, що зробити…
+	This build has no network access for the assistant.	У цій збірці асистент не має доступу до мережі.
+	Your key stays on this device and goes only to the provider you pick.	Ваш ключ лишається на цьому пристрої і йде лише обраному провайдеру.
+	looked at the canvas	подивився на полотно
+	ran	виконав
+	read the document	прочитав документ
+	ready	готово
+	searched commands for	шукав команди:
+	thinking…	думає…
+	Preset provider id (see the assistant's provider list)	Ідентифікатор попередньо заданого провайдера (див. список провайдерів асистента)
+	Preset provider API key	Ключ API попередньо заданого провайдера

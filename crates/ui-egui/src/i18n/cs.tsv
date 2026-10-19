@@ -3817,3 +3817,25 @@ navigator	Zoom	Zvětšení
 	Comfortable	Pohodlné
 	Airy	Vzdušné
 	Corner Radius	Poloměr rohů
+	API key	API klíč
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Požádejte o úpravu, pohled nebo radu. Asistent umí spustit každý příkaz v brahma a vidí plátno.
+	Assistant	Asistent
+	Base URL	Základní URL
+	Clear the conversation	Vymazat konverzaci
+	Pick a provider and paste your API key in the setup rows above.	Vyberte poskytovatele a vložte svůj API klíč do řádků nastavení výše.
+	Provider	Poskytovatel
+	Provider and key	Poskytovatel a klíč
+	Send	Odeslat
+	Show it the canvas	Ukázat mu plátno
+	Stopped after too many steps; ask again to continue.	Zastaveno po příliš mnoha krocích; zeptejte se znovu pro pokračování.
+	Tell the assistant what to do…	Řekněte asistentovi, co má udělat…
+	This build has no network access for the assistant.	Toto sestavení nemá pro asistenta přístup k síti.
+	Your key stays on this device and goes only to the provider you pick.	Váš klíč zůstává v tomto zařízení a jde jen k poskytovateli, kterého vyberete.
+	looked at the canvas	podíval se na plátno
+	ran	spustil
+	read the document	přečetl dokument
+	ready	připraven
+	searched commands for	hledal příkazy pro
+	thinking…	přemýšlí…
+	Preset provider id (see the assistant's provider list)	ID přednastaveného poskytovatele (viz seznam poskytovatelů asistenta)
+	Preset provider API key	API klíč přednastaveného poskytovatele

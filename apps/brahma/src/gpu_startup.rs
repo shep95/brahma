@@ -25,8 +25,8 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use eframe::{egui_wgpu, wgpu};
 use brahma_engine::prefs::{GpuBackend, RenderingMode};
+use eframe::{egui_wgpu, wgpu};
 use serde_json::{Value, json};
 
 /// The marker's file name in the config directory.

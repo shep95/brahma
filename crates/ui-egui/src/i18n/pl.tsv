@@ -3806,3 +3806,25 @@ curves	Smooth	Wygładź
 	Comfortable	Wygodny
 	Airy	Przestronny
 	Corner Radius	Promień narożników
+	API key	Klucz API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Poproś o edycję, spojrzenie lub radę. Asystent może uruchomić każde polecenie w brahma i widzi płótno.
+	Assistant	Asystent
+	Base URL	Adres bazowy
+	Clear the conversation	Wyczyść rozmowę
+	Pick a provider and paste your API key in the setup rows above.	Wybierz dostawcę i wklej swój klucz API w wierszach ustawień powyżej.
+	Provider	Dostawca
+	Provider and key	Dostawca i klucz
+	Send	Wyślij
+	Show it the canvas	Pokaż mu płótno
+	Stopped after too many steps; ask again to continue.	Zatrzymano po zbyt wielu krokach; zapytaj ponownie, aby kontynuować.
+	Tell the assistant what to do…	Powiedz asystentowi, co ma zrobić…
+	This build has no network access for the assistant.	Ta kompilacja nie ma dostępu do sieci dla asystenta.
+	Your key stays on this device and goes only to the provider you pick.	Twój klucz zostaje na tym urządzeniu i trafia tylko do wybranego dostawcy.
+	looked at the canvas	obejrzał płótno
+	ran	uruchomił
+	read the document	przeczytał dokument
+	ready	gotowy
+	searched commands for	szukał poleceń dla
+	thinking…	myśli…
+	Preset provider id (see the assistant's provider list)	Identyfikator wstępnie ustawionego dostawcy (zob. listę dostawców asystenta)
+	Preset provider API key	Klucz API wstępnie ustawionego dostawcy

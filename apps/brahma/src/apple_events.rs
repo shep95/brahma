@@ -9,8 +9,8 @@
 //! delegate alone) behind a safe main-thread API; this module adapts it to [`OsEvent`]s that the UI
 //! polls every frame.
 
-use fmv_macos_events::{Event, Inbox, Registration};
 use brahma_ui_egui::OsEvent;
+use fmv_macos_events::{Event, Inbox, Registration};
 
 /// Keeps the Apple-event handlers registered; hold it until the event loop returns.
 pub struct AppleEvents {

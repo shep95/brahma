@@ -27,8 +27,8 @@ pub use platform::service;
 
 #[cfg(target_os = "windows")]
 mod platform {
-    use eframe::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
     use brahma_ui_egui::WindowFrameFn;
+    use eframe::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
     use winsafe::{HWND, HwndPlace, POINT, SIZE, co};
 
     /// A guard that keeps the window borderless each frame, or `None` when the app uses the

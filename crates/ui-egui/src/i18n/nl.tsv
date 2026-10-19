@@ -3968,3 +3968,25 @@ curves	Smooth	Vloeiend maken
 	Comfortable	Comfortabel
 	Airy	Luchtig
 	Corner Radius	Hoekradius
+	API key	API-sleutel
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Vraag om een bewerking, een blik of advies. De assistent kan elke opdracht in brahma uitvoeren en het canvas zien.
+	Assistant	Assistent
+	Base URL	Basis-URL
+	Clear the conversation	Gesprek wissen
+	Pick a provider and paste your API key in the setup rows above.	Kies een aanbieder en plak je API-sleutel in de instelregels hierboven.
+	Provider	Aanbieder
+	Provider and key	Aanbieder en sleutel
+	Send	Verzenden
+	Show it the canvas	Laat het canvas zien
+	Stopped after too many steps; ask again to continue.	Gestopt na te veel stappen; vraag opnieuw om door te gaan.
+	Tell the assistant what to do…	Vertel de assistent wat te doen…
+	This build has no network access for the assistant.	Deze build heeft geen netwerktoegang voor de assistent.
+	Your key stays on this device and goes only to the provider you pick.	Je sleutel blijft op dit apparaat en gaat alleen naar de gekozen aanbieder.
+	looked at the canvas	heeft het canvas bekeken
+	ran	uitgevoerd:
+	read the document	heeft het document gelezen
+	ready	klaar
+	searched commands for	opdrachten gezocht voor
+	thinking…	denkt na…
+	Preset provider id (see the assistant's provider list)	ID van de vooraf ingestelde aanbieder (zie de aanbiederslijst van de assistent)
+	Preset provider API key	API-sleutel van de vooraf ingestelde aanbieder

@@ -447,9 +447,7 @@ fn main() -> eframe::Result {
                 }
             }
             let fallback_reason = std::env::var("BRAHMA_GPU_STARTUP_FAILURE").ok().or_else(|| {
-                (app.perf.gpu_info.canvas == "cpu" && mode != brahma_engine::prefs::RenderingMode::Cpu)
-                    .then(|| app.perf.gpu_info.fallback.clone())
-                    .flatten()
+                (app.perf.gpu_info.canvas == "cpu" && mode != brahma_engine::prefs::RenderingMode::Cpu).then(|| app.perf.gpu_info.fallback.clone()).flatten()
             });
             if let Some(reason) = fallback_reason {
                 brahma_ui_egui::gpu_status::queue_fallback_notice(&mut app, &reason);

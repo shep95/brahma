@@ -25,6 +25,7 @@ pub mod analysis_ui;
 pub mod anchor_tools;
 pub mod artboard_tool;
 pub mod artboard_ui;
+pub mod assistant_ui;
 pub(crate) mod background_redraw;
 mod blend_keys;
 pub(crate) mod blend_preview;
@@ -381,6 +382,10 @@ pub type AutomationCommandFn = Box<dyn Fn(&str, &Value) -> Result<(), String>>;
 /// Open a URL in the system browser (native) — reliable cross-platform, unlike `ctx.open_url`.
 pub type OpenUrlFn = Box<dyn Fn(&str) -> Result<(), String>>;
 pub type EncodePngFn = Box<dyn Fn(u32, u32, &[u8]) -> Result<Vec<u8>, String>>;
+/// One HTTP POST for the assistant (`assistant_ui`): the shell performs it without blocking the
+/// frame and calls the reply with the status and body, or a transport error.
+pub type HttpReply = Box<dyn FnOnce(Result<(u16, String), String>) + Send>;
+pub type HttpFn = Box<dyn Fn(brahma_engine::ai_chat::HttpRequest, HttpReply)>;
 /// Put an RGBA8 image (width, height, pixels) on the OS clipboard.
 pub type ClipboardSetFn = Box<dyn FnMut(u32, u32, &[u8]) -> Result<(), String>>;
 /// Read an RGBA8 image from the OS clipboard.
@@ -467,6 +472,8 @@ pub struct Services {
     pub automation_authorize: Option<fn(&str, &serde_json::Value) -> brahma_engine::Result<()>>,
     /// Encode an RGBA8 image as PNG (used for screenshots and `ui.render`).
     pub encode_png: Option<EncodePngFn>,
+    /// The assistant's HTTP calls to the AI provider the user picked (`None`: no assistant).
+    pub http: Option<HttpFn>,
     /// Open a URL in the system browser (native). Falls back to `ctx.open_url` (web) when unset.
     pub open_url: Option<OpenUrlFn>,
     /// Preferences ▸ General ▸ Beep When Done: the platform's default beep, played when a
@@ -1941,6 +1948,10 @@ impl eframe::App for BrahmaApp {
         }
         if chrome && self.ui.panels.dock {
             panels::right_dock(self, ui);
+        }
+        assistant_ui::poll(self, &ctx);
+        if chrome {
+            assistant_ui::panel(self, ui);
         }
         let t = theme::Tokens::get(&ctx);
         let backdrop = if chrome { prefs_ui::pasteboard_color(self).unwrap_or(t.canvas) } else { egui::Color32::BLACK };

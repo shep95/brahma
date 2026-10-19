@@ -863,7 +863,7 @@ impl Default for RawDefaults {
 
 choice!(
     /// Which AI provider brahma talks to with the user's own key (see [`crate::ai`]).
-    AiProvider { None = "none", Anthropic = "anthropic", OpenAi = "openai", Google = "google", Custom = "custom" } default None
+    AiProvider { None = "none", Anthropic = "anthropic", OpenAi = "openai", Google = "google", Custom = "custom", Preset = "preset" } default None
 );
 
 /// Edit › Preferences › AI Integrations. The API keys are the user's own ("bring your own key"):
@@ -890,6 +890,11 @@ pub struct Integrations {
     pub custom_base_url: String,
     /// The key for the custom endpoint (may be empty for a local server).
     pub custom_api_key: String,
+    /// With `ai_provider = preset`: the id of a provider from [`crate::ai::PRESETS`] (every
+    /// major platform, any country: deepseek, mistral, qwen, yandex, sarvam, …).
+    pub ai_preset: String,
+    /// The user's own key for that preset provider, kept on this device.
+    pub preset_api_key: String,
 }
 
 impl Default for Integrations {
@@ -904,6 +909,8 @@ impl Default for Integrations {
             google_api_key: String::new(),
             custom_base_url: String::new(),
             custom_api_key: String::new(),
+            ai_preset: String::new(),
+            preset_api_key: String::new(),
         }
     }
 }

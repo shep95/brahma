@@ -3211,3 +3211,25 @@ curves	Smooth	Glätten
 	Comfortable	Bequem
 	Airy	Luftig
 	Corner Radius	Eckenradius
+	API key	API-Schlüssel
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Bitte um eine Änderung, einen Blick oder einen Rat. Der Assistent kann jeden Befehl in brahma ausführen und die Leinwand sehen.
+	Assistant	Assistent
+	Base URL	Basis-URL
+	Clear the conversation	Unterhaltung löschen
+	Pick a provider and paste your API key in the setup rows above.	Wähle einen Anbieter und füge deinen API-Schlüssel in den Einrichtungszeilen oben ein.
+	Provider	Anbieter
+	Provider and key	Anbieter und Schlüssel
+	Send	Senden
+	Show it the canvas	Leinwand zeigen
+	Stopped after too many steps; ask again to continue.	Nach zu vielen Schritten gestoppt; frag erneut, um fortzufahren.
+	Tell the assistant what to do…	Sag dem Assistenten, was er tun soll…
+	This build has no network access for the assistant.	Dieser Build hat keinen Netzwerkzugang für den Assistenten.
+	Your key stays on this device and goes only to the provider you pick.	Dein Schlüssel bleibt auf diesem Gerät und geht nur an den gewählten Anbieter.
+	looked at the canvas	hat die Leinwand angesehen
+	ran	ausgeführt:
+	read the document	hat das Dokument gelesen
+	ready	bereit
+	searched commands for	Befehle gesucht für
+	thinking…	denkt nach…
+	Preset provider id (see the assistant's provider list)	ID des voreingestellten Anbieters (siehe Anbieterliste des Assistenten)
+	Preset provider API key	API-Schlüssel des voreingestellten Anbieters

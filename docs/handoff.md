@@ -43,22 +43,15 @@ so also its default). every push goes there.
 | 18 | installable + offline web app (manifest, service worker, document.title) | done (precache on install; offline reload verified) |
 | 19 | this file | ongoing |
 | 20 | export / download with rounded corners | done: `cornerRadius` (px or "20%") on every flat save command, corner radius slider in export as |
-| 21 | ai assistant sidebar: drives every command, persona from the shepherd file, any provider's keys from any country, sees the canvas | todo (plan below) |
+| 21 | ai assistant sidebar: drives every command, persona from the shepherd file, any provider's keys from any country, sees the canvas | done: window › assistant (sparkles button on the rail). engine `ai_chat.rs` (anthropic / openai-compatible / gemini protocols, tools search_commands, run_command, inspect_document, look_at_canvas), 28 provider presets in `ai.rs` (`ai.providers`), persona `crates/aesthetic/data/persona.md`. open: streaming, a transcript saved per document |
 | 23 | every font: the full google fonts catalogue (~1,941 families) on demand + system fonts | todo (plan below) |
 
 ## plans for the open tasks
 
-- **21 ai assistant.** engine module `ai.rs`: a provider-agnostic request/response builder
-  (anthropic messages, openai chat completions and every openai-compatible host such as
-  deepseek, mistral, qwen, moonshot, yandex, openrouter; google gemini; plus a custom base url
-  so any country's provider works). the tool list comes from `command_specs()` (id, params doc)
-  so the model drives every command; images go in as base64 for vision. the http call is a
-  `Services` callback (web: `fetch_bytes` via wasm fetch; desktop: `ureq` on a thread, dep already
-  in `apps/brahma/Cargo.toml`). ui: a chat dock group with a message list, the input, a
-  "look at the canvas" toggle that attaches a `ui.screenshot`-sized thumbnail of the document
-  to each turn. persona: a system prompt distilled from the shepherd research file (tone, the
-  oklch/typography/motion rules), stored in `brahma-aesthetic` next to the corpus. keys stay in
-  preferences › ai integrations and never leave the machine except to the provider chosen.
+- **21 ai assistant (shipped).** `Services::http` does the post (web: `fetch_post` in
+  `web.rs`; desktop: `http_post` on a thread in `services.rs`). the web build can only reach
+  providers that allow browser calls (anthropic with the direct-browser header, openai, google,
+  openrouter, groq, mistral, deepseek do); others need the desktop build or a proxy base url.
 - **23 fonts.** the google fonts catalogue (`families.csv` + `METADATA.pb` per family, fetched
   from github.com/google/fonts at a pinned commit; api.fontsource and jsdelivr are unreachable
   from the build container) is distilled into a compact table compiled into `brahma-text`

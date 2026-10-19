@@ -19,9 +19,9 @@ pub use platform::service;
 
 #[cfg(target_os = "macos")]
 mod platform {
+    use brahma_ui_egui::CapsLockFn;
     use core_graphics2::event_source::CGEventSource;
     use core_graphics2::event_types::{CGEventFlags, CGEventSourceStateID};
-    use brahma_ui_egui::CapsLockFn;
 
     pub fn service(_cc: &eframe::CreationContext<'_>) -> Option<CapsLockFn> {
         Some(Box::new(|| {
@@ -46,8 +46,8 @@ mod platform {
 
 #[cfg(target_os = "linux")]
 mod platform {
-    use eframe::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
     use brahma_ui_egui::CapsLockFn;
+    use eframe::wgpu::rwh::{HasWindowHandle, RawWindowHandle};
     use x11rb::protocol::xkb::{self, ConnectionExt as _};
     use x11rb::protocol::xproto::ModMask;
     use x11rb::rust_connection::RustConnection;

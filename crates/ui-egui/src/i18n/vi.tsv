@@ -3695,3 +3695,25 @@ curves	Smooth	Làm mượt
 	Comfortable	Thoải mái
 	Airy	Thoáng
 	Corner Radius	Bán kính góc
+	API key	Khóa API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Yêu cầu chỉnh sửa, xem xét hoặc lời khuyên. Trợ lý có thể chạy mọi lệnh trong brahma và nhìn thấy canvas.
+	Assistant	Trợ lý
+	Base URL	URL gốc
+	Clear the conversation	Xóa cuộc trò chuyện
+	Pick a provider and paste your API key in the setup rows above.	Chọn nhà cung cấp và dán khóa API của bạn vào các dòng thiết lập ở trên.
+	Provider	Nhà cung cấp
+	Provider and key	Nhà cung cấp và khóa
+	Send	Gửi
+	Show it the canvas	Cho nó xem canvas
+	Stopped after too many steps; ask again to continue.	Đã dừng sau quá nhiều bước; hỏi lại để tiếp tục.
+	Tell the assistant what to do…	Nói cho trợ lý biết cần làm gì…
+	This build has no network access for the assistant.	Bản dựng này không có quyền truy cập mạng cho trợ lý.
+	Your key stays on this device and goes only to the provider you pick.	Khóa của bạn ở lại trên thiết bị này và chỉ gửi đến nhà cung cấp bạn chọn.
+	looked at the canvas	đã xem canvas
+	ran	đã chạy
+	read the document	đã đọc tài liệu
+	ready	sẵn sàng
+	searched commands for	đã tìm lệnh cho
+	thinking…	đang suy nghĩ…
+	Preset provider id (see the assistant's provider list)	ID nhà cung cấp đặt sẵn (xem danh sách nhà cung cấp của trợ lý)
+	Preset provider API key	Khóa API của nhà cung cấp đặt sẵn

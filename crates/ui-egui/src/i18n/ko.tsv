@@ -3387,3 +3387,25 @@ curves	Smooth	매끄럽게
 	Comfortable	편안
 	Airy	여유
 	Corner Radius	모서리 반경
+	API key	API 키
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	편집, 확인, 조언을 요청하세요. 어시스턴트는 brahma의 모든 명령을 실행하고 캔버스를 볼 수 있습니다.
+	Assistant	어시스턴트
+	Base URL	기본 URL
+	Clear the conversation	대화 지우기
+	Pick a provider and paste your API key in the setup rows above.	제공자를 선택하고 위 설정 줄에 API 키를 붙여 넣으세요.
+	Provider	제공자
+	Provider and key	제공자와 키
+	Send	보내기
+	Show it the canvas	캔버스 보여 주기
+	Stopped after too many steps; ask again to continue.	단계가 너무 많아 멈췄습니다. 계속하려면 다시 요청하세요.
+	Tell the assistant what to do…	어시스턴트에게 할 일을 말하세요…
+	This build has no network access for the assistant.	이 빌드에는 어시스턴트용 네트워크 접근이 없습니다.
+	Your key stays on this device and goes only to the provider you pick.	키는 이 기기에만 저장되며 선택한 제공자에게만 전송됩니다.
+	looked at the canvas	캔버스를 봤습니다
+	ran	실행:
+	read the document	문서를 읽었습니다
+	ready	준비됨
+	searched commands for	명령 검색:
+	thinking…	생각 중…
+	Preset provider id (see the assistant's provider list)	프리셋 제공자 ID (어시스턴트의 제공자 목록 참조)
+	Preset provider API key	프리셋 제공자 API 키

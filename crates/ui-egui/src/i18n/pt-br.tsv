@@ -3998,3 +3998,25 @@ layerLabel	No Color	Sem cor
 	Comfortable	Confortável
 	Airy	Arejado
 	Corner Radius	Raio dos cantos
+	API key	Chave de API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Peça uma edição, uma olhada ou um conselho. O assistente pode executar qualquer comando do brahma e ver a tela.
+	Assistant	Assistente
+	Base URL	URL base
+	Clear the conversation	Limpar a conversa
+	Pick a provider and paste your API key in the setup rows above.	Escolha um provedor e cole sua chave de API nas linhas de configuração acima.
+	Provider	Provedor
+	Provider and key	Provedor e chave
+	Send	Enviar
+	Show it the canvas	Mostrar a tela a ele
+	Stopped after too many steps; ask again to continue.	Parou após passos demais; peça de novo para continuar.
+	Tell the assistant what to do…	Diga ao assistente o que fazer…
+	This build has no network access for the assistant.	Esta build não tem acesso à rede para o assistente.
+	Your key stays on this device and goes only to the provider you pick.	Sua chave fica neste dispositivo e vai só para o provedor escolhido.
+	looked at the canvas	olhou a tela
+	ran	executou
+	read the document	leu o documento
+	ready	pronto
+	searched commands for	buscou comandos para
+	thinking…	pensando…
+	Preset provider id (see the assistant's provider list)	ID do provedor predefinido (veja a lista de provedores do assistente)
+	Preset provider API key	Chave de API do provedor predefinido

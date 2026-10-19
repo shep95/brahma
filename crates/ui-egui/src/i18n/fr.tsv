@@ -3212,3 +3212,25 @@ curves	Smooth	Lisser
 	Comfortable	Confortable
 	Airy	Aéré
 	Corner Radius	Rayon des coins
+	API key	Clé API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Demandez une retouche, un regard ou un conseil. L'assistant peut exécuter chaque commande de brahma et voir la toile.
+	Assistant	Assistant
+	Base URL	URL de base
+	Clear the conversation	Effacer la conversation
+	Pick a provider and paste your API key in the setup rows above.	Choisissez un fournisseur et collez votre clé API dans les lignes de réglage ci-dessus.
+	Provider	Fournisseur
+	Provider and key	Fournisseur et clé
+	Send	Envoyer
+	Show it the canvas	Lui montrer la toile
+	Stopped after too many steps; ask again to continue.	Arrêté après trop d'étapes ; redemandez pour continuer.
+	Tell the assistant what to do…	Dites à l'assistant quoi faire…
+	This build has no network access for the assistant.	Cette version n'a pas d'accès réseau pour l'assistant.
+	Your key stays on this device and goes only to the provider you pick.	Votre clé reste sur cet appareil et ne va qu'au fournisseur choisi.
+	looked at the canvas	a regardé la toile
+	ran	a exécuté
+	read the document	a lu le document
+	ready	prêt
+	searched commands for	a cherché des commandes pour
+	thinking…	réfléchit…
+	Preset provider id (see the assistant's provider list)	Identifiant du fournisseur prédéfini (voir la liste des fournisseurs de l'assistant)
+	Preset provider API key	Clé API du fournisseur prédéfini

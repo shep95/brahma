@@ -2824,3 +2824,25 @@ curves	Smooth	平滑
 	Comfortable	舒适
 	Airy	宽松
 	Corner Radius	圆角半径
+	API key	API 密钥
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	可以请求修改、查看或建议。助手能运行 brahma 的每一条命令并看到画布。
+	Assistant	助手
+	Base URL	基础 URL
+	Clear the conversation	清除对话
+	Pick a provider and paste your API key in the setup rows above.	选择一个提供商，并把你的 API 密钥粘贴到上面的设置行中。
+	Provider	提供商
+	Provider and key	提供商与密钥
+	Send	发送
+	Show it the canvas	让它看画布
+	Stopped after too many steps; ask again to continue.	步骤过多已停止；再问一次即可继续。
+	Tell the assistant what to do…	告诉助手要做什么…
+	This build has no network access for the assistant.	此构建没有供助手使用的网络访问。
+	Your key stays on this device and goes only to the provider you pick.	你的密钥只保存在此设备上，仅发送给你选择的提供商。
+	looked at the canvas	查看了画布
+	ran	已运行
+	read the document	读取了文档
+	ready	就绪
+	searched commands for	搜索命令：
+	thinking…	思考中…
+	Preset provider id (see the assistant's provider list)	预设提供商 ID（见助手的提供商列表）
+	Preset provider API key	预设提供商 API 密钥

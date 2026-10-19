@@ -3199,3 +3199,25 @@ curves	Smooth	Haluskan
 	Comfortable	Nyaman
 	Airy	Lapang
 	Corner Radius	Radius Sudut
+	API key	Kunci API
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Minta suntingan, pandangan, atau saran. Asisten dapat menjalankan setiap perintah di brahma dan melihat kanvas.
+	Assistant	Asisten
+	Base URL	URL dasar
+	Clear the conversation	Hapus percakapan
+	Pick a provider and paste your API key in the setup rows above.	Pilih penyedia dan tempel kunci API Anda di baris pengaturan di atas.
+	Provider	Penyedia
+	Provider and key	Penyedia dan kunci
+	Send	Kirim
+	Show it the canvas	Tunjukkan kanvasnya
+	Stopped after too many steps; ask again to continue.	Berhenti setelah terlalu banyak langkah; tanya lagi untuk melanjutkan.
+	Tell the assistant what to do…	Beri tahu asisten apa yang harus dilakukan…
+	This build has no network access for the assistant.	Build ini tidak punya akses jaringan untuk asisten.
+	Your key stays on this device and goes only to the provider you pick.	Kunci Anda tetap di perangkat ini dan hanya dikirim ke penyedia yang Anda pilih.
+	looked at the canvas	melihat kanvas
+	ran	menjalankan
+	read the document	membaca dokumen
+	ready	siap
+	searched commands for	mencari perintah untuk
+	thinking…	berpikir…
+	Preset provider id (see the assistant's provider list)	ID penyedia prasetel (lihat daftar penyedia asisten)
+	Preset provider API key	Kunci API penyedia prasetel

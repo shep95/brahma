@@ -4281,3 +4281,25 @@ shape	Appearance	Izgled
 	Comfortable	Udobno
 	Airy	Prozračno
 	Corner Radius	Полупречник углова
+	API key	API кључ
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Затражите измену, поглед или савет. Асистент може да покрене сваку команду у brahma и види платно.
+	Assistant	Асистент
+	Base URL	Основни URL
+	Clear the conversation	Обриши разговор
+	Pick a provider and paste your API key in the setup rows above.	Изаберите провајдера и налепите свој API кључ у редове за подешавање изнад.
+	Provider	Провајдер
+	Provider and key	Провајдер и кључ
+	Send	Пошаљи
+	Show it the canvas	Покажи му платно
+	Stopped after too many steps; ask again to continue.	Заустављено након превише корака; питајте поново за наставак.
+	Tell the assistant what to do…	Реците асистенту шта да уради…
+	This build has no network access for the assistant.	Ова верзија нема мрежни приступ за асистента.
+	Your key stays on this device and goes only to the provider you pick.	Ваш кључ остаје на овом уређају и иде само изабраном провајдеру.
+	looked at the canvas	погледао платно
+	ran	покренуо
+	read the document	прочитао документ
+	ready	спремно
+	searched commands for	тражио команде за
+	thinking…	размишља…
+	Preset provider id (see the assistant's provider list)	ID унапред подешеног провајдера (види листу провајдера асистента)
+	Preset provider API key	API кључ унапред подешеног провајдера

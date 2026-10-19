@@ -4127,3 +4127,25 @@ cameraRaw	Yellow	Sárga
 	Comfortable	Kényelmes
 	Airy	Levegős
 	Corner Radius	Saroklekerekítés
+	API key	API-kulcs
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Kérj szerkesztést, egy pillantást vagy tanácsot. Az asszisztens minden brahma-parancsot futtathat és látja a vásznat.
+	Assistant	Asszisztens
+	Base URL	Alap URL
+	Clear the conversation	Beszélgetés törlése
+	Pick a provider and paste your API key in the setup rows above.	Válassz szolgáltatót, és illeszd be az API-kulcsod a fenti beállító sorokba.
+	Provider	Szolgáltató
+	Provider and key	Szolgáltató és kulcs
+	Send	Küldés
+	Show it the canvas	Mutasd neki a vásznat
+	Stopped after too many steps; ask again to continue.	Túl sok lépés után leállt; kérdezz újra a folytatáshoz.
+	Tell the assistant what to do…	Mondd meg az asszisztensnek, mit tegyen…
+	This build has no network access for the assistant.	Ennek a buildnek nincs hálózati hozzáférése az asszisztenshez.
+	Your key stays on this device and goes only to the provider you pick.	A kulcsod ezen az eszközön marad, és csak a választott szolgáltatóhoz jut el.
+	looked at the canvas	megnézte a vásznat
+	ran	futtatta:
+	read the document	elolvasta a dokumentumot
+	ready	kész
+	searched commands for	parancsokat keresett:
+	thinking…	gondolkodik…
+	Preset provider id (see the assistant's provider list)	Előre beállított szolgáltató azonosítója (lásd az asszisztens szolgáltatólistáját)
+	Preset provider API key	Előre beállított szolgáltató API-kulcsa

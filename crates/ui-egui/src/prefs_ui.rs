@@ -1060,6 +1060,8 @@ fn humanize(key: &str) -> String {
         "googleApiKey" => return "Google AI API key".into(),
         "customBaseUrl" => return "Custom endpoint base URL (OpenAI-compatible)".into(),
         "customApiKey" => return "Custom endpoint API key".into(),
+        "aiPreset" => return "Preset provider id (see the assistant's provider list)".into(),
+        "presetApiKey" => return "Preset provider API key".into(),
         "lightTheme" => return "Light Theme".into(),
         _ => {}
     }

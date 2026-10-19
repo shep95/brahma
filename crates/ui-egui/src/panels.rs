@@ -1730,6 +1730,11 @@ pub fn right_dock(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                         }
                     }
                 }
+                // The assistant lives beside the dock, not in it: its own button at the end.
+                ui.add_space(4.0);
+                if icons::rail_button(ui, "sparkles", rb, app.ui.assistant.open, tl!("Assistant")).clicked() {
+                    app.ui.assistant.open = !app.ui.assistant.open;
+                }
                 ui.ctx().data_mut(|d| d.insert_temp(drawer_id().with("rail"), ui.max_rect()));
             });
     }

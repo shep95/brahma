@@ -3938,3 +3938,25 @@ cameraData	Lens	Lens
 	Comfortable	Rahat
 	Airy	Ferah
 	Corner Radius	Köşe Yarıçapı
+	API key	API anahtarı
+	Ask for an edit, a look, or advice. The assistant can run every command in brahma and see the canvas.	Bir düzenleme, bakış ya da öneri isteyin. Asistan brahma'daki her komutu çalıştırabilir ve tuvali görebilir.
+	Assistant	Asistan
+	Base URL	Temel URL
+	Clear the conversation	Konuşmayı temizle
+	Pick a provider and paste your API key in the setup rows above.	Bir sağlayıcı seçin ve API anahtarınızı yukarıdaki kurulum satırlarına yapıştırın.
+	Provider	Sağlayıcı
+	Provider and key	Sağlayıcı ve anahtar
+	Send	Gönder
+	Show it the canvas	Tuvali göster
+	Stopped after too many steps; ask again to continue.	Çok fazla adımdan sonra durdu; devam etmek için yeniden sorun.
+	Tell the assistant what to do…	Asistana ne yapacağını söyleyin…
+	This build has no network access for the assistant.	Bu derlemede asistan için ağ erişimi yok.
+	Your key stays on this device and goes only to the provider you pick.	Anahtarınız bu cihazda kalır ve yalnızca seçtiğiniz sağlayıcıya gider.
+	looked at the canvas	tuvale baktı
+	ran	çalıştırdı:
+	read the document	belgeyi okudu
+	ready	hazır
+	searched commands for	komut aradı:
+	thinking…	düşünüyor…
+	Preset provider id (see the assistant's provider list)	Hazır sağlayıcı kimliği (asistanın sağlayıcı listesine bakın)
+	Preset provider API key	Hazır sağlayıcı API anahtarı
