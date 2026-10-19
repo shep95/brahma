@@ -3,12 +3,12 @@
 //! reference, and like the destructive command's result, for every kind with a dialog. Skips
 //! without an adapter that renders 32-bit float targets (like `crates/gpu/tests/parity.rs`).
 
-use eframe::wgpu;
 use brahma_color::{BlendMode, Color, ColorMode, PixelFormat, SampleType};
 use brahma_doc::{Document, Layer, LayerId, LayerMask, Size};
 use brahma_geom::Rect;
 use brahma_gpu::{Compositor, render_to_vec};
 use brahma_ui_egui::adjust_preview::{PREVIEW_LAYER, preview_document};
+use eframe::wgpu;
 use serde_json::{Value, json};
 
 fn block_on<F: std::future::Future>(f: F) -> F::Output {

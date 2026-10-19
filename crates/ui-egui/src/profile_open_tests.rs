@@ -4,13 +4,13 @@
 //! the next; Cancel opens neither it nor the files still to come.
 
 use crate::{BrahmaApp, Services};
+use brahma_doc::{Color, ColorMode, Document, SampleType, Size};
+use brahma_engine::Session;
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-use brahma_doc::{Color, ColorMode, Document, SampleType, Size};
-use brahma_engine::Session;
 use serde_json::Value;
 
 const USE: &str = "Use the embedded profile (Adobe RGB (1998)-compatible (brahma))";

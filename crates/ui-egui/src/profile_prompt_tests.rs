@@ -3,12 +3,12 @@
 //! one after another, even when an older one has been raised above the live one.
 
 use crate::{BrahmaApp, Services};
+use brahma_engine::Session;
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-use brahma_engine::Session;
 
 fn harness(background: bool) -> Harness<'static, BrahmaApp> {
     let mut h = Harness::builder().with_size(vec2(1400.0, 900.0)).with_max_steps(64).build_eframe(|cc| {

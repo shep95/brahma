@@ -1,7 +1,7 @@
 //! Real dialog/controller acceptance: interactions never make a second document edit path.
+use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, theme::ThemeKind};
 use egui::{Event, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, theme::ThemeKind};
 use serde_json::{Value, json};
 
 use brahma_testkit::gpu_lock;

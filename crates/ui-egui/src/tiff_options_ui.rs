@@ -5,7 +5,7 @@
 //! once answered: with the layers (Photoshop layer data in the file), or flattened ("Discard
 //! Layers and Save a Copy"). "Don't show again" clears the preference. Cancel drops the save.
 
-use crate::{ExportSettings, BrahmaApp};
+use crate::{BrahmaApp, ExportSettings};
 
 /// A save waiting on the TIFF Options answer.
 pub struct Prompt {

@@ -102,16 +102,7 @@ fn ai_status(s: &mut Session, _: &Value) -> Result<Value> {
 }
 
 pub fn specs() -> Vec<CommandSpec> {
-    vec![CommandSpec {
-        id: "ai.status",
-        label: "AI Status",
-        menu: &[],
-        shortcut: None,
-        params: r##"{}"##,
-        enabled: always,
-        run: ai_status,
-        journal: false,
-    }]
+    vec![CommandSpec { id: "ai.status", label: "AI Status", menu: &[], shortcut: None, params: r##"{}"##, enabled: always, run: ai_status, journal: false }]
 }
 
 #[cfg(test)]

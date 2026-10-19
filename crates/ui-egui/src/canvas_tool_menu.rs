@@ -1,9 +1,9 @@
 //! Canvas context menus for the selection tools, the Pen, the Zoom and Hand tools, an active Free
 //! Transform box, text being edited with a Type tool, the pasteboard (outside the image) and a guide.
 
-use egui::Context;
 use brahma_doc::LayerContent;
 use brahma_engine::prefs::{self, CanvasColor};
+use egui::Context;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

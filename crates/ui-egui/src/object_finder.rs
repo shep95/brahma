@@ -13,10 +13,10 @@
 
 use std::sync::Arc;
 
-use egui::{Color32, TextureOptions, pos2};
 use brahma_algo::selection::Region;
 use brahma_doc::{DocId, Document, LayerId};
 use brahma_engine::smartselect_cmds::{find_object, sampled_target};
+use egui::{Color32, TextureOptions, pos2};
 
 use crate::BrahmaApp;
 use crate::canvas::ViewXform;

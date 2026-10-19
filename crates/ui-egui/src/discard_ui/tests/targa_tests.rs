@@ -2,8 +2,8 @@
 //! `tgaBits` that skips it, and the close prompt waiting behind it.
 use super::*;
 use crate::{FileDialogAnswer, targa_options_ui};
-use egui_kittest::kittest::Queryable;
 use brahma_io::TgaBits;
+use egui_kittest::kittest::Queryable;
 use std::{cell::RefCell, rc::Rc};
 
 /// Each write: the path, and the Targa bits the export was asked for (as JSON).

@@ -1,7 +1,7 @@
-use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
-use egui_kittest::Harness;
 use brahma_color::{Color, ColorMode};
 use brahma_doc::{Fill, LayerContent, LayerId};
+use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
+use egui_kittest::Harness;
 use serde_json::json;
 
 use super::*;

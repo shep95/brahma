@@ -6,9 +6,9 @@ use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-use egui::Color32;
 use brahma_engine::BrushSettings;
 use brahma_engine::paint::{self, Pattern, StrokePoint, TipShape};
+use egui::Color32;
 
 /// Values cached per named slot, each tagged with the signature it was rendered for. A slot holds
 /// one value, so dragging a slider replaces the slot's texture instead of piling up new ones.

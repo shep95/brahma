@@ -19,6 +19,7 @@ pub mod adjust_dialog;
 pub mod adjust_editors;
 pub mod adjust_preview;
 pub mod adjust_ui;
+pub mod aesthetic_ui;
 mod alt_grab;
 pub mod analysis_ui;
 pub mod anchor_tools;
@@ -131,8 +132,8 @@ pub mod menu_catalog;
 pub mod menu_keys;
 pub mod menu_nav;
 pub mod menus;
-pub mod motion;
 pub mod monitor_status;
+pub mod motion;
 pub mod move_box;
 pub mod move_hover;
 pub mod move_lock;
@@ -282,6 +283,8 @@ pub struct ExportSettings {
     /// Embed EXIF, resolution and other non-XMP metadata when the format supports it. Export As
     /// turns this off for Metadata: None; Save As leaves it on.
     pub embed_metadata: bool,
+    /// Flat formats: round the corners by this many pixels of the exported image (0 = square).
+    pub corner_radius: f32,
 }
 
 impl Default for ExportSettings {
@@ -297,6 +300,7 @@ impl Default for ExportSettings {
             psd_maximize_compatibility: true,
             embed_icc: true,
             embed_metadata: true,
+            corner_radius: 0.0,
         }
     }
 }
@@ -320,6 +324,7 @@ impl ExportSettings {
         opts.tga_bits = self.tga_bits;
         opts.image_previews = self.image_previews;
         opts.psd_maximize_compatibility = self.psd_maximize_compatibility;
+        opts.corner_radius = self.corner_radius;
         opts
     }
 }
@@ -1948,6 +1953,7 @@ impl eframe::App for BrahmaApp {
         gradient_ui::editor_window(self, &ctx);
         type_panels_ui::windows(self, &ctx);
         analysis_ui::windows(self, &ctx);
+        aesthetic_ui::window(self, &ctx);
         timeline_ui::windows(self, &ctx);
         workspace_ui::windows(self, &ctx);
         palette::show(self, &ctx);
@@ -2972,8 +2978,8 @@ mod clipboard_tests {
 #[cfg(test)]
 mod channel_tint_tests {
     use super::channel_tint;
-    use egui::Color32;
     use brahma_doc::ColorMode::{Cmyk, Grayscale, Rgb};
+    use egui::Color32;
 
     #[test]
     fn channels_in_color_tint_rgb_from_black_and_cmyk_inks_from_white() {

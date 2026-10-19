@@ -1,6 +1,6 @@
+use brahma_engine::paint::{Control, GrayTile, MaskMode, Pattern, PatternStyle, TipShape};
 use egui::vec2;
 use egui_kittest::Harness;
-use brahma_engine::paint::{Control, GrayTile, MaskMode, Pattern, PatternStyle, TipShape};
 
 use super::*;
 

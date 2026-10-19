@@ -55,8 +55,7 @@ fn open_photo(w: u32, h: u32) -> Res<Session> {
             }
         }
     });
-    let img =
-        brahma_codecs::Image::from_raw(w, h, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, px).map_err(|e| e.to_string())?;
+    let img = brahma_codecs::Image::from_raw(w, h, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, px).map_err(|e| e.to_string())?;
     let jpeg = brahma_codecs::encode(&img, brahma_codecs::Format::Jpeg, &Default::default()).map_err(|e| e.to_string())?;
     let doc = brahma_io::import("photo.jpg", &jpeg).map_err(|e| e.to_string())?.document;
     let mut s = Session::new();

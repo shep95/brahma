@@ -5,10 +5,10 @@ mod common;
 
 use std::sync::Arc;
 
-use common::*;
 use brahma_cms::{Builtin, ColorSpace, Profile};
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::*;
+use common::*;
 
 fn single(mode: ColorMode, depth: SampleType, alpha: bool) -> brahma_doc::Document {
     let mut d = brahma_doc::Document::new("s", brahma_geom::Size::new(9, 6), mode, depth);
@@ -87,13 +87,8 @@ fn cmyk_to_png_is_colour_managed_and_tagged_srgb() {
 #[test]
 fn cmyk_fills_survive_psd_roundtrip_at_every_depth() {
     use brahma_doc::{Color, Document, Fill, GradientStyle, Layer, LayerContent};
-    let icc = brahma_cms::synth::cmyk_profile(&brahma_cms::synth::CmykParams {
-        tvi: [0.26, 0.26, 0.26, 0.3],
-        grid_a2b: 5,
-        grid_b2a: 9,
-        ..Default::default()
-    })
-    .to_bytes();
+    let icc = brahma_cms::synth::cmyk_profile(&brahma_cms::synth::CmykParams { tvi: [0.26, 0.26, 0.26, 0.3], grid_a2b: 5, grid_b2a: 9, ..Default::default() })
+        .to_bytes();
     let a = Color { mode: ColorMode::Cmyk, c: [0.2, 0.4, 0.6, 0.3], alpha: 0.7 };
     let b = Color { mode: ColorMode::Cmyk, c: [0.6, 0.2, 0.3, 0.1], alpha: 0.4 };
     for depth in SampleType::ALL {

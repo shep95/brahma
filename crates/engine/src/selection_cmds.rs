@@ -764,12 +764,7 @@ mod tests {
     fn selection_sampling_refuses_oversized_canvases_before_reading_pixels() {
         let mut s = Session::new();
         s.add_document(
-            brahma_doc::Document::new(
-                "large",
-                brahma_geom::Size::new(300_000, 300_000),
-                brahma_color::ColorMode::Rgb,
-                brahma_color::SampleType::U8,
-            ),
+            brahma_doc::Document::new("large", brahma_geom::Size::new(300_000, 300_000), brahma_color::ColorMode::Rgb, brahma_color::SampleType::U8),
             None,
         );
         for all_layers in [false, true] {
@@ -795,12 +790,7 @@ mod tests {
     #[test]
     fn modify_rejects_oversized_canvases_before_reading_the_mask() {
         let mut s = Session::new();
-        let mut doc = brahma_doc::Document::new(
-            "large",
-            brahma_geom::Size::new(300_000, 300_000),
-            brahma_color::ColorMode::Rgb,
-            brahma_color::SampleType::U8,
-        );
+        let mut doc = brahma_doc::Document::new("large", brahma_geom::Size::new(300_000, 300_000), brahma_color::ColorMode::Rgb, brahma_color::SampleType::U8);
         let mut selection = brahma_raster::Surface::new(brahma_color::PixelFormat::GRAY8);
         selection.write_pixel(0, 0, &[1.0]);
         doc.selection = Some(selection);

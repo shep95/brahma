@@ -4,9 +4,9 @@
 //! (`slice.new`, `slice.set`, `slice.promote`, `slice.divide`, `slice.delete`); this module only
 //! turns pointer gestures into them.
 
-use egui::{Color32, Rect, Stroke, vec2};
 use brahma_doc::slices::{self, ResolvedSlice};
 use brahma_doc::{Document, SliceOrigin};
+use egui::{Color32, Rect, Stroke, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

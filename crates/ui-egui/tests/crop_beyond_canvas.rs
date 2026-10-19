@@ -9,10 +9,10 @@
 //! The real app runs offscreen on wgpu with real egui pointer events; the test reads the rendered
 //! pixels. Skips when no GPU adapter exists (like `drag_preview_canvas.rs`).
 
-use egui::{Key, Modifiers, PointerButton, Pos2};
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::control::{ControlRequest, handle};
+use egui::{Key, Modifiers, PointerButton, Pos2};
 use serde_json::{Value, json};
 
 type Harness = egui_kittest::Harness<'static, BrahmaApp>;

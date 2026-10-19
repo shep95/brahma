@@ -13,8 +13,8 @@
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
-use egui::{Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::{DocId, Document};
+use egui::{Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;
@@ -747,12 +747,12 @@ fn order(f: &Map<String, Value>, add: usize, sub: usize) -> Option<Value> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use brahma_doc::{Color, ColorMode, SampleType, Size};
+    use brahma_geom::Rect as GRect;
     use egui_kittest::{
         Harness,
         kittest::{NodeT, Queryable},
     };
-    use brahma_doc::{Color, ColorMode, SampleType, Size};
-    use brahma_geom::Rect as GRect;
 
     /// 40 × 30: red block (0..20, 0..15), blue block (20..40, 0..15), black and white below.
     fn app_with_doc() -> BrahmaApp {

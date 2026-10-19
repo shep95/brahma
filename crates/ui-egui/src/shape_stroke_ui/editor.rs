@@ -1,6 +1,6 @@
 //! A live, locally owned popup: egui's memory popup slot belongs to its child ComboBoxes.
-use egui::{Rect, Sense, Stroke, pos2, vec2};
 use brahma_doc::{LineCap, LineJoin, StrokeAlign};
+use egui::{Rect, Sense, Stroke, pos2, vec2};
 use serde::{Deserialize, Serialize};
 
 use super::StrokeOptions;
@@ -330,12 +330,7 @@ fn paint_sample(ui: &egui::Ui, rect: Rect, id: egui::Id, options: &StrokeOptions
             path,
             stroke: Some(sample.stroke(
                 2.5 * scale,
-                brahma_doc::Fill::Solid(brahma_doc::Color::rgba(
-                    f32::from(color.r()) / 255.0,
-                    f32::from(color.g()) / 255.0,
-                    f32::from(color.b()) / 255.0,
-                    1.0,
-                )),
+                brahma_doc::Fill::Solid(brahma_doc::Color::rgba(f32::from(color.r()) / 255.0, f32::from(color.g()) / 255.0, f32::from(color.b()) / 255.0, 1.0)),
             )),
             ..Default::default()
         };

@@ -789,9 +789,7 @@ impl Ex {
             let item = match (sm.stack_mode, self.source_composite(&src.uuid)) {
                 (None, Some((img, img_bounds))) => {
                     let unfiltered = match &sm.perspective {
-                        Some(p) => {
-                            brahma_algo::warp::place_source_projective(&img, img_bounds, &brahma_algo::transform::Homography(*p), sm.warp.as_ref())
-                        }
+                        Some(p) => brahma_algo::warp::place_source_projective(&img, img_bounds, &brahma_algo::transform::Homography(*p), sm.warp.as_ref()),
                         None => brahma_algo::warp::place_source(&img, img_bounds, &sm.transform, sm.warp.as_ref()),
                     };
                     match unfiltered {
@@ -832,11 +830,7 @@ impl Ex {
             blocks::PlldWarp::None => None,
             blocks::PlldWarp::Warp(w) => Some(w),
         };
-        if sm.source != (brahma_doc::SmartSource::Linked { path: id.clone() })
-            || sm.warp != warp
-            || !sm.smart_filters.is_empty()
-            || sm.filter_mask.is_some()
-        {
+        if sm.source != (brahma_doc::SmartSource::Linked { path: id.clone() }) || sm.warp != warp || !sm.smart_filters.is_empty() || sm.filter_mask.is_some() {
             return true;
         }
         // Placed as the importer places it (the same source size, from the same file, and the
@@ -986,8 +980,7 @@ impl Ex {
             (format!("{stem}.psb"), data, size, f64::from(doc.resolution_dpi), Some(doc))
         } else {
             // Formats we can't decode (vector PDF/AI…) are still embedded; their size comes from the layer.
-            let (size, dpi) =
-                crate::linked::source_geometry(file_name, bytes, &brahma_raster::Interrupt::NONE).unwrap_or(((0.0, 0.0), f64::from(self.dpi)));
+            let (size, dpi) = crate::linked::source_geometry(file_name, bytes, &brahma_raster::Interrupt::NONE).unwrap_or(((0.0, 0.0), f64::from(self.dpi)));
             (file_name.to_string(), bytes.to_vec(), size, dpi, None)
         };
         let uuid = contents_uuid(contents_id, &data);
@@ -1009,8 +1002,7 @@ impl Ex {
             return c.surface.clone();
         }
         if self.cmyk
-            && let Some(s) =
-                brahma_compose::gradient_fill::render_cmyk_fill(f, self.canvas, brahma_compose::fill_frame(l, self.canvas), self.fmt.sample)
+            && let Some(s) = brahma_compose::gradient_fill::render_cmyk_fill(f, self.canvas, brahma_compose::fill_frame(l, self.canvas), self.fmt.sample)
         {
             return s;
         }
@@ -1693,8 +1685,7 @@ fn document_to_psd_nested(doc: &Document, opts: &PsdExportOptions, depth: u32, c
     // writes its empty `<< /0 << >> >>` stub — readers such as Photopea reject it (#3514). Keep the
     // block when the file had one (round-trip its pen positions/extras) or a layer is Optical (the
     // one mode EngineData can't carry; #1348).
-    let txt2 =
-        (previous.is_some() || brahma_text::psd::needs_txt2(&text_layers)).then(|| brahma_text::psd::build_txt2(&text_layers, previous.as_deref()));
+    let txt2 = (previous.is_some() || brahma_text::psd::needs_txt2(&text_layers)).then(|| brahma_text::psd::build_txt2(&text_layers, previous.as_deref()));
     for (sig, key, data) in preserved {
         if txt2.is_some() && key == *b"Txt2" {
             continue;
@@ -1914,8 +1905,7 @@ mod tests {
     fn photo_filter_psd_is_four_byte_aligned_and_round_trips() {
         let color = [60000u16, 30000, 0].map(|x| x as f32 / 65535.0);
         let adjustment = brahma_doc::Adjustment::PhotoFilter { color, density: 0.14, preserve_luminosity: true };
-        let mut doc =
-            Document::with_background("Photo Filter PSD", brahma_geom::Size::new(32, 24), ColorMode::Rgb, SampleType::U8, brahma_doc::Color::WHITE);
+        let mut doc = Document::with_background("Photo Filter PSD", brahma_geom::Size::new(32, 24), ColorMode::Rgb, SampleType::U8, brahma_doc::Color::WHITE);
         let mut layer = Layer::new("Warming Filter", LayerContent::Adjustment(adjustment.clone()));
         doc.layers.push(layer.clone());
 
@@ -1955,8 +1945,7 @@ mod tests {
         let v3 = vec![0, 3, 0, 0, 0x5e, 0x7f, 0, 0, 0x61, 0xaa, 0, 0, 0x0e, 0xf3, 0, 0, 0, 0x3f, 1, 0];
         let adjustment = crate::adjust_map::parse(b"phfl", &v3, None, crate::adjust_map::Channels::Rgb);
         let brahma_doc::Adjustment::PhotoFilter { color, .. } = adjustment else { panic!("{adjustment:?}") };
-        let mut doc =
-            Document::with_background("Photo Filter v3", brahma_geom::Size::new(8, 8), ColorMode::Rgb, SampleType::U8, brahma_doc::Color::WHITE);
+        let mut doc = Document::with_background("Photo Filter v3", brahma_geom::Size::new(8, 8), ColorMode::Rgb, SampleType::U8, brahma_doc::Color::WHITE);
         let mut layer = Layer::new("Photo Filter 1", LayerContent::Adjustment(adjustment.clone()));
         layer.psd_blocks = vec![(*b"phfl", std::sync::Arc::new(v3.clone()))];
         doc.layers.push(layer);

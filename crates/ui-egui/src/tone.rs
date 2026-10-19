@@ -6,9 +6,9 @@
 
 use std::sync::Arc;
 
-use egui::{Color32, Rect, Sense, vec2};
 use brahma_doc::adjust::ToneSpace;
 use brahma_doc::{Document, Layer, LayerId};
+use egui::{Color32, Rect, Sense, vec2};
 
 use crate::BrahmaApp;
 use crate::theme::Tokens;

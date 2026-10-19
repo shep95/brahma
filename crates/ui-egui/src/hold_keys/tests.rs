@@ -2,9 +2,9 @@
 //! and ⌘Space / ⌥Space are temporary Hand / Zoom tools that give the tool back, D / X and the
 //! fill keys are commands whose Keyboard Shortcuts overrides replace the defaults.
 
+use brahma_geom::Rect;
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
-use brahma_geom::Rect;
 use serde_json::json;
 
 use super::*;

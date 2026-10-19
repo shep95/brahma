@@ -18,6 +18,7 @@ brahma-doc = { workspace = true }
 brahma-compose = { workspace = true }
 brahma-gpu = { workspace = true }
 brahma-engine = { workspace = true }
+brahma-aesthetic = { workspace = true }
 brahma-io = { workspace = true }
 brahma-plugins = { workspace = true }
 brahma-algo = { workspace = true }

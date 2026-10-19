@@ -15,10 +15,10 @@
 
 use std::time::Instant;
 
-use eframe::wgpu;
 use brahma_color::{BlendMode, Color};
 use brahma_doc::{Bevel, BevelStyle, BevelTechnique, Contour, Document, Effect, FxCommon, LayerContent};
 use brahma_geom::Rect;
+use eframe::wgpu;
 use serde_json::json;
 
 const SIZES: [u32; 3] = [8, 50, 250];

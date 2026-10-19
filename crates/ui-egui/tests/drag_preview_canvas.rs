@@ -12,10 +12,10 @@
 //! move (each move's frame shows the new outline) and that the animated ants keep frames coming
 //! while the pointer is held still. Skips when no GPU adapter exists (like `live_stroke_canvas.rs`).
 
-use egui::{Modifiers, PointerButton, Pos2};
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::control::{ControlRequest, handle};
+use egui::{Modifiers, PointerButton, Pos2};
 use serde_json::{Value, json};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

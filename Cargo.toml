@@ -18,6 +18,7 @@ brahma-cms = { path = "crates/cms" }
 brahma-raster = { path = "crates/raster" }
 brahma-doc = { path = "crates/doc" }
 brahma-ops = { path = "crates/ops" }
+brahma-aesthetic = { path = "crates/aesthetic" }
 brahma-psd = { path = "crates/psd" }
 brahma-codecs = { path = "crates/codecs" }
 brahma-raw = { path = "crates/raw" }

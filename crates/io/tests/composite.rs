@@ -3,10 +3,10 @@
 
 mod common;
 
-use common::*;
 use brahma_color::{BlendMode, ColorMode, SampleType};
 use brahma_io::*;
 use brahma_psd::{PixelData, PsdBuilder, PsdFile};
+use common::*;
 
 const TOL: f32 = 1.0 / 255.0 + 1e-4;
 

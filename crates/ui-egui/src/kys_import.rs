@@ -194,9 +194,7 @@ pub fn show_offer(app: &mut BrahmaApp, ctx: &egui::Context) {
     let Some(offer) = &app.ui.kys_offer else { return };
     let n = offer.changes.to_string();
     let line = crate::i18n::fmt(
-        tl!(
-            "brahma found your keyboard shortcut set {set} from another image editor on this computer: {n} of its shortcuts differ from brahma's. Import it?"
-        ),
+        tl!("brahma found your keyboard shortcut set {set} from another image editor on this computer: {n} of its shortcuts differ from brahma's. Import it?"),
         &[("set", &offer.set), ("n", &n)],
     );
     let mut answer = None;

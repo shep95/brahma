@@ -19,9 +19,9 @@
 //! `tools.setBrush` ([`crate::brush_panel::commit_gesture`]) and applies the returned [`Pick`]s
 //! with [`apply`], so every change is a journaled command (Rule 1).
 
-use egui::{CursorIcon, RichText, Stroke, vec2};
 use brahma_engine::BrushSettings;
 use brahma_engine::paint::{BrushPreset, MAX_BRUSH_SIZE, TipShape};
+use egui::{CursorIcon, RichText, Stroke, vec2};
 use serde_json::{Value, json};
 
 use crate::brush_panel::{BrushesPanelState, Renaming};

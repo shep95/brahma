@@ -316,12 +316,8 @@ pub fn load_bytes(app: &mut BrahmaApp, name: &str, bytes: &[u8]) -> Result<Value
         crate::i18n::fmt(&crate::i18n::trn(crate::i18n::current(), n, "Loaded {n} action from {file}", "Loaded {n} actions from {file}"), &[("file", &shown)]);
     app.ui.status_error = false;
     app.ui.status = if unsupported > 0 {
-        let note = crate::i18n::trn(
-            crate::i18n::current(),
-            unsupported as u64,
-            "{n} step has no brahma equivalent yet",
-            "{n} steps have no brahma equivalent yet",
-        );
+        let note =
+            crate::i18n::trn(crate::i18n::current(), unsupported as u64, "{n} step has no brahma equivalent yet", "{n} steps have no brahma equivalent yet");
         let template = "{message} ({note})";
         crate::i18n::fmt(tl!(template), &[("message", &loaded), ("note", &note)])
     } else {
@@ -1360,9 +1356,7 @@ mod tests {
         let written = std::rc::Rc::new(std::cell::RefCell::new(Vec::<String>::new()));
         let log = written.clone();
         let services = crate::Services {
-            export: Some(Box::new(|doc, path, _| {
-                brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string())
-            })),
+            export: Some(Box::new(|doc, path, _| brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string()))),
             write: Some(Box::new(move |path, _| {
                 log.borrow_mut().push(path.to_string());
                 Ok(())
@@ -1393,9 +1387,7 @@ mod tests {
             import: Some(Box::new(|name, bytes, depth| {
                 brahma_io::import_with_svg_group_depth(name, bytes, depth).map(|r| (r.document, r.warnings)).map_err(|e| e.to_string())
             })),
-            export: Some(Box::new(|doc, path, _| {
-                brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string())
-            })),
+            export: Some(Box::new(|doc, path, _| brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string()))),
             write: Some(Box::new(|path, bytes| std::fs::write(path, bytes).map_err(|e| e.to_string()))),
             file_dialog: Some(crate::file_dialog::fake(answers).0),
             ..Default::default()

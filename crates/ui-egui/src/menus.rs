@@ -71,6 +71,7 @@ pub const UI_COMMANDS: &[(&str, &str, &[&str], Option<&str>)] = &[
     ("window.toggle.color", "Color", &["Window"], Some("F6")),
     ("window.toggle.brushSettings", "Brush Settings", &["Window"], Some("F5")),
     ("window.toggle.brushes", "Brushes", &["Window"], None),
+    ("window.toggle.aestheticAdvisor", "Aesthetic Advisor", &["Window"], None),
     ("window.toggle.navigator", "Navigator", &["Window"], None),
     ("window.toggle.toolbar", "Tools", &["Window"], None),
     // Photoshop's Tab and ⇧Tab: all panels (Tools, options bar and the dock), or only the dock.
@@ -574,8 +575,7 @@ pub(crate) fn invoke_unguarded(app: &mut BrahmaApp, ctx: &egui::Context, id: &st
                     let v = &app.ui.views[i];
                     let pz = app.point_zoom();
                     let (hw, hh) = (app.last_canvas_rect.width() / 2.0 / pz / app.ui.view.display_aspect(), app.last_canvas_rect.height() / 2.0 / pz);
-                    let r =
-                        brahma_geom::Rect::new((v.center[0] - hw) as i32, (v.center[1] - hh) as i32, (v.center[0] + hw) as i32, (v.center[1] + hh) as i32);
+                    let r = brahma_geom::Rect::new((v.center[0] - hw) as i32, (v.center[1] - hh) as i32, (v.center[0] + hw) as i32, (v.center[1] + hh) as i32);
                     !clip.bounds.intersect(&r).is_empty()
                 });
             let p = match app.session.active_index() {
@@ -698,6 +698,7 @@ pub(crate) fn invoke_unguarded(app: &mut BrahmaApp, ctx: &egui::Context, id: &st
                 "brushSettings" => &mut p.brush_settings,
                 "brushes" => &mut p.brushes,
                 "dock" => &mut p.dock,
+                "aestheticAdvisor" => &mut app.ui.aesthetic.open,
                 _ => return Err(format!("unknown panel in {t}")),
             };
             *slot = !*slot;
@@ -907,6 +908,7 @@ fn checked(app: &BrahmaApp, id: &str) -> Option<bool> {
         "window.toggle.options" => p.options_bar,
         "window.toggle.brushSettings" => p.brush_settings,
         "window.toggle.brushes" => p.brushes,
+        "window.toggle.aestheticAdvisor" => app.ui.aesthetic.open,
         _ => return None,
     })
 }

@@ -11,7 +11,31 @@
 const CACHE = 'brahma-site-v1';
 const IMMUTABLE = /\.(wasm|js|woff2?|ttf|otf|png)$/;
 
-self.addEventListener('install', () => self.skipWaiting());
+// On install, cache the page and everything it references (the hashed js and wasm, the
+// manifest, the icons), so the app starts offline after the very first visit, not the second.
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    try {
+      const cache = await caches.open(CACHE);
+      const index = new URL('./index.html', self.location).href;
+      const res = await fetch(index, { cache: 'no-cache' });
+      if (!res.ok) return;
+      await cache.put(index, res.clone());
+      const html = await res.text();
+      const urls = new Set();
+      for (const m of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+        const u = new URL(m[1], self.location);
+        if (u.origin === self.location.origin && /\.(js|wasm|webmanifest|png)$/.test(u.pathname)) urls.add(u.href);
+      }
+      await Promise.all([...urls].map(async (u) => {
+        try { const r = await fetch(u); if (r.ok) await cache.put(u, r); } catch (e) { /* cached on first use instead */ }
+      }));
+    } catch (e) {
+      // Offline during install: the fetch handler fills the cache on first use.
+    }
+    await self.skipWaiting();
+  })());
+});
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {

@@ -1,8 +1,8 @@
 //! Chrome around the canvas: title bar, options bar, toolbar, status bar, dock cards, Properties.
 
-use egui::{Align2, Color32, CornerRadius, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_color::BlendMode;
 use brahma_doc::{Layer, LayerContent, LayerId};
+use egui::{Align2, Color32, CornerRadius, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::mask_thumbs_ui::MaskKind;
@@ -786,10 +786,7 @@ mod title_tests {
     }
 
     fn open_named(app: &mut crate::BrahmaApp, name: &str) {
-        app.session.add_document(
-            brahma_doc::Document::new(name, brahma_doc::Size::new(4, 4), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8),
-            None,
-        );
+        app.session.add_document(brahma_doc::Document::new(name, brahma_doc::Size::new(4, 4), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8), None);
     }
 
     #[test]
@@ -1771,36 +1768,37 @@ fn compact_drawer(app: &mut BrahmaApp, ui: &mut egui::Ui, t: &Tokens) {
     let x = if rtl { avail.left() - width * (1.0 - how) } else { avail.right() - width * how };
     let rect = Rect::from_min_size(pos2(x, avail.top()), vec2(width, avail.height()));
     ctx.data_mut(|d| d.insert_temp(drawer_id().with("rect"), rect));
-    egui::Area::new(drawer_id().with("area"))
-        .order(egui::Order::Middle)
-        .fixed_pos(rect.min)
-        .constrain(false)
-        .interactable(true)
-        .show(&ctx, |ui| {
-            ui.set_clip_rect(rect.intersect(ctx.content_rect()));
-            // A soft edge on the canvas side so the drawer reads as a layer above the image.
-            let edge = if rtl { rect.right() } else { rect.left() };
-            for i in 0..6 {
-                let a = (6 - i) as f32 * 9.0 * how;
-                let off = i as f32;
-                let xx = if rtl { edge + off } else { edge - off };
-                ui.painter().line_segment([pos2(xx, rect.top()), pos2(xx, rect.bottom())], Stroke::new(1.0, Color32::from_black_alpha(a as u8)));
-            }
-            egui::Frame::NONE.fill(t.dock).inner_margin(egui::Margin::same(2)).show(ui, |ui| {
-                ui.set_min_size(rect.size() - vec2(4.0, 4.0));
-                ui.set_max_size(rect.size() - vec2(4.0, 4.0));
-                crate::dock::show(app, ui, &[g], dock_body);
-            });
-        });
-    // A press outside the drawer and the rail closes it (the press still reaches what it hit).
-    if open.is_some()
-        && let Some(p) = ctx.input(|i| i.pointer.any_pressed().then(|| i.pointer.press_origin()).flatten())
-    {
-        let rail = ctx.data(|d| d.get_temp::<Rect>(drawer_id().with("rail"))).unwrap_or(Rect::NOTHING);
-        if !rect.contains(p) && !rail.contains(p) && !ctx.egui_is_using_pointer() {
+    // A backdrop over the canvas while the drawer is open: a press there closes the drawer and
+    // goes no further, so dismissing it never paints a dab or moves a layer underneath.
+    if open.is_some() {
+        let backdrop = egui::Area::new(drawer_id().with("backdrop")).order(egui::Order::Middle).fixed_pos(avail.min).constrain(false).interactable(true).show(
+            &ctx,
+            |ui| {
+                let (r, resp) = ui.allocate_exact_size(avail.size(), Sense::click());
+                ui.painter().rect_filled(r, 0.0, Color32::from_black_alpha((40.0 * how) as u8));
+                resp
+            },
+        );
+        if backdrop.inner.clicked() {
             set_drawer(app, &ctx, None);
         }
     }
+    egui::Area::new(drawer_id().with("area")).order(egui::Order::Middle).fixed_pos(rect.min).constrain(false).interactable(true).show(&ctx, |ui| {
+        ui.set_clip_rect(rect.intersect(ctx.content_rect()));
+        // A soft edge on the canvas side so the drawer reads as a layer above the image.
+        let edge = if rtl { rect.right() } else { rect.left() };
+        for i in 0..6 {
+            let a = (6 - i) as f32 * 9.0 * how;
+            let off = i as f32;
+            let xx = if rtl { edge + off } else { edge - off };
+            ui.painter().line_segment([pos2(xx, rect.top()), pos2(xx, rect.bottom())], Stroke::new(1.0, Color32::from_black_alpha(a as u8)));
+        }
+        egui::Frame::NONE.fill(t.dock).inner_margin(egui::Margin::same(2)).show(ui, |ui| {
+            ui.set_min_size(rect.size() - vec2(4.0, 4.0));
+            ui.set_max_size(rect.size() - vec2(4.0, 4.0));
+            crate::dock::show(app, ui, &[g], dock_body);
+        });
+    });
 }
 
 /// The dock's width range (points). It is the right dock, on the left in a right-to-left UI.
@@ -4002,15 +4000,7 @@ fn background_drop_refused(doc: &brahma_doc::Document, payload: &Value, target: 
 /// Drag a layer row to reorder: drop above, below, or inside an existing group. With ⌥ held on
 /// release the layers stay put and copies land there instead (Photoshop).
 /// Multi-layer moves are atomic (one undo step), using the engine's stable document order.
-fn layer_drag_and_drop(
-    app: &BrahmaApp,
-    ctx: &egui::Context,
-    ui: &egui::Ui,
-    l: &Layer,
-    rect: Rect,
-    resp: &egui::Response,
-    actions: &mut Vec<(String, Value)>,
-) {
+fn layer_drag_and_drop(app: &BrahmaApp, ctx: &egui::Context, ui: &egui::Ui, l: &Layer, rect: Rect, resp: &egui::Response, actions: &mut Vec<(String, Value)>) {
     let t = Tokens::get(ctx);
     let key = egui::Id::new("layer-drag");
     // A drag from the mask thumbnail (`starts_mask_drag`) moves the mask, not the layer.
@@ -4393,9 +4383,8 @@ mod color_tests {
             let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
             app.session.tools.foreground = [1.0, 0.0, 0.0, 1.0];
             app.session.tools.background = [0.0, 0.0, 1.0, 1.0];
-            let mut h = egui_kittest::Harness::builder()
-                .with_size(vec2(80.0, 120.0))
-                .build_ui_state(|ui, app: &mut BrahmaApp| color_chips(app, ui, two_columns), app);
+            let mut h =
+                egui_kittest::Harness::builder().with_size(vec2(80.0, 120.0)).build_ui_state(|ui, app: &mut BrahmaApp| color_chips(app, ui, two_columns), app);
             BrahmaApp::setup_context(&h.ctx, kind);
             h.run_steps(2);
             h.get_by_label("Swap colours (X)").click();
@@ -4804,8 +4793,7 @@ mod snapshot_row_tests {
         app.run("history.newSnapshot", json!({})).unwrap();
         app.run("edit.fill", json!({"color": "#0000ff"})).unwrap();
         // 60 fps steps, so two clicks a frame apart count as a double-click.
-        let mut h =
-            Harness::builder().with_size(vec2(300.0, 400.0)).with_step_dt(1.0 / 60.0).build_ui_state(|ui, app: &mut BrahmaApp| history(app, ui), app);
+        let mut h = Harness::builder().with_size(vec2(300.0, 400.0)).with_step_dt(1.0 / 60.0).build_ui_state(|ui, app: &mut BrahmaApp| history(app, ui), app);
         h.run_steps(3);
         let steps = h.state().session.active().unwrap().history.entries().len();
         h.get_by_label("Snapshot 1").click();

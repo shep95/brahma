@@ -4149,3 +4149,24 @@ navigator	Zoom	Zoom
 	Model (blank = provider default)	Modelo (vacío = predeterminado del proveedor)
 	OpenAI API key	Clave API de OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Asesor estético
+	Feeling	Sensación
+	Build around the foreground color	Construir alrededor del color frontal
+	Touch screen	Pantalla táctil
+	Recommend	Recomendar
+	Read the document	Leer el documento
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Medir luminosidad, contraste, bordes y tonos de la imagen abierta y recomendar a partir de lo que ya dice
+	Click a swatch to make it the foreground color	Haz clic en una muestra para convertirla en color frontal
+	The document reads as	El documento se lee como
+	Color scheme	Esquema de color
+	Placement and measurement	Colocación y medidas
+	From the research	De la investigación
+	Neutral	Neutral
+	Trust	Confianza
+	Calm	Calma
+	Wonder	Asombro
+	Playful	Lúdico
+	Dense	Denso
+	Comfortable	Cómodo
+	Airy	Aireado
+	Corner Radius	Radio de esquinas

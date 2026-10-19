@@ -4,8 +4,8 @@
 //! empty placeholder. Each frame is one engine command (`layer.new.frame`), so one undo step; this
 //! module only turns the drag into it.
 
-use egui::{Pos2, Stroke};
 use brahma_doc::LayerContent;
+use egui::{Pos2, Stroke};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

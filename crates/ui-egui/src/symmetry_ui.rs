@@ -7,10 +7,10 @@ use crate::{
     theme::Tokens,
     widgets,
 };
-use egui::{Atom, Key, Stroke, vec2};
 use brahma_doc::Document;
 use brahma_engine::symmetry_cmds::PaintingSymmetry;
 use brahma_paint::symmetry::{PresetSymmetry, SymmetryMode};
+use egui::{Atom, Key, Stroke, vec2};
 use serde::Serialize;
 use serde_json::json;
 use std::sync::Arc;

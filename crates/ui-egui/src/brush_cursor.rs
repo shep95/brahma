@@ -3,8 +3,8 @@
 
 use std::sync::Arc;
 
-use egui::{CursorIcon, Painter, Pos2, Vec2};
 use brahma_paint::brush::{BrushSettings, TipShape};
+use egui::{CursorIcon, Painter, Pos2, Vec2};
 
 /// Below this on-screen radius an outline is unreadable: show the crosshair instead.
 const MIN_RADIUS: f32 = 3.0;

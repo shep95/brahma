@@ -1,7 +1,7 @@
 //! Camera Raw labels and language changes through the real shared native/WASM shell.
+use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, i18n, theme::ThemeKind};
 use egui::{accesskit::Role, pos2, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, i18n, theme::ThemeKind};
 use serde_json::json;
 
 #[test]

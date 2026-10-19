@@ -4,11 +4,11 @@
 
 mod common;
 
-use common::*;
 use brahma_color::{ColorMode, SampleType};
 use brahma_doc::{Document, LayerContent};
 use brahma_io::*;
 use brahma_psd::tiff::{ByteOrder, ImageSourceData};
+use common::*;
 
 fn tiff(doc: &Document, layers: bool) -> ExportResult {
     export(doc, "x.tif", &ExportOptions { tiff_layers: layers, ..Default::default() }).expect("export")
@@ -82,12 +82,10 @@ fn tiff_and_psd_open_as_the_same_document() {
         assert_docs_eq(&expected(&from_psd), &from_tif);
         // The composite the TIFF carries is what the document looks like.
         let tif = tiff(&d, true);
-        let flat = import(
-            "flat.tif",
-            &brahma_codecs::encode(&brahma_codecs::decode(&tif.bytes).unwrap(), brahma_codecs::Format::Tiff, &Default::default()).unwrap(),
-        )
-        .unwrap()
-        .document;
+        let flat =
+            import("flat.tif", &brahma_codecs::encode(&brahma_codecs::decode(&tif.bytes).unwrap(), brahma_codecs::Format::Tiff, &Default::default()).unwrap())
+                .unwrap()
+                .document;
         let a = brahma_compose::flatten(&d).px;
         let b = brahma_compose::flatten(&flat).px;
         assert!(max_diff(&a, &b) <= 2.0 / 255.0, "{mode:?} {depth:?}: composite differs by {}", max_diff(&a, &b));

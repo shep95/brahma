@@ -3947,3 +3947,24 @@ curves	Smooth	Vloeiend maken
 	Model (blank = provider default)	Model (leeg = standaard van aanbieder)
 	OpenAI API key	OpenAI-API-sleutel
 	OpenAI	OpenAI
+	Aesthetic Advisor	Esthetisch adviseur
+	Feeling	Gevoel
+	Build around the foreground color	Rond de voorgrondkleur opbouwen
+	Touch screen	Aanraakscherm
+	Recommend	Aanbevelen
+	Read the document	Document lezen
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Meet helderheid, contrast, randen en tinten van de open afbeelding en beveel aan vanuit wat die al zegt
+	Click a swatch to make it the foreground color	Klik op een staal om er de voorgrondkleur van te maken
+	The document reads as	Het document leest als
+	Color scheme	Kleurenschema
+	Placement and measurement	Plaatsing en maten
+	From the research	Uit het onderzoek
+	Neutral	Neutraal
+	Trust	Vertrouwen
+	Calm	Kalm
+	Wonder	Verwondering
+	Playful	Speels
+	Dense	Dicht
+	Comfortable	Comfortabel
+	Airy	Luchtig
+	Corner Radius	Hoekradius

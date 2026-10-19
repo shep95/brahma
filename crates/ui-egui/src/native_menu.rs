@@ -1149,9 +1149,7 @@ mod tests {
             });
             out.textures_delta.clear();
             assert_eq!(out.platform_output.commands, [egui::OutputCommand::CopyText("Hello".into())]);
-            let brahma_doc::LayerContent::Text(text) = &app.session.active().unwrap().doc.layer(id).unwrap().content else {
-                panic!("type layer changed kind")
-            };
+            let brahma_doc::LayerContent::Text(text) = &app.session.active().unwrap().doc.layer(id).unwrap().content else { panic!("type layer changed kind") };
             assert!(text.text.is_empty());
             let edit = app.ui.text_edit.as_ref().unwrap();
             assert_eq!((edit.anchor, edit.caret), (0, 0));

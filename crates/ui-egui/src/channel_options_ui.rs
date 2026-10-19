@@ -3,8 +3,8 @@
 //! or ink colour, and opacity (solidity for spot channels). OK runs the engine's
 //! `channel.options`, which agents can also call directly with params (#3761).
 
-use egui::{Align2, Sense, pos2, vec2};
 use brahma_doc::ColorIndicates;
+use egui::{Align2, Sense, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;

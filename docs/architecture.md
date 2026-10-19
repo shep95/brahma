@@ -170,7 +170,7 @@ brahma/
  L5  engine
  L4  tools · viewport · io · ml · plugins
  L3  compose · gpu · format
- L2  ops · algo · paint · text · vector
+ L2  ops · algo · paint · text · vector · aesthetic
  L1  doc
  L0  geom · cms · color · raster           psd, codecs, raw, adobe-assets (standalone, no workspace deps)
 ```

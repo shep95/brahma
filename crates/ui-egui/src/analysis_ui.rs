@@ -8,8 +8,8 @@
 //! Sampler points themselves live in the engine (`DocState.color_samplers`) so every front end
 //! shares them; this module only maps pointer input and draws the numbered markers.
 
-use egui::{Align2, Color32, CornerRadius, FontId, Pos2, RichText, Stroke, pos2, vec2};
 use brahma_doc::{Document, Ruler};
+use egui::{Align2, Color32, CornerRadius, FontId, Pos2, RichText, Stroke, pos2, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 

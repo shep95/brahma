@@ -10,11 +10,11 @@
 //! Skips when no GPU
 //! adapter exists (like `crop_beyond_canvas.rs`).
 
-use egui::{Key, Modifiers, PointerButton, Pos2, pos2, vec2};
-use egui_kittest::kittest::Queryable;
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::control::{ControlRequest, handle};
+use egui::{Key, Modifiers, PointerButton, Pos2, pos2, vec2};
+use egui_kittest::kittest::Queryable;
 use serde_json::{Value, json};
 
 type Harness = egui_kittest::Harness<'static, BrahmaApp>;

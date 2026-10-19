@@ -1,9 +1,9 @@
 //! #126: group disclosure triangles in the real Layers panel (whole app, real pointer input).
 
+use brahma_doc::{Document, LayerContent, LayerId};
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::{Document, LayerContent, LayerId};
 use serde_json::json;
 
 use super::display_rows;

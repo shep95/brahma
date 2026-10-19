@@ -395,12 +395,7 @@ impl GpuCanvas {
     /// composite (linear documents, see `brahma_engine::display_color`). Returns `Err` when the
     /// document uses features the GPU compositor doesn't cover yet; the caller then falls back to
     /// the CPU compositor.
-    pub fn composite(
-        &self,
-        doc: &brahma_doc::Document,
-        region: brahma_geom::Rect,
-        encode_srgb: bool,
-    ) -> Result<brahma_gpu::Stats, brahma_gpu::Unsupported> {
+    pub fn composite(&self, doc: &brahma_doc::Document, region: brahma_geom::Rect, encode_srgb: bool) -> Result<brahma_gpu::Stats, brahma_gpu::Unsupported> {
         let (device, queue) = (&self.rs.device, &self.rs.queue);
         let size = [doc.size.width, doc.size.height];
         if size[0] == 0 || size[1] == 0 {
@@ -810,11 +805,7 @@ fn texture_buffer<'a>(
 
 /// A CPU composite `buf` as texels of a `format` canvas texture, in `display`'s encoding: what
 /// [`GpuCanvas::upload_rect`] takes. Runs anywhere (a redraw's worker converts its own pieces).
-pub fn display_texels(
-    format: wgpu::TextureFormat,
-    display: Option<&brahma_engine::display_color::CanvasDisplay>,
-    buf: &brahma_compose::Buffer,
-) -> Vec<u8> {
+pub fn display_texels(format: wgpu::TextureFormat, display: Option<&brahma_engine::display_color::CanvasDisplay>, buf: &brahma_compose::Buffer) -> Vec<u8> {
     texels(format, &texture_buffer(display, buf).px)
 }
 

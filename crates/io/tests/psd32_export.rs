@@ -8,12 +8,12 @@
 
 mod common;
 
-use common::Features;
 use brahma_color::{ColorMode, SampleType};
 use brahma_doc::Document;
 use brahma_geom::Size;
 use brahma_io::*;
 use brahma_psd::{Compression, LayerInfoPlacement, PsdFile, hdr};
+use common::Features;
 
 fn be32(b: &[u8], at: usize) -> u32 {
     u32::from_be_bytes(b[at..at + 4].try_into().unwrap())

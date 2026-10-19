@@ -206,13 +206,7 @@ fn adjusted_cmy(s: &Surface, r: Rect, adj: &Adjustment, selection: Option<&Surfa
 
 /// `edited` mixed back over `orig` (straight RGBA over `r`, row-major) by the selection's
 /// coverage, encoded in `fmt`: what a destructive edit writes back through a selection.
-pub(crate) fn mix_through_selection(
-    fmt: &brahma_color::PixelFormat,
-    r: Rect,
-    orig: &[[f32; 4]],
-    edited: &[[f32; 4]],
-    selection: Option<&Surface>,
-) -> Vec<f32> {
+pub(crate) fn mix_through_selection(fmt: &brahma_color::PixelFormat, r: Rect, orig: &[[f32; 4]], edited: &[[f32; 4]], selection: Option<&Surface>) -> Vec<f32> {
     let w = (r.width() as usize).max(1);
     let mut out = Vec::with_capacity(orig.len() * fmt.channels());
     // The selection's coverage (channel 0) one row at a time, each of its tiles looked up once

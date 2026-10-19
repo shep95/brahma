@@ -2,8 +2,8 @@
 //! collapsible section header every section uses (separator, disclosure chevron, title), column
 //! widths that make field rows fill the panel, and the Quick Actions each layer kind offers.
 
-use egui::{Rect, Sense, pos2, vec2};
 use brahma_doc::{Layer, LayerContent};
+use egui::{Rect, Sense, pos2, vec2};
 
 use crate::theme::{self, Tokens};
 use crate::{BrahmaApp, widgets};

@@ -1,8 +1,8 @@
 //! #967: ⌥-click the line between two layers clips / releases the upper one.
 
+use brahma_doc::{Document, LayerContent, LayerId};
 use egui::{Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
-use brahma_doc::{Document, LayerContent, LayerId};
 use serde_json::json;
 
 use super::at;

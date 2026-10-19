@@ -3,8 +3,8 @@
 //! icon's rounded corners; it is decoded once per context into a mipmapped texture, so it stays
 //! crisp at the title bar's size on any display scale.
 
-use egui::{Color32, Context, Id, Rect, TextureHandle, TextureOptions, Ui, pos2};
 use brahma_codecs::{ChannelLayout, SampleType};
+use egui::{Color32, Context, Id, Rect, TextureHandle, TextureOptions, Ui, pos2};
 
 /// 128 px: sharp at 20 pt on a 3× display, and the mipmaps keep it clean at 1×.
 const ICON_PNG: &[u8] = include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/com.houseofasher.brahma.png");

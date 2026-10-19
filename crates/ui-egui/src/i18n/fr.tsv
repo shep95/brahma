@@ -3191,3 +3191,24 @@ curves	Smooth	Lisser
 	Model (blank = provider default)	Modèle (vide = défaut du fournisseur)
 	OpenAI API key	Clé API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Conseiller esthétique
+	Feeling	Sensation
+	Build around the foreground color	Construire autour de la couleur de premier plan
+	Touch screen	Écran tactile
+	Recommend	Recommander
+	Read the document	Lire le document
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Mesurer la luminosité, le contraste, les contours et les teintes de l'image ouverte et recommander à partir de ce qu'elle dit déjà
+	Click a swatch to make it the foreground color	Cliquez sur un échantillon pour en faire la couleur de premier plan
+	The document reads as	Le document se lit comme
+	Color scheme	Schéma de couleurs
+	Placement and measurement	Placement et mesures
+	From the research	Issu de la recherche
+	Neutral	Neutre
+	Trust	Confiance
+	Calm	Calme
+	Wonder	Émerveillement
+	Playful	Ludique
+	Dense	Dense
+	Comfortable	Confortable
+	Airy	Aéré
+	Corner Radius	Rayon des coins

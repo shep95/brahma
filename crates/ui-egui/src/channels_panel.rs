@@ -5,9 +5,9 @@
 //! Rows can be dragged onto the footer's buttons, as in Photoshop (#4689): New duplicates the
 //! channel, Delete deletes it, and Load Channel as Selection loads it.
 
-use egui::{Align2, Color32, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::ColorIndicates;
 use brahma_engine::channel_cmds::{self, ChannelTarget};
+use egui::{Align2, Color32, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::theme::{self, Tokens};

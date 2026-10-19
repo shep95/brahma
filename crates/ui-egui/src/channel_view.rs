@@ -7,12 +7,12 @@
 //! revision and view state and updated per damage rectangle while painting, so nothing is
 //! recomposited per frame.
 
-use egui::{Color32, TextureOptions};
 use brahma_doc::{AlphaChannel, ColorMode, Document};
 use brahma_engine::channel_cmds::{ChannelView, color_count};
 use brahma_engine::mask_view_cmds::MaskViewMode;
 use brahma_geom::Rect;
 use brahma_raster::{Surface, from_rgba, to_rgba};
+use egui::{Color32, TextureOptions};
 
 use crate::BrahmaApp;
 

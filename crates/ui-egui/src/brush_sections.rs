@@ -3,9 +3,9 @@
 //! Dynamics, Transfer, Brush Pose, Build-up and Smoothing. Each edits a working copy of the brush;
 //! the panel turns the difference into one `tools.setBrush` call.
 
-use egui::{Color32, RichText, Sense, Stroke, pos2, vec2};
 use brahma_engine::BrushSettings;
 use brahma_engine::paint::{self, BrushPreset, Control, Dynamic, MAX_BRUSH_SIZE, MaskMode, Pattern, PatternStyle, TipShape};
+use egui::{Color32, RichText, Sense, Stroke, pos2, vec2};
 
 use crate::brush_preview;
 use crate::theme::{self, Tokens};

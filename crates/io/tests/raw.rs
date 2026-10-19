@@ -282,8 +282,7 @@ fn unusable_previews_keep_the_neutral_fallback() {
         let bytes = nef_uncompressed(&cam, w, h, p);
         let r = import("DSC_0003.NEF", &bytes).unwrap();
         assert!(fallback(&r.warnings) && !fitted(&r.warnings), "preview {i}: {:?}", r.warnings);
-        let (tuned, wb) =
-            brahma_io::raw::import_raw_tuned("DSC_0003.NEF", &bytes, &brahma_io::raw::RawTuning { exposure: 0.5, ..Default::default() }).unwrap();
+        let (tuned, wb) = brahma_io::raw::import_raw_tuned("DSC_0003.NEF", &bytes, &brahma_io::raw::RawTuning { exposure: 0.5, ..Default::default() }).unwrap();
         assert!(!wb && fallback(&tuned.warnings) && !fitted(&tuned.warnings), "preview {i}: {:?}", tuned.warnings);
         assert_eq!(tuned.document.depth, SampleType::U16);
     }

@@ -37,11 +37,36 @@ so also its default). every push goes there.
 | 12 | security audit + weekly workflow | done (`.github/workflows/security.yml`) |
 | 13 | vercel layout: one static site, no services, no bindings | done, confirmed by the user |
 | 14 | web ui bugs: sidebar clicks, panel scrolling, slow open, responsiveness | in progress (see below) |
-| 15 | aesthetic recommender trained on the research file | todo |
-| 16 | motion system (springs) matching the aesthetic | todo |
-| 17 | quality and speed: startup, file open, frame pacing | todo |
-| 18 | installable + offline web app (manifest, service worker, document.title) | in progress |
+| 15 | aesthetic recommender trained on the research file | done: crate `brahma-aesthetic` (l2), commands `aesthetic.recommend/analyze/search`, window › aesthetic advisor |
+| 16 | motion system (springs) matching the aesthetic | module `ui-egui/src/motion.rs` done, used by the compact drawer; apply to panel collapse, dialogs, hover |
+| 17 | quality and speed: startup, file open, frame pacing | measured (startup 1.2 s, 12 mp jpeg 1.7 s on the ui thread); worker decode still open |
+| 18 | installable + offline web app (manifest, service worker, document.title) | done (precache on install; offline reload verified) |
 | 19 | this file | ongoing |
+| 20 | export / download with rounded corners | done: `cornerRadius` (px or "20%") on every flat save command, corner radius slider in export as |
+| 21 | ai assistant sidebar: drives every command, persona from the shepherd file, any provider's keys from any country, sees the canvas | todo (plan below) |
+| 23 | every font: the full google fonts catalogue (~1,941 families) on demand + system fonts | todo (plan below) |
+
+## plans for the open tasks
+
+- **21 ai assistant.** engine module `ai.rs`: a provider-agnostic request/response builder
+  (anthropic messages, openai chat completions and every openai-compatible host such as
+  deepseek, mistral, qwen, moonshot, yandex, openrouter; google gemini; plus a custom base url
+  so any country's provider works). the tool list comes from `command_specs()` (id, params doc)
+  so the model drives every command; images go in as base64 for vision. the http call is a
+  `Services` callback (web: `fetch_bytes` via wasm fetch; desktop: `ureq` on a thread, dep already
+  in `apps/brahma/Cargo.toml`). ui: a chat dock group with a message list, the input, a
+  "look at the canvas" toggle that attaches a `ui.screenshot`-sized thumbnail of the document
+  to each turn. persona: a system prompt distilled from the shepherd research file (tone, the
+  oklch/typography/motion rules), stored in `brahma-aesthetic` next to the corpus. keys stay in
+  preferences › ai integrations and never leave the machine except to the provider chosen.
+- **23 fonts.** the google fonts catalogue (`families.csv` + `METADATA.pb` per family, fetched
+  from github.com/google/fonts at a pinned commit; api.fontsource and jsdelivr are unreachable
+  from the build container) is distilled into a compact table compiled into `brahma-text`
+  (family, category, styles, file paths). the font picker lists all of them; selecting one
+  fetches the file from `https://raw.githubusercontent.com/google/fonts/<pin>/<path>` (web:
+  `fetch_bytes`, desktop: `ureq`) and installs it through `served_fonts::install`, cached in the
+  service worker (web) or the app data dir (desktop). system fonts are enumerated with
+  `fontdb` on desktop. never commit font files.
 
 ## in flight (task 14 and 18)
 

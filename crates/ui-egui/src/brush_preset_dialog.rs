@@ -2,8 +2,8 @@
 //! name and what the preset captures in the middle, OK and Cancel on the right. Every way of making
 //! a preset opens it: the picker's [+] and its gear menu, the Brush Settings [+] and the Brushes
 //! tab's [+]. Nothing is saved until OK.
-use egui::{Color32, pos2, vec2};
 use brahma_paint::{BrushPreset, BrushSettings};
+use egui::{Color32, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::{BrahmaApp, state::DialogKind, theme::Tokens, widgets};

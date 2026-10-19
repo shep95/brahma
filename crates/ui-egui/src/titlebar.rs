@@ -535,8 +535,8 @@ pub fn resize_zones(ui: &mut Ui) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use egui::{Event, Pos2, RawInput, ViewportId};
     use brahma_engine::Session;
+    use egui::{Event, Pos2, RawInput, ViewportId};
 
     /// A headless window `width` pt wide showing the title bar and the resize zones.
     struct Win {

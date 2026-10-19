@@ -1,11 +1,11 @@
 //! #2061: the scroll wheel over the options bar's Mode dropdown (Brush, Pencil, Gradient) steps
 //! through the blend modes, as over the Layers panel's (#1747) and as in Photoshop.
 
+use brahma_doc::BlendMode;
 use egui::accesskit::Role;
 use egui::{Pos2, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::BlendMode;
 use serde_json::json;
 
 use crate::BrahmaApp;

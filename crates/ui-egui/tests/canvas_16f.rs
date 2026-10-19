@@ -7,14 +7,14 @@ use std::collections::HashSet;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use eframe::egui_wgpu::RenderState;
-use eframe::wgpu::TextureFormat;
 use brahma_color::{ColorMode, PixelFormat, SampleType};
 use brahma_doc::{Document, Layer, LayerContent, Size};
 use brahma_geom::Rect;
 use brahma_raster::Surface;
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::gpu_canvas::{self, GpuCanvas};
+use eframe::egui_wgpu::RenderState;
+use eframe::wgpu::TextureFormat;
 use serde_json::json;
 
 use brahma_testkit::gpu_lock;

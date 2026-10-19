@@ -1,10 +1,10 @@
 //! #5048: the Layers panel's filter-type dropdown (Kind, Name, Mode).
 
+use brahma_color::BlendMode;
+use brahma_doc::Document;
 use egui::vec2;
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_color::BlendMode;
-use brahma_doc::Document;
 use serde_json::json;
 
 use super::{Filter, FilterBy};

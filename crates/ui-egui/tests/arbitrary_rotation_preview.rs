@@ -1,9 +1,9 @@
 //! #1436: a size-changing Arbitrary rotation preview must remain visible on the real GPU canvas.
 //! Synthetic blue pixels are measured outside the dialog, so its controls cannot pass the test.
 
-use egui_kittest::kittest::Queryable;
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::control::{ControlRequest, Outcome, handle};
+use egui_kittest::kittest::Queryable;
 use serde_json::{Value, json};
 use std::sync::Arc;
 

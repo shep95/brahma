@@ -2,8 +2,8 @@
 //! selected. Canvas size and orientation, resolution, colour mode and bit depth, and the
 //! Rulers & Grids toggles. Every edit dispatches an engine or view command, so the panel stays thin.
 
-use egui::{Align2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::{ColorMode, Document, Layer, LayerId, SampleType};
+use egui::{Align2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::theme::Tokens;

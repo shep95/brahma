@@ -9,10 +9,10 @@
 
 use std::sync::Arc;
 
-use egui::{Color32, ColorImage};
 use brahma_doc::{Document, LayerContent, LayerId};
 use brahma_geom::Rect;
 use brahma_raster::Surface;
+use egui::{Color32, ColorImage};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

@@ -21,11 +21,11 @@
 
 use std::time::Instant;
 
-use eframe::egui_wgpu::RenderState;
 use brahma_color::{BlendMode, Color, ColorMode, PixelFormat, SampleType};
 use brahma_doc::{Adjustment, Document, Effect, FxCommon, FxPaint, Layer, LayerContent, Shadow, StrokeFx, StrokePosition, TextLayer};
 use brahma_geom::{Rect, Size};
 use brahma_ui_egui::gpu_canvas::GpuCanvas;
+use eframe::egui_wgpu::RenderState;
 use rayon::prelude::*;
 
 fn arg(args: &[String], name: &str) -> Option<String> {

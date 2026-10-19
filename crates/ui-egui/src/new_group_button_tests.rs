@@ -1,9 +1,9 @@
 //! #2561: the Layers panel New Group button. Like Photoshop a plain click adds an empty group
 //! and Shift-click groups the selected layers.
 
+use brahma_doc::{Layer, LayerId};
 use egui::Modifiers;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::{Layer, LayerId};
 use serde_json::json;
 
 use crate::BrahmaApp;

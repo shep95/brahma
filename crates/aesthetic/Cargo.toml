@@ -1,0 +1,15 @@
+[package]
+name = "brahma-aesthetic"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "aesthetic recommendations (colour schemes in oklch, type scales, placement and measurement, motion timing) from a distilled design-research corpus"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]

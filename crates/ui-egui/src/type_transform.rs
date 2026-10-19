@@ -5,9 +5,9 @@
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use egui::{CursorIcon, Modifiers, Pos2, Stroke, vec2};
 use brahma_doc::{DocId, Document, LayerContent, LayerId, text::TextShape};
 use brahma_geom::{Affine, Point, Rect};
+use egui::{CursorIcon, Modifiers, Pos2, Stroke, vec2};
 use serde_json::json;
 
 use crate::BrahmaApp;

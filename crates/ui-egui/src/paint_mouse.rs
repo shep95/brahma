@@ -4,9 +4,9 @@
 //! Brush erases with the current brush (Krita, Paint). Each right stroke is one `paint.stroke`
 //! with `"erase": true`, so one undo step, with the pen pressure and tilt of a normal stroke.
 
-use egui::{PointerButton, Response};
 use brahma_engine::BrushSettings;
 use brahma_engine::prefs::RightClickPaint;
+use egui::{PointerButton, Response};
 
 use crate::BrahmaApp;
 use crate::state::Tool;

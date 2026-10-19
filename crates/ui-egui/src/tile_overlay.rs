@@ -18,9 +18,9 @@ use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
-use egui::{Align2, Color32, FontId, Painter, Shape, Stroke};
 use brahma_geom::{Rect as DRect, TILE_SIZE, TileCoord};
 use brahma_raster::{Surface, Tile};
+use egui::{Align2, Color32, FontId, Painter, Shape, Stroke};
 #[cfg(not(target_arch = "wasm32"))]
 use rayon::prelude::*;
 

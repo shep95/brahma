@@ -3,8 +3,8 @@
 //! Brush Settings uses the same editor for each dynamic's own curve ([`edit_points`]).
 //! Drag a point to move it, click empty space to add one, right-click a point to remove it.
 
-use egui::{Pos2, Sense, Stroke, Vec2, pos2};
 use brahma_engine::prefs::PressureCurve;
+use egui::{Pos2, Sense, Stroke, Vec2, pos2};
 use serde_json::{Value, json};
 
 use crate::theme::Tokens;

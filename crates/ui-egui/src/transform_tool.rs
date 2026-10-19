@@ -11,11 +11,11 @@
 
 use std::sync::Arc;
 
-use egui::{Color32, CursorIcon, Pos2, Stroke, pos2, vec2};
 use brahma_algo::transform::Homography;
 use brahma_doc::{DocId, Document, LayerContent, LayerId};
 use brahma_engine::jobs::{JobEvent, JobId, JobOutcome};
 use brahma_geom::warp::{BezierMesh, Warp, WarpStyle};
+use egui::{Color32, CursorIcon, Pos2, Stroke, pos2, vec2};
 use serde_json::json;
 
 use crate::BrahmaApp;
@@ -316,12 +316,7 @@ pub fn begin_placed(app: &mut BrahmaApp, ctx: &egui::Context) -> Result<(), Stri
 /// Edit › Content-Aware Scale (#3096): a scale-only box over `region` of the active pixel layer
 /// (the selection's bounds, else the layer's content), cleared under the box as the command
 /// clears it. OK runs `edit.contentAwareScale` (cas_transform.rs) instead of `edit.transform`.
-pub(crate) fn begin_content_aware(
-    app: &mut BrahmaApp,
-    ctx: &egui::Context,
-    region: brahma_geom::Rect,
-    live: crate::cas_transform::Live,
-) -> Result<(), String> {
+pub(crate) fn begin_content_aware(app: &mut BrahmaApp, ctx: &egui::Context, region: brahma_geom::Rect, live: crate::cas_transform::Live) -> Result<(), String> {
     let st = app.session.active().ok_or("no document")?;
     let (doc, revision) = (st.doc.clone(), st.revision);
     let id = st.active_layer.ok_or("no active layer")?;
@@ -431,13 +426,7 @@ fn fold_made(app: &mut BrahmaApp, document: DocId, made: MadeLayer) {
 /// Free Transform of a targeted unlinked layer mask, alpha channel or Quick Mask by itself: the
 /// box frames its content (or the selection) and previews the moving values in grey over the
 /// document with them vacated.
-fn begin_lone(
-    app: &mut BrahmaApp,
-    ctx: &egui::Context,
-    doc: Arc<Document>,
-    surf: brahma_raster::Surface,
-    target: serde_json::Value,
-) -> Result<(), String> {
+fn begin_lone(app: &mut BrahmaApp, ctx: &egui::Context, doc: Arc<Document>, surf: brahma_raster::Surface, target: serde_json::Value) -> Result<(), String> {
     use brahma_engine::transform_cmds as tc;
     let b = tc::target_frame(&doc, &surf);
     if b.is_empty() {
@@ -2256,14 +2245,7 @@ pub(crate) fn carries_selection_of(app: &BrahmaApp, document: DocId) -> bool {
 /// rotation, skew, distort, perspective or warp while it is made, to where applying it leaves it.
 /// `segs` is the outline of `document`'s selection at rest. False when no open transform carries
 /// that selection: the caller draws it where it is.
-pub(crate) fn draw_selection(
-    app: &BrahmaApp,
-    painter: &egui::Painter,
-    xf: &ViewXform,
-    document: DocId,
-    segs: &[crate::outline::Segment],
-    time: f64,
-) -> bool {
+pub(crate) fn draw_selection(app: &BrahmaApp, painter: &egui::Painter, xf: &ViewXform, document: DocId, segs: &[crate::outline::Segment], time: f64) -> bool {
     let Some(t) = app.ui.transform.as_ref().filter(|_| carries_selection_of(app, document)) else { return false };
     let scr = |(x, y): (f64, f64)| xf.to_screen(x as f32, y as f32);
     let doc = |p: [i32; 2]| [f64::from(p[0]), f64::from(p[1])];

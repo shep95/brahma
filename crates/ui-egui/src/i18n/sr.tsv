@@ -4260,3 +4260,24 @@ shape	Appearance	Izgled
 	Model (blank = provider default)	Model (prazno = podrazumevani kod provajdera)
 	OpenAI API key	OpenAI API ključ
 	OpenAI	OpenAI
+	Aesthetic Advisor	Estetski savetnik
+	Feeling	Osećaj
+	Build around the foreground color	Graditi oko boje prednjeg plana
+	Touch screen	Ekran osetljiv na dodir
+	Recommend	Preporuči
+	Read the document	Pročitaj dokument
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Izmeri svetlinu, kontrast, ivice i nijanse otvorene slike i preporuči iz onoga što već govori
+	Click a swatch to make it the foreground color	Klikni na uzorak da postane boja prednjeg plana
+	The document reads as	Dokument deluje kao
+	Color scheme	Šema boja
+	Placement and measurement	Raspored i mere
+	From the research	Iz istraživanja
+	Neutral	Neutralno
+	Trust	Poverenje
+	Calm	Smirenost
+	Wonder	Čuđenje
+	Playful	Razigrano
+	Dense	Gusto
+	Comfortable	Udobno
+	Airy	Prozračno
+	Corner Radius	Полупречник углова

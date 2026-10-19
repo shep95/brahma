@@ -16,10 +16,10 @@
 
 use std::time::Instant;
 
-use eframe::wgpu;
 use brahma_doc::{Document, LayerContent};
 use brahma_engine::Session;
 use brahma_geom::Rect;
+use eframe::wgpu;
 use serde_json::{Value, json};
 
 fn arg(args: &[String], name: &str) -> Option<String> {
@@ -297,8 +297,7 @@ fn main() {
         b.time(&format!("Curves dialog change, layer preview{sel}"), |b| {
             v = (v + 7) % 120;
             let t = Instant::now();
-            let p =
-                brahma_ui_egui::adjust_preview::with_settings(&base, "curves", &json!({"points": [[0, 0], [100, 100 + v], [255, 255]]})).expect("preview");
+            let p = brahma_ui_egui::adjust_preview::with_settings(&base, "curves", &json!({"points": [[0, 0], [100, 100 + v], [255, 255]]})).expect("preview");
             let build = ms(t);
             let t = Instant::now();
             match &mut b.gpu {
@@ -320,8 +319,7 @@ fn main() {
         b.time(&format!("Curves dialog change, layer preview 100 % view{sel}"), |b| {
             v = (v + 7) % 120;
             let t = Instant::now();
-            let p =
-                brahma_ui_egui::adjust_preview::with_settings(&base, "curves", &json!({"points": [[0, 0], [100, 100 + v], [255, 255]]})).expect("preview");
+            let p = brahma_ui_egui::adjust_preview::with_settings(&base, "curves", &json!({"points": [[0, 0], [100, 100 + v], [255, 255]]})).expect("preview");
             match &mut b.gpu {
                 Some(g) => {
                     if g.comp.render(&g.device, &g.queue, &p, view, |_, _| {}).is_err() {

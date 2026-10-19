@@ -140,9 +140,8 @@ fn edit(s: &mut Session, p: &Value) -> Result<Value> {
             for k in &keys {
                 // Only library patterns can be deleted here; a document-only pattern must
                 // fail the whole batch up front rather than midway through it.
-                let id = brahma_doc::pattern::find(&s.patterns.items, k, k)
-                    .map(|q| q.id.clone())
-                    .ok_or_else(|| bad(CMD, format!("no library pattern \"{k}\"")))?;
+                let id =
+                    brahma_doc::pattern::find(&s.patterns.items, k, k).map(|q| q.id.clone()).ok_or_else(|| bad(CMD, format!("no library pattern \"{k}\"")))?;
                 if !ids.contains(&id) {
                     ids.push(id);
                 }

@@ -267,11 +267,22 @@ pub(crate) struct SaveOpts {
     /// PSD/PSB: write the real merged image (Preferences › File Handling › Maximize PSD and PSB
     /// File Compatibility).
     pub psd_maximize_compatibility: bool,
+    /// Flat formats: round the corners by this many pixels (`"cornerRadius"`: a number of
+    /// pixels, or a percentage string such as `"20%"` of the shorter side); 0 = square.
+    pub corner_radius: f32,
 }
 
 impl Default for SaveOpts {
     fn default() -> Self {
-        SaveOpts { quality: None, tiff_layers: false, tga_bits: None, dpx_bits: None, image_previews: true, psd_maximize_compatibility: true }
+        SaveOpts {
+            quality: None,
+            tiff_layers: false,
+            tga_bits: None,
+            dpx_bits: None,
+            image_previews: true,
+            psd_maximize_compatibility: true,
+            corner_radius: 0.0,
+        }
     }
 }
 
@@ -287,6 +298,7 @@ impl SaveOpts {
             tiff_layers: p.get("tiffLayers").and_then(Value::as_bool).unwrap_or(false),
             tga_bits: tga_bits_param(p, cmd)?,
             dpx_bits: dpx_bits_param(p, cmd)?,
+            corner_radius: corner_radius_param(s, p, cmd)?,
             image_previews: file_handling.image_previews != crate::prefs::Ask::Never,
             psd_maximize_compatibility: file_handling.maximize_psd_compatibility != crate::prefs::Ask::Never,
         })
@@ -301,6 +313,33 @@ impl SaveOpts {
 impl From<Option<f64>> for SaveOpts {
     fn from(quality: Option<f64>) -> Self {
         SaveOpts { quality, ..Default::default() }
+    }
+}
+
+/// The corner radius in `p` (`"cornerRadius"`): pixels as a number, or a percentage of the
+/// active document's shorter side as a string (`"20%"`). Absent or null: 0 (square corners).
+/// Negative, NaN or anything else is a bad parameter of command `cmd`.
+pub(crate) fn corner_radius_param(s: &Session, p: &Value, cmd: &str) -> Result<f32> {
+    let bad = |msg: String| EngineError::BadParams { cmd: cmd.into(), msg };
+    match p.get("cornerRadius") {
+        None | Some(Value::Null) => Ok(0.0),
+        Some(Value::Number(n)) => {
+            let v = n.as_f64().unwrap_or(f64::NAN);
+            if v.is_finite() && v >= 0.0 { Ok(v.min(1.0e6) as f32) } else { Err(bad(format!("`cornerRadius` must be a number of pixels >= 0, got {v}"))) }
+        }
+        Some(Value::String(t)) => {
+            let pct: f64 = t
+                .trim()
+                .strip_suffix('%')
+                .and_then(|n| n.trim().parse().ok())
+                .ok_or_else(|| bad(format!("`cornerRadius` must be pixels or a percentage like \"20%\", got {t:?}")))?;
+            if !pct.is_finite() || pct < 0.0 {
+                return Err(bad(format!("`cornerRadius` percentage must be >= 0, got {t:?}")));
+            }
+            let side = s.active().map(|d| d.doc.size.width.min(d.doc.size.height)).unwrap_or(0) as f64;
+            Ok((side * pct.min(50.0) / 100.0) as f32)
+        }
+        Some(v) => Err(bad(format!("`cornerRadius` must be pixels or a percentage string, got {v}"))),
     }
 }
 
@@ -346,6 +385,7 @@ pub(crate) fn encode(doc: &Document, path: &str, save: impl Into<SaveOpts>) -> R
     // lossy or lossless as it was), as Photoshop's Save does.
     brahma_io::apply_file_encoding(doc, &mut opts.encode);
     opts.encode.dpx_bits = save.dpx_bits;
+    opts.corner_radius = save.corner_radius;
     if let Some(q) = save.quality {
         let q = (q.clamp(0.0, 12.0) / 12.0 * 99.0 + 1.0).round() as u8;
         opts.encode.jpeg_quality = q;
@@ -1594,7 +1634,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Save a Copy…",
             &["File"],
             Some("Cmd+Alt+S"),
-            r##"{"path":str (format from the extension),"quality":0..12? (JPEG),"layers":bool=true,"tiffLayers":bool=false (TIFF: keep the layers; flat by default),"tgaBits":24|32? (TGA: 32 writes the alpha channel, or else the transparency, as the alpha; unset, 32 with an alpha channel or transparency, else 24),"dpxBits":8|10|12|16? (DPX: bits per sample; unset, 8 for an 8-bit document, else 16)}"##,
+            r##"{"path":str (format from the extension),"quality":0..12? (JPEG),"layers":bool=true,"tiffLayers":bool=false (TIFF: keep the layers; flat by default),"tgaBits":24|32? (TGA: 32 writes the alpha channel, or else the transparency, as the alpha; unset, 32 with an alpha channel or transparency, else 24),"dpxBits":8|10|12|16? (DPX: bits per sample; unset, 8 for an 8-bit document, else 16),"cornerRadius":px|"20%"? (flat formats: rounded corners, transparent where the format keeps alpha, white otherwise)}"##,
             native_doc,
             save_a_copy
         ),

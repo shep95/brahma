@@ -1,9 +1,9 @@
 //! The Magnetic Lasso through `tool_event` (mouse and `ui.pointer` alike), and through the real
 //! canvas for hover, keys and double-click.
 
+use brahma_geom::Rect;
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
-use brahma_geom::Rect;
 use serde_json::json;
 
 use super::*;

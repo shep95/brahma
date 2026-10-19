@@ -4308,3 +4308,24 @@ shape	Appearance	Aspetto
 	Model (blank = provider default)	Modello (vuoto = predefinito del fornitore)
 	OpenAI API key	Chiave API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Consulente estetico
+	Feeling	Sensazione
+	Build around the foreground color	Costruisci attorno al colore di primo piano
+	Touch screen	Schermo tattile
+	Recommend	Consiglia
+	Read the document	Leggi il documento
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Misura luminosità, contrasto, bordi e tinte dell'immagine aperta e consiglia a partire da ciò che già dice
+	Click a swatch to make it the foreground color	Fai clic su un campione per renderlo colore di primo piano
+	The document reads as	Il documento si legge come
+	Color scheme	Schema colori
+	Placement and measurement	Posizionamento e misure
+	From the research	Dalla ricerca
+	Neutral	Neutro
+	Trust	Fiducia
+	Calm	Calma
+	Wonder	Meraviglia
+	Playful	Giocoso
+	Dense	Denso
+	Comfortable	Comodo
+	Airy	Arioso
+	Corner Radius	Raggio degli angoli

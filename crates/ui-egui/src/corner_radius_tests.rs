@@ -1,8 +1,8 @@
 //! TOOL-214-12: a live rectangle's corner radius widgets, as in Photoshop.
 
-use egui::Modifiers;
 use brahma_doc::LayerContent;
 use brahma_doc::vector::LiveShape;
+use egui::Modifiers;
 use serde_json::json;
 
 use crate::BrahmaApp;

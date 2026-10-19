@@ -1,10 +1,10 @@
 //! #4281: Clip Thumbnails to Layer Bounds. A small object in a large document fills its Layers
 //! panel thumbnail instead of being a speck in an empty canvas-sized one.
 
-use egui::vec2;
-use egui_kittest::Harness;
 use brahma_doc::LayerId;
 use brahma_geom::Rect;
+use egui::vec2;
+use egui_kittest::Harness;
 use serde_json::json;
 
 use crate::BrahmaApp;

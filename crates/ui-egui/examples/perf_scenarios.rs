@@ -15,7 +15,6 @@
 
 use std::time::Instant;
 
-use eframe::egui_wgpu::RenderState;
 use brahma_algo::liquify::{LiquifyField, LiquifyStroke, LiquifyTool, ProxyImage, auto_cell};
 use brahma_color::{ColorMode, PixelFormat, SampleType};
 use brahma_engine::Session;
@@ -23,6 +22,7 @@ use brahma_geom::Rect;
 use brahma_raster::Surface;
 use brahma_testkit::perf::{RssSampler, report, row, write_report};
 use brahma_ui_egui::gpu_canvas::GpuCanvas;
+use eframe::egui_wgpu::RenderState;
 use serde_json::{Value, json};
 
 type Res<T> = Result<T, String>;
@@ -62,8 +62,7 @@ fn photo_jpeg(w: u32, h: u32) -> Res<Vec<u8>> {
             }
         }
     });
-    let img =
-        brahma_codecs::Image::from_raw(w, h, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, px).map_err(|e| e.to_string())?;
+    let img = brahma_codecs::Image::from_raw(w, h, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, px).map_err(|e| e.to_string())?;
     brahma_codecs::encode(&img, brahma_codecs::Format::Jpeg, &Default::default()).map_err(|e| e.to_string())
 }
 

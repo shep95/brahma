@@ -8,8 +8,8 @@
 //! point whatever the proxy factor. The Preview checkbox keeps toggling the on-canvas live result
 //! (`canvas::ensure_filter_preview`), unchanged.
 
-use egui::{Color32, Rect, Sense, Stroke, Vec2, pos2, vec2};
 use brahma_doc::Document;
+use egui::{Color32, Rect, Sense, Stroke, Vec2, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;

@@ -255,9 +255,7 @@ fn main() {
         } else {
             (img, w, h)
         };
-        let image =
-            brahma_codecs::Image::from_raw((w * 3) as u32, h as u32, brahma_codecs::ChannelLayout::Rgba, brahma_codecs::SampleType::U8, img)
-                .unwrap();
+        let image = brahma_codecs::Image::from_raw((w * 3) as u32, h as u32, brahma_codecs::ChannelLayout::Rgba, brahma_codecs::SampleType::U8, img).unwrap();
         std::fs::write(&out, brahma_codecs::encode(&image, brahma_codecs::Format::Png, &Default::default()).unwrap()).unwrap();
         println!("wrote {out}");
         return;
@@ -275,10 +273,7 @@ fn main() {
         wr(format!("{out}_ps.f32"), &merged);
         let mut meta = format!("{} {}\n", doc.size.width, doc.size.height);
         for (i, l) in doc.layers.iter().enumerate() {
-            let b = brahma_compose::surface_to_buffer(
-                l.surface().unwrap_or(&brahma_raster::Surface::new(brahma_color::PixelFormat::RGBA8)),
-                doc.bounds(),
-            );
+            let b = brahma_compose::surface_to_buffer(l.surface().unwrap_or(&brahma_raster::Surface::new(brahma_color::PixelFormat::RGBA8)), doc.bounds());
             wr(format!("{out}_L{i}.f32"), &b.px);
             meta += &format!("{i} {}\n", l.name);
         }

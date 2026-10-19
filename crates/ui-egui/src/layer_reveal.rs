@@ -6,8 +6,8 @@
 //! Only a change of the active layer reveals: closing the group that holds it, or scrolling
 //! away, is left alone until the next change.
 
-use egui::{Rect, pos2};
 use brahma_doc::{LayerContent, LayerId};
+use egui::{Rect, pos2};
 use serde_json::json;
 
 use crate::BrahmaApp;

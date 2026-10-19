@@ -9,12 +9,12 @@
 //! `filter.vanishingPoint` with the planes and the paste, so it is one history step and an
 //! action or agent can replay it exactly.
 
-use egui::{Color32, Pos2, Stroke, TextureHandle, pos2};
 use brahma_algo::transform::Homography;
 use brahma_algo::vanishing::{PlaneCheck, Scene, VpPlane};
 use brahma_doc::{LayerContent, LayerId};
 use brahma_engine::vp_cmds::VP;
 use brahma_geom::Rect;
+use egui::{Color32, Pos2, Stroke, TextureHandle, pos2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

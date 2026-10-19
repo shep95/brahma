@@ -896,13 +896,8 @@ fn automation_smart_contents_accepts_memory_sources_and_explicit_targets() {
 }
 
 fn contents_file() -> std::path::PathBuf {
-    let doc = Document::with_background(
-        "source",
-        Size::new(4, 4),
-        brahma_doc::ColorMode::Rgb,
-        brahma_doc::SampleType::U8,
-        brahma_color::Color::rgb(1.0, 0.0, 0.0),
-    );
+    let doc =
+        Document::with_background("source", Size::new(4, 4), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8, brahma_color::Color::rgb(1.0, 0.0, 0.0));
     let path = std::env::temp_dir().join(format!("pcraft-contents-{}-{}.pcraft", std::process::id(), doc.id.0));
     std::fs::write(&path, encode_source(&doc).unwrap()).unwrap();
     path
@@ -970,8 +965,7 @@ fn automation_smart_contents_checks_nested_reads_at_nontrivial_placements() {
     for (scale, psd_uuid, allowed) in [(1.0, false, true), (1.5, false, false), (1.5, true, true)] {
         let mut inner = Document::new("inner", Size::new(4, 4), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8);
         let source_path = if psd_uuid {
-            let linked =
-                brahma_io::linked::LinkedFile { uuid: "nested-id".into(), file_name: "source.pcraft".into(), bytes: std::fs::read(&path).unwrap() };
+            let linked = brahma_io::linked::LinkedFile { uuid: "nested-id".into(), file_name: "source.pcraft".into(), bytes: std::fs::read(&path).unwrap() };
             inner.metadata.psd_global_blocks.push((*b"8BIM", *b"lnk2", Arc::new(brahma_io::linked::encode_linked_file(&linked))));
             linked.uuid
         } else {

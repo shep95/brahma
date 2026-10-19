@@ -1,10 +1,10 @@
 //! #2735: a dropdown takes one press-drag-release, like the menus (#775): press the box, drag onto
 //! an option, release to choose it.
 
+use brahma_doc::BlendMode;
 use egui::accesskit::Role;
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::BlendMode;
 use serde_json::json;
 
 use crate::BrahmaApp;

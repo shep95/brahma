@@ -1,7 +1,7 @@
 //! #3820: edit custom paper through the real Print dialog, preview it, and print safely to PDF.
+use brahma_ui_egui::{BrahmaApp, file_ui::open_print};
 use egui::{Event, Key, Modifiers, PointerButton, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_ui_egui::{BrahmaApp, file_ui::open_print};
 use serde_json::{Map, Value, json};
 
 fn app() -> (BrahmaApp, u64) {

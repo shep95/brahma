@@ -21,10 +21,10 @@
 //! step per drag, and the same commands drive it over MCP and the control channel. The Pen path
 //! being drawn is not in the document yet: its edits apply to it directly, without a command.
 
-use egui::{Color32, Modifiers, Pos2};
 use brahma_doc::vector::Path;
 use brahma_geom::Point;
 use brahma_vector::edit::{self, Handle, Hit};
+use egui::{Color32, Modifiers, Pos2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

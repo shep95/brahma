@@ -3917,3 +3917,24 @@ cameraData	Lens	Lens
 	Model (blank = provider default)	Model (boş = sağlayıcının varsayılanı)
 	OpenAI API key	OpenAI API anahtarı
 	OpenAI	OpenAI
+	Aesthetic Advisor	Estetik danışmanı
+	Feeling	His
+	Build around the foreground color	Ön plan rengi etrafında kur
+	Touch screen	Dokunmatik ekran
+	Recommend	Öner
+	Read the document	Belgeyi oku
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Açık görüntünün parlaklığını, kontrastını, kenarlarını ve tonlarını ölç ve zaten söylediklerinden öneri yap
+	Click a swatch to make it the foreground color	Bir örneğe tıklayınca ön plan rengi olur
+	The document reads as	Belgenin hissi
+	Color scheme	Renk şeması
+	Placement and measurement	Yerleşim ve ölçüler
+	From the research	Araştırmadan
+	Neutral	Nötr
+	Trust	Güven
+	Calm	Sakinlik
+	Wonder	Hayret
+	Playful	Oyunbaz
+	Dense	Yoğun
+	Comfortable	Rahat
+	Airy	Ferah
+	Corner Radius	Köşe Yarıçapı

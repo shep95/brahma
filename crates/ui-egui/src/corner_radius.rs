@@ -6,9 +6,9 @@
 //! commits one `shape.edit` with `radii` per changed layer on release, as one history step; a
 //! click without movement changes nothing.
 
-use egui::{Color32, Modifiers, Pos2, Stroke};
 use brahma_doc::LayerContent;
 use brahma_doc::vector::LiveShape;
+use egui::{Color32, Modifiers, Pos2, Stroke};
 
 use crate::BrahmaApp;
 use crate::canvas::ToolEvent;

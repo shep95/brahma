@@ -11,8 +11,8 @@
 
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use egui::{Color32, Pos2, Stroke, vec2};
 use brahma_engine::paint::MAX_BRUSH_SIZE;
+use egui::{Color32, Pos2, Stroke, vec2};
 use serde_json::json;
 
 use crate::BrahmaApp;

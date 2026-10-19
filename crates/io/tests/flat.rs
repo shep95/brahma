@@ -2,9 +2,9 @@
 
 mod common;
 
-use common::*;
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::*;
+use common::*;
 
 fn single(mode: ColorMode, depth: SampleType, alpha: bool) -> brahma_doc::Document {
     let mut d = brahma_doc::Document::new("s", brahma_geom::Size::new(9, 6), mode, depth);
@@ -322,10 +322,10 @@ fn cmyk_layered_to_png_warns_conversion() {
 #[test]
 fn effects_are_written_to_psd_and_read_back() {
     let mut d = gen_doc(ColorMode::Rgb, SampleType::U8, Features::PIXELS);
-    d.layers[1].effects.items.push(brahma_doc::Effect::ColorOverlay {
-        common: brahma_doc::FxCommon::new(brahma_color::BlendMode::Normal, 1.0),
-        color: brahma_color::Color::BLACK,
-    });
+    d.layers[1]
+        .effects
+        .items
+        .push(brahma_doc::Effect::ColorOverlay { common: brahma_doc::FxCommon::new(brahma_color::BlendMode::Normal, 1.0), color: brahma_color::Color::BLACK });
     d.layers[1].effects.items.push(brahma_doc::Effect::default_drop_shadow());
     let r = export(&d, "a.psd", &ExportOptions::default()).unwrap();
     assert!(!r.warnings.iter().any(|w| w.contains("effects")), "{:?}", r.warnings);
@@ -765,8 +765,7 @@ fn tga_transparency_reopens_as_alpha_1() {
 fn tga_alpha_channel_wins_over_transparency_and_skips_spot_channels() {
     let mut d = with_alpha_channel(single(ColorMode::Rgb, SampleType::U8, true), "Alpha 2");
     let spot = brahma_raster::Surface::new(brahma_color::PixelFormat::new(ColorMode::Grayscale, SampleType::U8, false));
-    let spot =
-        brahma_doc::AlphaChannel { spot: Some((brahma_color::Color::rgb(1.0, 0.0, 0.0), 1.0)), ..brahma_doc::AlphaChannel::new("Spot", spot) };
+    let spot = brahma_doc::AlphaChannel { spot: Some((brahma_color::Color::rgb(1.0, 0.0, 0.0), 1.0)), ..brahma_doc::AlphaChannel::new("Spot", spot) };
     d.channels.insert(0, spot);
     let r = export(&d, "a.tga", &ExportOptions::default()).unwrap();
     let (bpp, alpha_bits, img) = tga(&r.bytes);
@@ -975,8 +974,7 @@ fn tga_default_bits_follow_the_alpha_channels() {
     assert_eq!(tga_default_bits(&d), TgaBits::Bits24, "transparency alone");
     let mut spot = d.clone();
     let s = brahma_raster::Surface::new(brahma_color::PixelFormat::GRAY8);
-    spot.channels
-        .push(brahma_doc::AlphaChannel { spot: Some((brahma_color::Color::rgb(1.0, 0.0, 0.0), 1.0)), ..brahma_doc::AlphaChannel::new("Spot", s) });
+    spot.channels.push(brahma_doc::AlphaChannel { spot: Some((brahma_color::Color::rgb(1.0, 0.0, 0.0), 1.0)), ..brahma_doc::AlphaChannel::new("Spot", s) });
     assert_eq!(tga_default_bits(&spot), TgaBits::Bits24, "spot channel");
     assert_eq!(tga_default_bits(&with_alpha_channel(d, "Alpha 1")), TgaBits::Bits32);
     assert_eq!((TgaBits::from_bits(24), TgaBits::from_bits(32), TgaBits::from_bits(16)), (Some(TgaBits::Bits24), Some(TgaBits::Bits32), None));

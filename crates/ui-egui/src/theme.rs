@@ -18,8 +18,8 @@
 //!
 //! Widgets read [`Tokens::get`] instead of hard-coding colours, so every theme applies everywhere.
 
-use egui::{Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals};
 use brahma_engine::prefs::UiFontSize;
+use egui::{Color32, CornerRadius, FontData, FontDefinitions, FontFamily, FontId, Stroke, TextStyle, Visuals};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 

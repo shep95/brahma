@@ -15,13 +15,13 @@
 
 use std::time::Instant;
 
-use egui::{Event, Modifiers, PointerButton, Pos2};
 use brahma_color::{ColorMode, PixelFormat, SampleType};
 use brahma_doc::{Document, Layer};
 use brahma_geom::{Rect, Size};
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::state::Tool;
 use brahma_ui_egui::{BrahmaApp, Services};
+use egui::{Event, Modifiers, PointerButton, Pos2};
 use rayon::prelude::*;
 use serde_json::json;
 

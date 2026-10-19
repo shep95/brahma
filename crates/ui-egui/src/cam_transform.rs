@@ -5,8 +5,8 @@
 //! (`paint.contentAwareMove` with `scaleX`, `scaleY` and `rotate`), Esc or ⊘ drops the whole move.
 //! The document is untouched until then, so the move stays one History step.
 
-use egui::{CursorIcon, Modifiers, Pos2};
 use brahma_algo::transform::Homography;
+use egui::{CursorIcon, Modifiers, Pos2};
 
 use crate::BrahmaApp;
 use crate::canvas::{ToolEvent, ViewXform};

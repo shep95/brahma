@@ -1,11 +1,11 @@
 //! #1747: the scroll wheel over the Layers panel's Blend Mode dropdown steps through the modes,
 //! as in Photoshop: down picks the next mode, up the previous one, one history step per notch.
 
+use brahma_doc::BlendMode;
 use egui::accesskit::Role;
 use egui::{Pos2, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::BlendMode;
 use serde_json::json;
 
 use crate::BrahmaApp;

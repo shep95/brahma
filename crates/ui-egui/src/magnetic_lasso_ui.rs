@@ -12,9 +12,9 @@
 //! The border closes through `select.magneticLasso` with `"trace": false`: the selection is exactly
 //! the outline drawn, in one history step, and an action replays that outline.
 
-use egui::{Color32, Key, Modifiers, Pos2, Rect, Stroke, vec2};
 use brahma_algo::magnetic::{self, Settings};
 use brahma_engine::magnetic_cmds::EdgeSource;
+use egui::{Color32, Key, Modifiers, Pos2, Rect, Stroke, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 

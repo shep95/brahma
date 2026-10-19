@@ -7,10 +7,10 @@
 use std::collections::HashMap;
 use std::sync::{Arc, PoisonError};
 
-use egui::{Color32, Pos2, Stroke};
 use brahma_doc::{Document, LayerContent, LayerId, TextLayer};
 use brahma_geom::{Affine, Point};
 use brahma_text::TextLayout;
+use egui::{Color32, Pos2, Stroke};
 use serde_json::json;
 
 use crate::BrahmaApp;

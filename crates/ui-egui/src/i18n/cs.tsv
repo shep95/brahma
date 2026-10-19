@@ -3795,3 +3795,25 @@ navigator	Zoom	Zvětšení
 	Model (blank = provider default)	Model (prázdné = výchozí poskytovatele)
 	OpenAI API key	Klíč API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Estetický poradce
+	Feeling	Pocit
+	Build around the foreground color	Postavit na barvě popředí
+	Touch screen	Dotyková obrazovka
+	Recommend	Doporučit
+	Read the document	Přečíst dokument
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Změřit jas, kontrast, hrany a odstíny otevřeného obrázku a doporučit podle toho, co už říká
+	Click a swatch to make it the foreground color	Kliknutím na vzorek z něj uděláte barvu popředí
+	The document reads as	Dokument působí jako
+	Color scheme	Barevné schéma
+	Placement and measurement	Rozmístění a rozměry
+	From the research	Z výzkumu
+	Neutral	Neutrální
+	Trust	Důvěra
+	Calm	Klid
+	Urgency	Naléhavost
+	Wonder	Úžas
+	Playful	Hravost
+	Dense	Husté
+	Comfortable	Pohodlné
+	Airy	Vzdušné
+	Corner Radius	Poloměr rohů

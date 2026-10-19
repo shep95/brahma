@@ -2,10 +2,10 @@
 //! to the layer being moved (the one Auto-Select picks on the press, not the one selected before)
 //! and moves in lockstep with its pixels, however fast the pointer goes.
 
-use egui::{Event, PointerButton, Pos2};
-use egui_kittest::Harness;
 use brahma_doc::LayerId;
 use brahma_geom::Rect;
+use egui::{Event, PointerButton, Pos2};
+use egui_kittest::Harness;
 use serde_json::json;
 
 use crate::BrahmaApp;

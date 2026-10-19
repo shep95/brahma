@@ -3887,3 +3887,24 @@ curves	Smooth	Εξομάλυνση
 	Model (blank = provider default)	Μοντέλο (κενό = προεπιλογή παρόχου)
 	OpenAI API key	Κλειδί API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Σύμβουλος αισθητικής
+	Feeling	Αίσθηση
+	Build around the foreground color	Χτίσιμο γύρω από το χρώμα προσκηνίου
+	Touch screen	Οθόνη αφής
+	Recommend	Πρόταση
+	Read the document	Ανάγνωση εγγράφου
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Μέτρηση φωτεινότητας, αντίθεσης, ακμών και αποχρώσεων της ανοιχτής εικόνας και πρόταση από όσα ήδη λέει
+	Click a swatch to make it the foreground color	Κλικ σε δείγμα για να γίνει χρώμα προσκηνίου
+	The document reads as	Το έγγραφο διαβάζεται ως
+	Color scheme	Χρωματικό σχήμα
+	Placement and measurement	Τοποθέτηση και μετρήσεις
+	From the research	Από την έρευνα
+	Neutral	Ουδέτερο
+	Trust	Εμπιστοσύνη
+	Calm	Ηρεμία
+	Wonder	Θαυμασμός
+	Playful	Παιχνιδιάρικο
+	Dense	Πυκνό
+	Comfortable	Άνετο
+	Airy	Αέρινο
+	Corner Radius	Ακτίνα γωνιών

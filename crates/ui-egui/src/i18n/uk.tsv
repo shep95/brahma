@@ -3886,3 +3886,24 @@ curves	Smooth	Згладити
 	Model (blank = provider default)	Модель (порожньо = типова у провайдера)
 	OpenAI API key	Ключ API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Естетичний радник
+	Feeling	Настрій
+	Build around the foreground color	Будувати навколо основного кольору
+	Touch screen	Сенсорний екран
+	Recommend	Рекомендувати
+	Read the document	Прочитати документ
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Виміряти світлоту, контраст, краї та відтінки відкритого зображення і рекомендувати з того, що воно вже каже
+	Click a swatch to make it the foreground color	Клацніть зразок, щоб зробити його основним кольором
+	The document reads as	Документ сприймається як
+	Color scheme	Колірна схема
+	Placement and measurement	Розміщення та розміри
+	From the research	З дослідження
+	Neutral	Нейтральний
+	Trust	Довіра
+	Calm	Спокій
+	Wonder	Подив
+	Playful	Грайливий
+	Dense	Щільний
+	Comfortable	Зручний
+	Airy	Повітряний
+	Corner Radius	Радіус кутів

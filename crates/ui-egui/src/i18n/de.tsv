@@ -3189,3 +3189,25 @@ curves	Smooth	Glätten
 	Model (blank = provider default)	Modell (leer = Standard des Anbieters)
 	OpenAI API key	OpenAI-API-Schlüssel
 	OpenAI	OpenAI
+	Aesthetic Advisor	Ästhetik-Berater
+	Feeling	Stimmung
+	Build around the foreground color	Um die Vordergrundfarbe herum aufbauen
+	Touch screen	Touchscreen
+	Recommend	Empfehlen
+	Read the document	Dokument lesen
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Helligkeit, Kontrast, Kanten und Farbtöne des offenen Bilds messen und aus dem empfehlen, was es schon sagt
+	Click a swatch to make it the foreground color	Ein Klick auf ein Farbfeld macht es zur Vordergrundfarbe
+	The document reads as	Das Dokument wirkt
+	Color scheme	Farbschema
+	Placement and measurement	Platzierung und Maße
+	From the research	Aus der Forschung
+	Neutral	Neutral
+	Trust	Vertrauen
+	Calm	Ruhe
+	Urgency	Dringlichkeit
+	Wonder	Staunen
+	Playful	Verspielt
+	Dense	Dicht
+	Comfortable	Bequem
+	Airy	Luftig
+	Corner Radius	Eckenradius

@@ -10,11 +10,11 @@
 
 use std::sync::Arc;
 
-use egui::{Color32, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::puppet::{ITERATIONS, PuppetDensity, PuppetMesh, PuppetMode, PuppetPin, PuppetSolver, PuppetWarp, build_mesh};
 use brahma_doc::{Document, LayerId};
 use brahma_geom::Rect;
 use brahma_raster::Surface;
+use egui::{Color32, Stroke, TextureHandle, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

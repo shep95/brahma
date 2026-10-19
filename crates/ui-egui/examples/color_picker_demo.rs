@@ -1,10 +1,10 @@
 //! Render synthetic color-picker evidence without capturing the user's desktop.
 //! cargo run -p brahma-ui-egui --example color_picker_demo -- /tmp/color-picker
-use egui_kittest::{Harness, kittest::Queryable};
 use brahma_ui_egui::{
     BrahmaApp, Services,
     screen_picker::{self, Capture, Pending, ScreenImage},
 };
+use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 
 fn main() {

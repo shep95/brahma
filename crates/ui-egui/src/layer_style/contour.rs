@@ -7,10 +7,10 @@
 //! - `contourEditor`: `{effect, key, original}` while the Contour Editor is open; `original` is
 //!   the param Cancel restores.
 
-use egui::{Color32, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::Contour;
 use brahma_doc::adjust::CurvePoint;
 use brahma_engine::layer_style::{CONTOURS, contour_from_param, contour_param, contour_to_shc, contours_from_shc};
+use egui::{Color32, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use super::{entry, set_param};

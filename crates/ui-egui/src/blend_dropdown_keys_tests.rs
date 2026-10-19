@@ -1,10 +1,10 @@
 //! #1318: the Layers panel's Blend Mode dropdown takes the arrow keys once it is open, ahead of
 //! the tool shortcuts (the Move tool's arrow-key nudge).
 
+use brahma_doc::BlendMode;
 use egui::accesskit::Role;
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::BlendMode;
 use serde_json::json;
 
 use crate::BrahmaApp;

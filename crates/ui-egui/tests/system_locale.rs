@@ -1,8 +1,8 @@
 //! Use the actual platform UI-language API and the production (non-cfg(test)) Auto path.
 #![cfg(not(target_arch = "wasm32"))]
 
-use egui_kittest::{Harness, kittest::Queryable};
 use brahma_ui_egui::{BrahmaApp, i18n};
+use egui_kittest::{Harness, kittest::Queryable};
 
 #[test]
 fn native_first_launch_follows_os_ui_preferences() {

@@ -529,6 +529,9 @@ pub(crate) fn export_flat_with(doc: &Document, format: Format, opts: &ExportOpti
     let mut img = document_to_image_for(doc, &mut warnings, cmyk_target)?;
     ctl.check().map_err(|_| IoError::Cancelled)?;
     ctl.progress(composite_share(format));
+    if opts.corner_radius > 0.0 {
+        img = round_corners(&img, opts.corner_radius)?;
+    }
     if opts.xmp == XmpEmbed::None {
         // Export As's Metadata: None: the packet lists the text of every type layer and one id
         // per placed document (#647).
@@ -684,6 +687,45 @@ fn map_bands(img: &Image, layout: ChannelLayout, sample: CSample, f: impl Fn(Vec
     Ok(Image::from_raw(w, h, layout, sample, data)?.with_icc(img.icc.clone()).with_meta(img.meta.clone()))
 }
 
+/// The image with its corners rounded by `radius` pixels: an alpha channel (added when the
+/// image has none) is multiplied by the coverage of a rounded rectangle the size of the image,
+/// with a one-pixel anti-aliased edge. Formats without alpha matte the corners over white later
+/// (`matte_over_white`). The radius is clamped to half the shorter side.
+pub(crate) fn round_corners(img: &Image, radius: f32) -> Result<Image, IoError> {
+    let (w, h) = img.dimensions();
+    if w == 0 || h == 0 || !radius.is_finite() || radius <= 0.0 {
+        return Ok(img.clone());
+    }
+    let r = radius.min(w.min(h) as f32 / 2.0);
+    let src_layout = img.layout();
+    let layout = src_layout.with_alpha();
+    let (sc, dc) = (src_layout.channels(), layout.channels());
+    let vals = img.to_normalized();
+    try_buffer(img.pixel_count(), dc * 4)?;
+    let mut out_f: Vec<f32> = Vec::with_capacity(img.pixel_count() * dc);
+    let (half_w, half_h) = (w as f32 / 2.0, h as f32 / 2.0);
+    for y in 0..h {
+        let py = (y as f32 + 0.5 - half_h).abs() - (half_h - r);
+        for x in 0..w {
+            let px = (x as f32 + 0.5 - half_w).abs() - (half_w - r);
+            let (dx, dy) = (px.max(0.0), py.max(0.0));
+            let d = (dx * dx + dy * dy).sqrt() - r;
+            let coverage = (0.5 - d).clamp(0.0, 1.0);
+            let i = (y as usize * w as usize + x as usize) * sc;
+            let Some(pixel) = vals.get(i..i + sc) else { continue };
+            if src_layout.has_alpha() {
+                let Some((&a, color)) = pixel.split_last() else { continue };
+                out_f.extend_from_slice(color);
+                out_f.push(a * coverage);
+            } else {
+                out_f.extend_from_slice(pixel);
+                out_f.push(coverage);
+            }
+        }
+    }
+    Ok(Image::from_normalized(w, h, layout, img.sample_type(), &out_f)?.with_icc(img.icc.clone()).with_meta(img.meta.clone()))
+}
+
 /// Straight-alpha pixels composited over white (no ink for CMYK), without the alpha channel.
 fn matte_over_white(img: &Image) -> Result<Image, IoError> {
     let layout = img.layout();
@@ -833,6 +875,54 @@ fn export_mode_specific(doc: &Document, format: Format, opts: &ExportOptions) ->
             Ok(Some(r))
         }
         _ => Ok(None),
+    }
+}
+
+#[cfg(test)]
+mod round_corner_tests {
+    use super::*;
+
+    fn alpha(img: &Image, x: u32, y: u32) -> f32 {
+        let c = img.layout().channels();
+        let (w, _) = img.dimensions();
+        img.to_normalized()[(y as usize * w as usize + x as usize) * c + c - 1]
+    }
+
+    #[test]
+    fn corners_go_transparent_and_the_middle_stays_opaque_at_every_depth() {
+        for layout in [ChannelLayout::Rgb, ChannelLayout::Rgba, ChannelLayout::Gray, ChannelLayout::Cmyk] {
+            for sample in [CSample::U8, CSample::U16, CSample::F32] {
+                let c = layout.channels();
+                let vals: Vec<f32> = (0..32 * 16 * c).map(|i| if layout.has_alpha() && i % c == c - 1 { 1.0 } else { 0.5 }).collect();
+                let img = Image::from_normalized(32, 16, layout, sample, &vals).unwrap();
+                let out = round_corners(&img, 6.0).unwrap();
+                assert!(out.layout().has_alpha() && out.layout().same_model(layout), "{layout:?}");
+                assert_eq!(out.sample_type(), sample);
+                assert_eq!(alpha(&out, 0, 0), 0.0, "{layout:?} {sample:?}");
+                assert_eq!(alpha(&out, 31, 15), 0.0);
+                assert_eq!(alpha(&out, 16, 8), 1.0);
+                assert_eq!(alpha(&out, 16, 0), 1.0, "edge midpoint keeps its alpha");
+                assert!(alpha(&out, 1, 1) > 0.0 && alpha(&out, 1, 1) < 1.0, "the arc is anti-aliased");
+            }
+        }
+    }
+
+    #[test]
+    fn existing_alpha_is_multiplied_and_odd_radii_are_clamped() {
+        let mut vals = vec![0.2; 8 * 8 * 4];
+        for px in vals.chunks_mut(4) {
+            px[3] = 0.5;
+        }
+        let img = Image::from_normalized(8, 8, ChannelLayout::Rgba, CSample::F32, &vals).unwrap();
+        let out = round_corners(&img, 100.0).unwrap();
+        assert_eq!(alpha(&out, 4, 4), 0.5);
+        assert_eq!(alpha(&out, 0, 0), 0.0);
+        for r in [0.0, -3.0, f32::NAN, f32::INFINITY] {
+            let same = round_corners(&img, r).unwrap();
+            assert_eq!(same.data(), img.data(), "radius {r} changes nothing");
+        }
+        let empty = Image::from_raw(0, 0, ChannelLayout::Rgba, CSample::U8, Vec::new()).unwrap();
+        assert_eq!(round_corners(&empty, 4.0).unwrap().dimensions(), (0, 0));
     }
 }
 

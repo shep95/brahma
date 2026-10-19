@@ -2,10 +2,10 @@
 //! drag onto another smart object moves it there, ⌥-drag copies it, and a drag onto Delete
 //! removes it, as in Photoshop.
 
+use brahma_doc::{LayerContent, LayerId};
 use egui::accesskit::{Role, Toggled};
 use egui::{Modifiers, Pos2};
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::{LayerContent, LayerId};
 use serde_json::json;
 
 use crate::BrahmaApp;

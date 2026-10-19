@@ -1,7 +1,7 @@
 //! Camera Raw-style continuous RGB ribbons. Raw bins remain exact; display filtering is local.
 use crate::theme::Tokens;
-use egui::{Mesh, Rect, pos2};
 use brahma_algo::histogram::{BINS, RgbHistogram};
+use egui::{Mesh, Rect, pos2};
 
 /// A five-bin binomial display kernel softens quantization combs. It cannot bridge
 /// a wide empty range. Clipping bins are pinned and excluded from filtering adjacent bins.

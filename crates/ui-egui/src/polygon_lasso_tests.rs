@@ -2,9 +2,9 @@
 //! new-selection polygon hides the selection it replaces while it is drawn (⇧ or ⌥ at the first
 //! click keep it, to add to or subtract from), replacing it in one history step.
 
+use brahma_geom::Rect;
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
-use brahma_geom::Rect;
 use serde_json::json;
 
 use crate::BrahmaApp;

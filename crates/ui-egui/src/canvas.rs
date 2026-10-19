@@ -4,9 +4,9 @@
 //! update only their damage rectangle (`set_partial`). The wgpu compositor (M5) will replace this
 //! with direct GPU rendering behind the same `CanvasCache` interface.
 
-use egui::{Color32, Mesh, PointerButton, Pos2, Rect, Sense, Stroke, TextureOptions, Vec2, pos2, vec2};
 use brahma_doc::{Document, LayerContent};
 use brahma_geom::Rect as DRect;
+use egui::{Color32, Mesh, PointerButton, Pos2, Rect, Sense, Stroke, TextureOptions, Vec2, pos2, vec2};
 use serde_json::json;
 
 use crate::BrahmaApp;
@@ -8410,8 +8410,7 @@ mod rotation_preview_isolation_tests {
             app.session
                 .edit("Fixture", |doc, active| {
                     if quick_mask {
-                        doc.quick_mask =
-                            Some(brahma_doc::AlphaChannel::new("Quick Mask", brahma_raster::Surface::new(brahma_color::PixelFormat::GRAY8)));
+                        doc.quick_mask = Some(brahma_doc::AlphaChannel::new("Quick Mask", brahma_raster::Surface::new(brahma_color::PixelFormat::GRAY8)));
                     }
                     for y in 0..16 {
                         for x in 0..8 {

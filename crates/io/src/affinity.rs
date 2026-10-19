@@ -375,8 +375,7 @@ impl Builder {
                 if style == GradientStyle::Radial && u > 0.0 && (w / u - 1.0).abs() > 0.01 {
                     self.warn("elliptical gradients import as circular ones");
                 }
-                let (angle, scale, offset) =
-                    brahma_compose::gradient_fill::from_handles(style, [o.x as f32, o.y as f32], [e.x as f32, e.y as f32], frame, 0.0);
+                let (angle, scale, offset) = brahma_compose::gradient_fill::from_handles(style, [o.x as f32, o.y as f32], [e.x as f32, e.y as f32], frame, 0.0);
                 let stops = g.stops.iter().map(|s| (s.offset as f32, Color { alpha: 1.0, ..color(s.color) })).collect();
                 let opacity_stops = g.stops.iter().map(|s| (s.offset as f32, s.color.alpha() as f32)).collect();
                 let midpoints = g.stops.iter().take(g.stops.len().saturating_sub(1)).map(|s| s.half_point() as f32).collect();

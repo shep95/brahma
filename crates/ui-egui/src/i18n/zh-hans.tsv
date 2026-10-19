@@ -2802,3 +2802,25 @@ curves	Smooth	平滑
 	Model (blank = provider default)	模型（留空 = 服务商默认）
 	OpenAI API key	OpenAI API 密钥
 	OpenAI	OpenAI
+	Aesthetic Advisor	美学顾问
+	Feeling	感受
+	Build around the foreground color	以前景色为基础
+	Touch screen	触摸屏
+	Recommend	推荐
+	Read the document	读取文档
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	测量打开图像的明度、对比度、边缘和色相，并根据它已表达的内容推荐
+	Click a swatch to make it the foreground color	点击色板将其设为前景色
+	The document reads as	文档给人的感受
+	Color scheme	配色方案
+	Placement and measurement	布局与尺寸
+	From the research	来自研究
+	Neutral	中性
+	Trust	信任
+	Calm	平静
+	Urgency	紧迫
+	Wonder	惊奇
+	Playful	俏皮
+	Dense	紧凑
+	Comfortable	舒适
+	Airy	宽松
+	Corner Radius	圆角半径

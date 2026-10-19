@@ -13,11 +13,11 @@
 
 use std::hash::{Hash, Hasher};
 
-use egui::{Align2, Color32, FontId, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::{FilterParams, GALLERY_CATEGORIES, GalleryFilter};
 use brahma_doc::LayerId;
 use brahma_geom::Rect;
 use brahma_raster::{Interrupt, Surface};
+use egui::{Align2, Color32, FontId, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;

@@ -11,9 +11,9 @@
 //! padding costs nothing and the work is bounded by the viewport at 500% or more, never by the
 //! document (AGENTS.md rule 8).
 
-use egui::{Color32, Painter, Stroke};
 use brahma_doc::Document;
 use brahma_geom::Rect as DRect;
+use egui::{Color32, Painter, Stroke};
 
 use crate::BrahmaApp;
 use crate::canvas::ViewXform;

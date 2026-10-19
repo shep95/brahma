@@ -19,13 +19,13 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 use std::sync::mpsc::Sender;
 
-use egui::{Color32, Rect, RichText, Sense, Stroke, vec2};
 use brahma_doc::DocId;
 use brahma_engine::jobs::{JobCtx, JobEvent, JobId, JobInfo, JobOutcome, OPEN_JOB, OpenSource, Started};
+use egui::{Color32, Rect, RichText, Sense, Stroke, vec2};
 use serde_json::{Value, json};
 
 use crate::theme::Tokens;
-use crate::{ControlResponse, ExportSettings, BrahmaApp, SaveFileFn, notices};
+use crate::{BrahmaApp, ControlResponse, ExportSettings, SaveFileFn, notices};
 
 /// Delay before the modal progress dialog appears (quick jobs finish without it).
 pub const DIALOG_DELAY_MS: f64 = 250.0;

@@ -5,8 +5,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
+use brahma_ui_egui::{BrahmaApp, FileDialogAnswer, FileDialogRequest, Services, menus};
 use egui_kittest::kittest::Queryable;
-use brahma_ui_egui::{FileDialogAnswer, FileDialogRequest, BrahmaApp, Services, menus};
 use serde_json::json;
 
 type Harness = egui_kittest::Harness<'static, BrahmaApp>;

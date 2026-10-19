@@ -1,6 +1,6 @@
 //! Save identity belongs to the editable document, after a successful write only.
 
-use crate::{ExportSettings, BrahmaApp, Services, menus};
+use crate::{BrahmaApp, ExportSettings, Services, menus};
 use brahma_engine::Session;
 use serde_json::json;
 use std::{cell::RefCell, rc::Rc};
@@ -12,9 +12,7 @@ fn app() -> BrahmaApp {
             import: Some(Box::new(|name, bytes, max_svg_group_depth| {
                 brahma_io::import_with_svg_group_depth(name, bytes, max_svg_group_depth).map(|r| (r.document, r.warnings)).map_err(|e| e.to_string())
             })),
-            export: Some(Box::new(|doc, path, _| {
-                brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string())
-            })),
+            export: Some(Box::new(|doc, path, _| brahma_io::export(doc, path, &Default::default()).map(|r| (r.bytes, r.warnings)).map_err(|e| e.to_string()))),
             write: Some(Box::new(|_, _| Ok(()))),
             automation_write: Some(Box::new(|_, _| Ok(()))),
             ..Default::default()

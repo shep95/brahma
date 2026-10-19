@@ -8,13 +8,13 @@
 //! Control channel: `ui.menu.invoke {"id":"filter.adaptiveWideAngle","params":{"ui":{"set":{…},
 //! "add":{"a":[x,y],"b":[x,y],"orientation":"…"}, "remove":i, "commit":true | "cancel":true}}}`.
 
-use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::transform::Interp;
 use brahma_algo::wideangle::{self, Camera, Constraint, Orientation, WideAngle, WideModel};
 use brahma_color::PixelFormat;
 use brahma_doc::LayerId;
 use brahma_geom::Rect;
 use brahma_raster::Surface;
+use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;
@@ -110,12 +110,8 @@ pub fn open(app: &mut BrahmaApp, ctx: &egui::Context) -> Result<(), String> {
     let (w, h) = (frame.width() as usize, frame.height() as usize);
     let k = w.max(h).div_ceil(PROXY_SIDE).max(1);
     let (pw, ph) = (w.div_ceil(k), h.div_ceil(k));
-    let proxy = brahma_algo::resample::resize_surface(
-        &surf.convert(PixelFormat::RGBA8),
-        1.0 / k as f64,
-        1.0 / k as f64,
-        brahma_algo::resample::Resample::Bilinear,
-    );
+    let proxy =
+        brahma_algo::resample::resize_surface(&surf.convert(PixelFormat::RGBA8), 1.0 / k as f64, 1.0 / k as f64, brahma_algo::resample::Resample::Bilinear);
     // Normalise the proxy to start at the origin.
     let mut px = Surface::new(PixelFormat::RGBA8);
     let src_r = Rect::new(

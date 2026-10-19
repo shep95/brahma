@@ -4,10 +4,10 @@
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
 
-use egui::{Color32, Rect, Stroke, StrokeKind, pos2, vec2};
 use brahma_color::Color;
 use brahma_doc::{DocId, Document, Fill, LayerContent, LayerId};
 use brahma_engine::solid_fill_cmds as cmds;
+use egui::{Color32, Rect, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::{BrahmaApp, color_picker_ui, theme::Tokens};

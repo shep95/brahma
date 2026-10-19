@@ -9,13 +9,13 @@
 
 use std::collections::{BTreeMap, HashMap, VecDeque};
 
-use egui::{Color32, RichText, Sense, vec2};
 use brahma_doc::DocId;
 use brahma_engine::jobs::{JobEvent, JobId, JobOutcome, Started};
 #[cfg(test)]
 use brahma_engine::prefs::Theme;
 use brahma_engine::prefs::{self, AppearanceMode, DarkTheme, LightTheme, SECTIONS, Theme as SavedTheme};
 use brahma_engine::snap::{SnapLine, SnapTargets};
+use egui::{Color32, RichText, Sense, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;

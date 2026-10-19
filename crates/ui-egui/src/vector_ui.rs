@@ -2,10 +2,10 @@
 //! Direct Selection (A) lives in `direct_select`.
 //! All edits go through the engine's `shape.*` / `path.*` commands.
 
-use egui::{Color32, Pos2, Rect, Sense, Stroke, pos2, vec2};
 use brahma_doc::vector::Path;
 use brahma_doc::{Document, LayerContent};
 use brahma_geom::Affine;
+use egui::{Color32, Pos2, Rect, Sense, Stroke, pos2, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -2084,8 +2084,7 @@ mod tests {
         let mut app = app();
         app.ui.tool_options.corner_radius = 8.0;
         let preview = |app: &BrahmaApp, tool, end| {
-            shape_geometry(&app.ui.tool_options, tool, [10.0, 10.0], end, egui::Modifiers::ALT)
-                .and_then(|p| brahma_engine::vector_cmds::shape_path(&p).ok())
+            shape_geometry(&app.ui.tool_options, tool, [10.0, 10.0], end, egui::Modifiers::ALT).and_then(|p| brahma_engine::vector_cmds::shape_path(&p).ok())
         };
         for tool in [Tool::Rectangle, Tool::EllipseShape, Tool::Triangle, Tool::Polygon, Tool::Line] {
             let shown = preview(&app, tool, [60.0, 30.0]).unwrap();

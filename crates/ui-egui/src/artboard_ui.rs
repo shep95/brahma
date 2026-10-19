@@ -2,8 +2,8 @@
 //! View › Fit Artboard on Screen, and the Properties panel section (X/Y/W/H, preset,
 //! background). Everything that changes the document is `layer.artboard.set` and friends.
 
-use egui::{Align2, Color32, Pos2, Rect, Stroke};
 use brahma_doc::{ArtboardBackground, Document, Layer};
+use egui::{Align2, Color32, Pos2, Rect, Stroke};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

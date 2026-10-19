@@ -11,7 +11,7 @@ use serde_json::{Map, Value, json};
 
 use crate::state::DialogKind;
 use crate::theme::Tokens;
-use crate::{ExportSettings, BrahmaApp};
+use crate::{BrahmaApp, ExportSettings};
 
 const FORMATS: [(&str, &str); 6] = [("png", "PNG"), ("jpg", "JPG"), ("webp", "WebP"), ("tif", "TIFF"), ("tga", "TGA"), ("ico", "ICO")];
 
@@ -65,8 +65,22 @@ fn seed_remembered(app: &BrahmaApp, f: &mut Map<String, Value>) {
 
 /// Record the settings for the next Export As (see [`seed_remembered`]).
 fn remember(app: &mut BrahmaApp, f: &Map<String, Value>) {
-    const KEYS: [&str; 13] =
-        ["format", "quality", "lossless", "transparency", "scale", "metadata", "tgaBits", "sizing", "width", "height", "lockAspect", "profile", "embedProfile"];
+    const KEYS: [&str; 14] = [
+        "format",
+        "quality",
+        "lossless",
+        "transparency",
+        "scale",
+        "metadata",
+        "tgaBits",
+        "sizing",
+        "width",
+        "height",
+        "lockAspect",
+        "profile",
+        "embedProfile",
+        "cornerRadius",
+    ];
     let saved: Map<String, Value> = KEYS.iter().filter_map(|k| f.get(*k).map(|v| ((*k).to_string(), v.clone()))).collect();
     app.session.prefs.edit(|p| {
         p.dialogs.insert(COMMAND.into(), Value::Object(saved));
@@ -89,6 +103,7 @@ pub fn open(app: &mut BrahmaApp) -> Result<u64, String> {
     f.insert("lockAspect".into(), json!(true));
     f.insert("profile".into(), json!("document"));
     f.insert("embedProfile".into(), json!(true));
+    f.insert("cornerRadius".into(), json!(0));
     f.insert("width".into(), json!(st.doc.size.width));
     f.insert("height".into(), json!(st.doc.size.height));
     f.insert("__w".into(), json!(st.doc.size.width));
@@ -393,6 +408,8 @@ fn settings(f: &Map<String, Value>) -> ExportSettings {
         // Metadata: None drops EXIF and resolution as well as XMP. A missing key keeps them,
         // which is what Export As wrote before the choice existed.
         embed_metadata: metadata != "none",
+        // The radius is in exported pixels: scaled with the image.
+        corner_radius: (n(f, "cornerRadius", 0.0).max(0.0) * n(f, "scale", 100.0) / 100.0) as f32,
         ..Default::default()
     }
 }
@@ -745,6 +762,12 @@ pub fn body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) 
                 crate::widgets::checkbox(ui, &mut tr, tl!("Transparency"));
                 f.insert("transparency".into(), json!(tr));
             }
+            // Rounded corners (#5821): a radius in document pixels; the corners are transparent,
+            // or white where the format has no alpha.
+            let max_r = (doc.size.width.min(doc.size.height) as f32 / 2.0).max(1.0);
+            let mut radius = n(f, "cornerRadius", 0.0).clamp(0.0, f64::from(max_r)) as f32;
+            crate::widgets::slider_row(ui, tl!("Corner Radius"), &mut radius, 0.0..=max_r, "px", None);
+            f.insert("cornerRadius".into(), json!(radius.round()));
             ui.horizontal(|ui| {
                 ui.label(egui::RichText::new(tl!("Metadata")).color(t.text_dim));
                 let mut m = s(f, "metadata");
@@ -985,6 +1008,23 @@ mod tests {
     /// Only the dialog's own settings are remembered: not the destination, the document size or
     /// the layer the dialog was opened with.
     #[test]
+    fn corner_radius_scales_with_the_export_and_is_remembered() {
+        let mut f = Map::new();
+        f.insert("format".into(), json!("png"));
+        f.insert("scale".into(), json!(50));
+        f.insert("cornerRadius".into(), json!(24));
+        assert_eq!(settings(&f).corner_radius, 12.0, "half-size export halves the radius");
+        f.insert("cornerRadius".into(), json!(-5));
+        assert_eq!(settings(&f).corner_radius, 0.0, "negative values mean square corners");
+        f.remove("cornerRadius");
+        assert_eq!(settings(&f).corner_radius, 0.0);
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+        f.insert("cornerRadius".into(), json!(16));
+        remember(&mut app, &f);
+        assert_eq!(app.session.prefs().dialogs.get(COMMAND).cloned().unwrap()["cornerRadius"], 16, "the radius is remembered");
+    }
+
+    #[test]
     fn remembering_keeps_only_the_dialog_settings() {
         let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
         let mut f = Map::new();
@@ -1047,13 +1087,8 @@ mod tests {
 
     #[test]
     fn export_document_scales_and_flattens() {
-        let doc = Document::with_background(
-            "x",
-            brahma_doc::Size::new(200, 100),
-            brahma_doc::ColorMode::Rgb,
-            brahma_doc::SampleType::U8,
-            brahma_doc::Color::WHITE,
-        );
+        let doc =
+            Document::with_background("x", brahma_doc::Size::new(200, 100), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8, brahma_doc::Color::WHITE);
         let mut f = Map::new();
         f.insert("format".into(), json!("jpg"));
         f.insert("scale".into(), json!(50));
@@ -1209,13 +1244,8 @@ mod tests {
         assert!(resize_from_side(400.0, 200.0, 0.0, 10.0, false, true).is_err());
         assert!(resize_from_side(10.0, 10.0, 400_000.0, 10.0, false, true).is_err());
 
-        let doc = Document::with_background(
-            "x",
-            brahma_doc::Size::new(400, 200),
-            brahma_doc::ColorMode::Rgb,
-            brahma_doc::SampleType::U8,
-            brahma_doc::Color::WHITE,
-        );
+        let doc =
+            Document::with_background("x", brahma_doc::Size::new(400, 200), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8, brahma_doc::Color::WHITE);
         let before = doc.clone();
         let mut f = Map::new();
         f.insert("format".into(), json!("png"));
@@ -1250,13 +1280,8 @@ mod tests {
         let all = settings(&f);
         assert!(all.xmp_all && all.embed_metadata && all.embed_icc);
 
-        let mut doc = Document::with_background(
-            "x",
-            brahma_doc::Size::new(8, 8),
-            brahma_doc::ColorMode::Rgb,
-            brahma_doc::SampleType::U8,
-            brahma_doc::Color::WHITE,
-        );
+        let mut doc =
+            Document::with_background("x", brahma_doc::Size::new(8, 8), brahma_doc::ColorMode::Rgb, brahma_doc::SampleType::U8, brahma_doc::Color::WHITE);
         doc.icc_profile = Some(Builtin::DisplayP3.profile().to_bytes());
         doc.metadata.xmp = Some("<x:xmpmeta>secret</x:xmpmeta>".into());
         let before = doc.clone();

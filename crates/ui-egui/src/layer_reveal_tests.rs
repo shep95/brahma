@@ -1,8 +1,8 @@
 //! #152: a new active layer opens its parent groups and is scrolled into view.
 
+use brahma_doc::LayerId;
 use egui::{Rect, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_doc::LayerId;
 use serde_json::json;
 
 use crate::BrahmaApp;

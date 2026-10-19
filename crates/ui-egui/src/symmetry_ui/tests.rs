@@ -1,10 +1,10 @@
 use super::*;
+use brahma_engine::Session;
 use egui::{Context, Modifiers, Pos2, RawInput, Rect};
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
-use brahma_engine::Session;
 
 fn app() -> BrahmaApp {
     let mut app = BrahmaApp::new(Session::new(), crate::Services::default());

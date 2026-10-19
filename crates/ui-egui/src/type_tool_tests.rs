@@ -3,11 +3,11 @@
 //! view flip and layer transform; size edits apply at layer and selection scope, for native and
 //! PSD-round-tripped text, as one history step per drag.
 
+use brahma_doc::{LayerContent, LayerId, TextLayer};
+use brahma_geom::{Affine, Point};
 use egui::{Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::{LayerContent, LayerId, TextLayer};
-use brahma_geom::{Affine, Point};
 use serde_json::json;
 
 use super::{layout, text_layer};
@@ -1338,8 +1338,8 @@ fn the_font_menu_lists_served_families() {
 /// #2236: formatting applies to the selected type layers, while an active text edit stays local.
 mod multi_layer_formatting {
     use super::*;
-    use egui::accesskit::Role;
     use brahma_doc::text::{AntiAlias, CharStyle, Orientation, TextAlign};
+    use egui::accesskit::Role;
 
     fn selected(app: &mut BrahmaApp, ids: &[LayerId]) {
         for (i, id) in ids.iter().enumerate() {
@@ -1557,9 +1557,9 @@ mod multi_layer_formatting {
     /// layers, or on the selected characters while typing.
     #[test]
     fn character_panel_opentype_buttons_toggle_and_show_the_feature() {
+        use brahma_engine::type_extra_cmds::feature_on;
         use egui::accesskit::Toggled;
         use egui_kittest::kittest::NodeT;
-        use brahma_engine::type_extra_cmds::feature_on;
         let (app, ids) = fixture();
         let untouched = style(&app, ids[2], 0);
         let mut h = controls(app, true);

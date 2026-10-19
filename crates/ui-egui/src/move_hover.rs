@@ -5,9 +5,9 @@
 //! is picked there (#2591). The answer is cached per document revision and pointer pixel: a
 //! pointer resting on the canvas costs nothing per frame.
 
-use egui::{Pos2, Stroke};
 use brahma_doc::{DocId, Document, Layer, LayerContent, LayerId};
 use brahma_geom::Rect;
+use egui::{Pos2, Stroke};
 
 use crate::BrahmaApp;
 use crate::canvas::ViewXform;

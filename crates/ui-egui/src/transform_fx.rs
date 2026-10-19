@@ -21,7 +21,6 @@
 
 use std::sync::{Arc, Mutex, PoisonError};
 
-use egui::{Color32, ColorImage, TextureHandle, TextureId, TextureOptions};
 use brahma_algo::transform::Homography;
 use brahma_color::{BlendMode, PixelFormat};
 use brahma_compose::Buffer;
@@ -29,6 +28,7 @@ use brahma_compose::effects::{self, TextureCtx};
 use brahma_doc::{Document, Effect, Layer, LayerContent};
 use brahma_geom::Rect;
 use brahma_raster::Surface;
+use egui::{Color32, ColorImage, TextureHandle, TextureId, TextureOptions};
 
 use crate::transform_tex::PreviewTextures;
 

@@ -3,10 +3,10 @@
 
 mod common;
 
-use common::*;
 use brahma_color::{ColorMode, SampleType};
 use brahma_format::zip::ZipReader;
 use brahma_io::*;
+use common::*;
 
 fn doc() -> brahma_doc::Document {
     let mut d = gen_doc(ColorMode::Rgb, SampleType::U8, Features::PIXELS);

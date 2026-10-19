@@ -3,10 +3,10 @@
 //! key input (issue #12: "add an adjustment layer to a new document, edit it, crash"), and the
 //! Curves point interactions (issue #43).
 
+use brahma_doc::{Adjustment, LayerContent, LayerId};
 use egui::{Pos2, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::{Adjustment, LayerContent, LayerId};
 use serde_json::json;
 
 use crate::BrahmaApp;
@@ -666,10 +666,7 @@ fn gradient_map_picker_import_cancel_and_errors_preserve_state() {
         None,
         Some(FileDialogAnswer::Contents("broken.grd".into(), b"invalid".to_vec())),
         Some(FileDialogAnswer::Contents("old.grd".into(), b"8BGR\0\x03".to_vec())),
-        Some(FileDialogAnswer::Contents(
-            "noise.grd".into(),
-            brahma_psd::grd::write(&[brahma_psd::grd::GrdGradient { noise: true, ..Default::default() }]),
-        )),
+        Some(FileDialogAnswer::Contents("noise.grd".into(), brahma_psd::grd::write(&[brahma_psd::grd::GrdGradient { noise: true, ..Default::default() }]))),
         Some(FileDialogAnswer::Contents("wrong.abr".into(), Vec::new())),
         Some(FileDialogAnswer::Paths(vec!["/nonexistent/brahma-gradients.grd".into()])),
         Some(FileDialogAnswer::Unavailable("dialog unavailable".into())),

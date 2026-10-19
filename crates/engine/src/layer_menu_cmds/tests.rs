@@ -470,11 +470,7 @@ fn reveal_in_finder_dry_run_and_enabled() {
     s.edit("linked", |doc, active| {
         let mut l = Layer::new(
             "linked",
-            LayerContent::Smart(brahma_doc::SmartObject::new(
-                SmartSource::Linked { path: "/tmp/pics/a.png".into() },
-                brahma_geom::Affine::IDENTITY,
-                None,
-            )),
+            LayerContent::Smart(brahma_doc::SmartObject::new(SmartSource::Linked { path: "/tmp/pics/a.png".into() }, brahma_geom::Affine::IDENTITY, None)),
         );
         l.visible = true;
         *active = Some(doc.insert_above(*active, l));

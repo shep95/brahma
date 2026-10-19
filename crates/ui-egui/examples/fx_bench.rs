@@ -12,12 +12,10 @@
 
 use std::time::Instant;
 
-use eframe::wgpu;
 use brahma_color::{BlendMode, Color, ColorMode, SampleType};
-use brahma_doc::{
-    Adjustment, Bevel, BevelStyle, BevelTechnique, Contour, Document, Effect, FxCommon, FxPaint, Layer, LayerContent, StrokeFx, StrokePosition,
-};
+use brahma_doc::{Adjustment, Bevel, BevelStyle, BevelTechnique, Contour, Document, Effect, FxCommon, FxPaint, Layer, LayerContent, StrokeFx, StrokePosition};
 use brahma_geom::{Rect, Size};
+use eframe::wgpu;
 use serde_json::json;
 
 fn arg(args: &[String], name: &str) -> Option<String> {

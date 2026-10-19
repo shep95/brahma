@@ -4,11 +4,11 @@
 #[path = "../../io/tests/support/current_affinity.rs"]
 mod fixture;
 
-use fixture::{Marker, document};
 use brahma_affinity::synth::Method;
 use brahma_doc::{LayerContent, LayerId};
 use brahma_engine::{Session, file_cmds::open_bytes_as};
 use brahma_geom::{Point, Rect};
+use fixture::{Marker, document};
 use serde_json::json;
 
 fn state(s: &Session, id: LayerId) -> (Rect, Point) {

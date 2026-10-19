@@ -1,9 +1,9 @@
 //! #2399: batch conversion exposes the formats and quality its engine already supports.
 //! The menu controls are exercised separately from the existing engine's decoded outputs.
 
-use egui_kittest::kittest::Queryable;
 use brahma_codecs::{ChannelLayout, EncodeOptions, Format, Image};
 use brahma_ui_egui::{BrahmaApp, menus};
+use egui_kittest::kittest::Queryable;
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

@@ -5,8 +5,8 @@
 //! once every affected document has been answered. Cancel at any point drops it. Documents are
 //! tracked by id, not tab index, so closing one elsewhere while the prompt is up can't retarget it.
 
-use egui::Key;
 use brahma_doc::DocId;
+use egui::Key;
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

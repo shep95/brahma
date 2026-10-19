@@ -30,6 +30,7 @@ crates/
   tablet                     L0 standalone pen tablet input (macOS AppKit, X11 XInput2); the one isolated unsafe crate
   doc                        L1 document model (layers, masks, adjustments, effects, smart objects: pure data)
   ops paint algo text vector L2 history, brush engine, imaging algorithms, type engine, paths/shapes
+  aesthetic                  L2 aesthetic recommendations (oklch palettes, type scales, placement, motion) from a research corpus
   compose gpu format         L3 CPU compositor (the oracle), wgpu compositor, .pcraft native format
   io plugins                 L4 document <-> PSD / flat formats; sandboxed WebAssembly plug-ins
   engine                     L5 Session + command registry (every action is a command)

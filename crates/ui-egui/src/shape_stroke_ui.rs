@@ -1,6 +1,6 @@
 //! Shape stroke geometry controls shared by the tool defaults and Properties.
-use egui::vec2;
 use brahma_doc::{LineCap, LineJoin, ShapeStroke, StrokeAlign};
+use egui::vec2;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

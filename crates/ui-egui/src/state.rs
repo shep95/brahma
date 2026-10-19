@@ -1185,6 +1185,9 @@ pub struct UiState {
     /// Ruler/Count/Note tools, Measurement Log and Notes panels (see `analysis_ui`).
     #[serde(default)]
     pub analysis: crate::analysis_ui::AnalysisUi,
+    /// Window › Aesthetic Advisor (see `aesthetic_ui`).
+    #[serde(default)]
+    pub aesthetic: crate::aesthetic_ui::AestheticUi,
     pub timeline: crate::timeline_ui::TimelineUi,
     /// Slice and Slice Select tools (see `slice_ui`).
     #[serde(default)]
@@ -1332,6 +1335,7 @@ impl Default for UiState {
             presets_ui: Default::default(),
             type_panels: Default::default(),
             analysis: Default::default(),
+            aesthetic: Default::default(),
             timeline: Default::default(),
             slices: Default::default(),
             frame_tool: Default::default(),

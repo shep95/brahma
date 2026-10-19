@@ -3977,3 +3977,24 @@ layerLabel	No Color	Sem cor
 	Model (blank = provider default)	Modelo (vazio = padrão do provedor)
 	OpenAI API key	Chave de API da OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Consultor estético
+	Feeling	Sensação
+	Build around the foreground color	Construir a partir da cor de primeiro plano
+	Touch screen	Tela sensível ao toque
+	Recommend	Recomendar
+	Read the document	Ler o documento
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Medir luminosidade, contraste, bordas e matizes da imagem aberta e recomendar a partir do que ela já diz
+	Click a swatch to make it the foreground color	Clique em uma amostra para torná-la a cor de primeiro plano
+	The document reads as	O documento transmite
+	Color scheme	Esquema de cores
+	Placement and measurement	Posicionamento e medidas
+	From the research	Da pesquisa
+	Neutral	Neutro
+	Trust	Confiança
+	Calm	Calma
+	Wonder	Encanto
+	Playful	Lúdico
+	Dense	Denso
+	Comfortable	Confortável
+	Airy	Arejado
+	Corner Radius	Raio dos cantos

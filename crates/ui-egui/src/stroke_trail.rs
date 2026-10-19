@@ -8,8 +8,8 @@
 //! egui tessellates a polyline whose width is much larger than its steps (any zoomed-in drag)
 //! into hard pie wedges fanning out across the canvas (#189), and translucent overlaps doubled up.
 
-use egui::{Color32, ColorImage, Rect, TextureHandle, TextureOptions, pos2};
 use brahma_paint::{BrushSettings, StrokePoint, StrokeRenderer};
+use egui::{Color32, ColorImage, Rect, TextureHandle, TextureOptions, pos2};
 
 /// Longest side of the mask, in mask pixels (big documents are stamped at a reduced scale).
 const MAX_SIDE: u32 = 1024;

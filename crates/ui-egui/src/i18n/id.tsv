@@ -3178,3 +3178,24 @@ curves	Smooth	Haluskan
 	Model (blank = provider default)	Model (kosong = bawaan penyedia)
 	OpenAI API key	Kunci API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Penasihat estetika
+	Feeling	Perasaan
+	Build around the foreground color	Bangun dari warna latar depan
+	Touch screen	Layar sentuh
+	Recommend	Rekomendasikan
+	Read the document	Baca dokumen
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Ukur kecerahan, kontras, tepi, dan rona gambar yang terbuka, lalu rekomendasikan dari apa yang sudah dikatakannya
+	Click a swatch to make it the foreground color	Klik contoh warna untuk menjadikannya warna latar depan
+	The document reads as	Dokumen terbaca sebagai
+	Color scheme	Skema warna
+	Placement and measurement	Penempatan dan ukuran
+	From the research	Dari riset
+	Neutral	Netral
+	Trust	Kepercayaan
+	Calm	Tenang
+	Wonder	Takjub
+	Playful	Ceria
+	Dense	Padat
+	Comfortable	Nyaman
+	Airy	Lapang
+	Corner Radius	Radius Sudut

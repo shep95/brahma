@@ -11,6 +11,7 @@ pub mod actions_cmds;
 pub mod actions_edit_cmds;
 pub mod adjust_cmds;
 pub mod adjust_params;
+pub mod aesthetic_cmds;
 pub mod ai;
 pub mod align_cmds;
 mod allocation;
@@ -137,10 +138,10 @@ use brahma_doc::{Document, LayerId};
 use brahma_ops::{History, LayerTarget};
 use serde_json::Value;
 
-pub use commands::{CommandSpec, command_specs};
 pub use brahma_doc as doc;
 pub use brahma_paint as paint;
 pub use brahma_paint::BrushSettings;
+pub use commands::{CommandSpec, command_specs};
 
 #[derive(Debug, thiserror::Error)]
 pub enum EngineError {
@@ -374,10 +375,7 @@ impl Default for ToolState {
             foreground: [0.0, 0.0, 0.0, 1.0],
             background: [1.0, 1.0, 1.0, 1.0],
             // Photoshop's Brush tool starts at 10 % Smoothing.
-            brush: brahma_paint::BrushSettings {
-                smoothing: brahma_paint::brush::Smoothing { amount: 0.1, ..Default::default() },
-                ..Default::default()
-            },
+            brush: brahma_paint::BrushSettings { smoothing: brahma_paint::brush::Smoothing { amount: 0.1, ..Default::default() }, ..Default::default() },
             presets: brahma_paint::presets::builtin(),
             presets_rev: 0,
             mixer: Default::default(),

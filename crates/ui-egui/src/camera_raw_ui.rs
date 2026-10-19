@@ -11,9 +11,9 @@
 //! and `{"ui":{"loadSettings":true}}` run Save Settings… / Load Settings… (Camera Raw `.xmp`
 //! settings files, see [`brahma_io::camera_raw_xmp`]) through the file dialog.
 
-use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::camera_raw::{CameraRaw, Wheel, curve_lut};
 use brahma_algo::histogram::RgbHistogram;
+use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 
 use crate::camera_raw_scope_ui::{MAX_SAMPLERS, ToneZone};
 use brahma_doc::LayerId;
@@ -355,12 +355,7 @@ fn commit_open_raw(app: &mut BrahmaApp, params: &CameraRaw, raw: &RawOpen) -> Re
 
 /// Swap the default-developed document `doc_id` for the re-developed one, at the same tab
 /// position and with the same path. Returns `{document, previous, warnings, wb}`.
-fn replace_raw_document(
-    s: &mut brahma_engine::Session,
-    doc_id: brahma_doc::DocId,
-    r: brahma_io::ImportResult,
-    wb: bool,
-) -> brahma_engine::Result<Value> {
+fn replace_raw_document(s: &mut brahma_engine::Session, doc_id: brahma_doc::DocId, r: brahma_io::ImportResult, wb: bool) -> brahma_engine::Result<Value> {
     let index =
         s.documents().iter().position(|st| st.doc.id == doc_id).ok_or_else(|| brahma_engine::EngineError::Other("the raw document was closed".into()))?;
     let path = s.documents().get(index).and_then(|st| st.path.clone());

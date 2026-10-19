@@ -1,7 +1,7 @@
+use brahma_doc::{Fill, LayerContent, LayerId};
 use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::{Fill, LayerContent, LayerId};
 use serde_json::json;
 
 use super::*;

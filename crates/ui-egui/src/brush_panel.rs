@@ -14,9 +14,9 @@
 //! The lock beside a section name keeps that section's settings when another preset is picked
 //! (`locks` in the brush, applied by the engine). The Brushes tab lives in [`crate::brushes_tab`].
 
-use egui::{Color32, CornerRadius, Sense, Stroke, vec2};
 use brahma_engine::BrushSettings;
 use brahma_engine::paint;
+use egui::{Color32, CornerRadius, Sense, Stroke, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 

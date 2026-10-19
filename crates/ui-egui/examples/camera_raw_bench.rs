@@ -18,8 +18,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             bytes.extend([(x % 256) as u8, (y % 256) as u8, ((x ^ y) % 256) as u8]);
         }
     }
-    let image =
-        brahma_codecs::Image::from_raw(width as u32, height as u32, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, bytes)?;
+    let image = brahma_codecs::Image::from_raw(width as u32, height as u32, brahma_codecs::ChannelLayout::Rgb, brahma_codecs::SampleType::U8, bytes)?;
     let encoded = brahma_codecs::encode(&image, brahma_codecs::Format::Png, &Default::default())?;
     app.session.open_document(brahma_io::import("scope.png", &encoded)?.document, None);
     camera_raw_ui::menu(&mut app, &ctx, "filter.cameraRaw", &json!({})).ok_or("no dialog entry point")??;

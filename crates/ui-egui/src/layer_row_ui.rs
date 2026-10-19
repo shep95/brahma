@@ -7,9 +7,9 @@
 //! UI scale. The blend-mode label is optional: it is dropped before the name gets too narrow.
 //! The rects drawn each frame are recorded ([`recorded`]) for tests and automation.
 
-use egui::{Align2, FontId, Galley, Painter, Pos2, Rect, Sense, Shape, Stroke, pos2, vec2};
 use brahma_color::BlendMode;
 use brahma_doc::Layer;
+use egui::{Align2, FontId, Galley, Painter, Pos2, Rect, Sense, Shape, Stroke, pos2, vec2};
 use serde_json::{Value, json};
 use std::sync::Arc;
 

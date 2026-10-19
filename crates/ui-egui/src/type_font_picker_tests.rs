@@ -1,11 +1,11 @@
 //! The Type tool's searchable font menu (#1369): it keeps its height and focuses its search field.
 
 use super::font_picker_in;
+use brahma_engine::prefs::FontPreview;
 use egui::accesskit::Role;
 use egui::{Key, Modifiers, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_engine::prefs::FontPreview;
 
 struct State {
     current: String,

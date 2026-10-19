@@ -24,12 +24,12 @@ mod layout_doc;
 
 use std::time::Instant;
 
-use egui::{Event, Key, Modifiers, PointerButton, Pos2};
-use egui_kittest::kittest::Queryable;
 use brahma_doc::{LayerContent, LayerId};
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::state::Tool;
 use brahma_ui_egui::{BrahmaApp, Services};
+use egui::{Event, Key, Modifiers, PointerButton, Pos2};
+use egui_kittest::kittest::Queryable;
 use serde_json::{Value, json};
 
 type H = egui_kittest::Harness<'static, BrahmaApp>;

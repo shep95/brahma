@@ -39,8 +39,8 @@ pub fn pointer(app: &mut BrahmaApp, ev: ToolEvent, mods: egui::Modifiers) -> boo
 
 #[cfg(test)]
 mod tests {
-    use egui::Modifiers;
     use brahma_geom::Rect;
+    use egui::Modifiers;
     use serde_json::json;
 
     use super::*;

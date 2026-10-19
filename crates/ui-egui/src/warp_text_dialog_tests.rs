@@ -1,11 +1,11 @@
 //! #218: Type › Warp Text… opens with the type layer's current warp (it always started at Arc)
 //! and previews the warp live on the canvas.
 
+use brahma_doc::text::TextWarp;
+use brahma_doc::{Document, LayerContent};
 use egui::vec2;
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::text::TextWarp;
-use brahma_doc::{Document, LayerContent};
 use serde_json::{Map, Value, json};
 
 use crate::BrahmaApp;

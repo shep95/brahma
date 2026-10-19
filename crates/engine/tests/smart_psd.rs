@@ -229,9 +229,9 @@ fn camera_raw_psd_fixture() {
         .smart_filters
         .iter()
         .position(|f| {
-            brahma_io::smart_map::item_for_filter(f).ok().is_some_and(
-                |item| matches!(item.get("Fltr"), Some(brahma_psd::descriptor::Value::Descriptor(d)) if d.class_id.is("Adobe Camera Raw Filter")),
-            )
+            brahma_io::smart_map::item_for_filter(f)
+                .ok()
+                .is_some_and(|item| matches!(item.get("Fltr"), Some(brahma_psd::descriptor::Value::Descriptor(d)) if d.class_id.is("Adobe Camera Raw Filter")))
         })
         .expect("a Camera Raw filter");
     let original_item = brahma_io::smart_map::item_for_filter(&sm.smart_filters[index]).unwrap();

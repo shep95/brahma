@@ -1,8 +1,8 @@
 //! Pointer, keyboard, colour precision and history regressions for shape appearance controls.
 use super::*;
+use brahma_doc::ShapeLayer;
 use egui::{Event, Key, Modifiers, PointerButton};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_doc::ShapeLayer;
 
 fn app(mode: &str, depth: u32) -> BrahmaApp {
     let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());

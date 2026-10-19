@@ -3673,3 +3673,25 @@ curves	Smooth	Làm mượt
 	Model (blank = provider default)	Mô hình (trống = mặc định của nhà cung cấp)
 	OpenAI API key	Khóa API OpenAI
 	OpenAI	OpenAI
+	Aesthetic Advisor	Cố vấn thẩm mỹ
+	Feeling	Cảm giác
+	Build around the foreground color	Xây dựng quanh màu tiền cảnh
+	Touch screen	Màn hình cảm ứng
+	Recommend	Đề xuất
+	Read the document	Đọc tài liệu
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	Đo độ sáng, độ tương phản, cạnh và sắc độ của ảnh đang mở rồi đề xuất từ những gì ảnh đã nói
+	Click a swatch to make it the foreground color	Nhấp vào một mẫu để đặt làm màu tiền cảnh
+	The document reads as	Tài liệu gợi cảm giác
+	Color scheme	Bảng màu
+	Placement and measurement	Bố cục và kích thước
+	From the research	Từ nghiên cứu
+	Neutral	Trung tính
+	Trust	Tin cậy
+	Calm	Bình yên
+	Urgency	Khẩn cấp
+	Wonder	Kinh ngạc
+	Playful	Vui tươi
+	Dense	Dày
+	Comfortable	Thoải mái
+	Airy	Thoáng
+	Corner Radius	Bán kính góc

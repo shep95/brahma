@@ -7,8 +7,8 @@
 //! engine command (`layer.new.artboard`, `layer.artboard.set`, `layer.artboard.addBeside`), so each
 //! gesture is one undo step; this module only turns pointer gestures into them.
 
-use egui::{CursorIcon, Pos2, Rect, Stroke, vec2};
 use brahma_doc::{Document, Layer, LayerId};
+use egui::{CursorIcon, Pos2, Rect, Stroke, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

@@ -2,10 +2,10 @@
 
 mod common;
 
-use common::*;
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::*;
 use brahma_psd::PsdFile;
+use common::*;
 
 fn roundtrip(doc: &brahma_doc::Document) -> brahma_doc::Document {
     let r = export(doc, "x.psd", &ExportOptions::default()).expect("export");

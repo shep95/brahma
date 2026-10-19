@@ -2,8 +2,8 @@
 //! (W/H/X/Y of the layer content, editable), Align and Distribute, the kind's sections and Quick Actions. Edits dispatch
 //! `edit.transform`, `layer.translate`, `layer.align.*` and selection commands.
 
-use egui::{Rect, Sense, Stroke, pos2, vec2};
 use brahma_doc::{Layer, LayerContent};
+use egui::{Rect, Sense, Stroke, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::props_layout::{LABEL_GAP, LABEL_W, quick_actions_ui, section};

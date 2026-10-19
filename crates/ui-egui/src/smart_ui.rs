@@ -3,8 +3,8 @@
 //! to select one; drag onto another smart object to move it there, ⌥-drag to copy it, #4271;
 //! drag it up or down its own stack to reorder it).
 
-use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::{Document, Layer, LayerContent, LayerId, SmartObject};
+use egui::{Align2, Color32, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::theme::Tokens;

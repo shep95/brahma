@@ -8,11 +8,11 @@
 //! recorded exactly as the engine replays them (`stroke_begin` + `stroke_segment` per point), so
 //! OK runs `filter.liquify` with the same strokes and gets the same field.
 
-use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::liquify::{LiquifyField, LiquifyStroke, LiquifyTool, ProxyImage, auto_cell};
 use brahma_doc::LayerId;
 use brahma_geom::Rect;
 use brahma_raster::Surface;
+use egui::{Align2, Color32, FontId, Pos2, Rect as ERect, Sense, Stroke, TextureHandle, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

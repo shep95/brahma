@@ -1,10 +1,10 @@
 //! #589: layers dragged onto another document's tab, then dropped on its canvas, are copied there.
 
+use brahma_doc::LayerId;
 use egui::accesskit::Role;
 use egui::{Modifiers, PointerButton, Pos2, Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_doc::LayerId;
 use serde_json::json;
 
 use crate::BrahmaApp;

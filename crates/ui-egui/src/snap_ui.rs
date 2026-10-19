@@ -6,9 +6,9 @@
 //! Ctrl is the corner-distortion modifier. Smart guides follow View › Show › Smart Guides and also snap the Move
 //! tool to other layers' edges and centres. The threshold is 8 screen pixels at the current zoom.
 
-use egui::{Color32, Stroke, pos2};
 use brahma_doc::LayerId;
 use brahma_engine::snap::{SnapKind, SnapLine, SnapOptions, SnapTargets, layer_rect, union};
+use egui::{Color32, Stroke, pos2};
 
 use crate::BrahmaApp;
 use crate::canvas::{ToolEvent, ViewXform};

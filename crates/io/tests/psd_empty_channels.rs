@@ -1,8 +1,8 @@
 mod common;
-use common::Features;
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::{ExportOptions, export};
 use brahma_psd::{Compression, PsdFile};
+use common::Features;
 
 #[test]
 fn empty_layer_and_mask_channels_use_raw_without_a_payload() {

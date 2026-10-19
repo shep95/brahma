@@ -1,10 +1,10 @@
 //! #155: Properties sections share one header style, Quick Actions fit the layer kind, controls
 //! fill the panel at every dock width, and the Layers panel's Opacity/Fill rows keep their gap.
 
+use brahma_doc::{Layer, LayerContent};
 use egui::{Rect, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::{Layer, LayerContent};
 use serde_json::json;
 
 use super::*;

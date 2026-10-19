@@ -1,10 +1,10 @@
 //! #144: the name never runs under the right-hand indicators; the fx triangle; #143: Collapse
 //! All Groups.
 
+use brahma_doc::{Effect, LayerContent};
 use egui::{Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::{Effect, LayerContent};
 use serde_json::json;
 
 use super::{Indicator, RowRects, layout, recorded};

@@ -393,8 +393,7 @@ fn renamed_face(source: &[u8], family: &str, ps: &str) -> Vec<u8> {
 fn exact_postscript_face_outside_the_guessed_family_is_not_missing() {
     let mut fonts = brahma_text::FontDb::new();
     fonts.register_font_data(renamed_face(&brahma_text::fonts::INTER_REGULAR, "Exact Only Test", "UnrelatedPS30"));
-    let style =
-        |ps: &str| brahma_doc::text::CharStyle { font_family: "Imported Wrong Family".into(), postscript_name: Some(ps.into()), ..Default::default() };
+    let style = |ps: &str| brahma_doc::text::CharStyle { font_family: "Imported Wrong Family".into(), postscript_name: Some(ps.into()), ..Default::default() };
     // Neither the stored family nor the family guessed from the name is installed: only the exact face.
     assert!(!fonts.has_family(&brahma_text::fonts::guess_from_postscript("UnrelatedPS30").family));
     assert_eq!((style_font_missing(&mut fonts, &style("UnrelatedPS30")), style_font_missing(&mut fonts, &style("UnrelatedPS31"))), (false, true));

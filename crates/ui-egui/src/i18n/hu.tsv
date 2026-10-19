@@ -4106,3 +4106,24 @@ cameraRaw	Yellow	Sárga
 	Model (blank = provider default)	Modell (üres = a szolgáltató alapértelmezése)
 	OpenAI API key	OpenAI API-kulcs
 	OpenAI	OpenAI
+	Aesthetic Advisor	Esztétikai tanácsadó
+	Feeling	Hangulat
+	Build around the foreground color	Az előtérszínre építve
+	Touch screen	Érintőképernyő
+	Recommend	Ajánlás
+	Read the document	Dokumentum beolvasása
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	A megnyitott kép világosságának, kontrasztjának, éleinek és árnyalatainak mérése, és ajánlás abból, amit már mond
+	Click a swatch to make it the foreground color	Kattints egy mintára, hogy előtérszín legyen
+	The document reads as	A dokumentum hatása
+	Color scheme	Színséma
+	Placement and measurement	Elhelyezés és méretek
+	From the research	A kutatásból
+	Neutral	Semleges
+	Trust	Bizalom
+	Calm	Nyugalom
+	Wonder	Ámulat
+	Playful	Játékos
+	Dense	Sűrű
+	Comfortable	Kényelmes
+	Airy	Levegős
+	Corner Radius	Saroklekerekítés

@@ -1,10 +1,10 @@
 //! #1719: layer effects are dragged onto another layer in the Layers panel, as in Photoshop: an
 //! effect row or the fx badge moves its effects there, ⌥-drag copies them.
 
+use brahma_doc::LayerId;
 use egui::{Modifiers, PointerButton, Pos2, Rect, accesskit::Role, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
-use brahma_doc::LayerId;
 use serde_json::json;
 
 use crate::BrahmaApp;

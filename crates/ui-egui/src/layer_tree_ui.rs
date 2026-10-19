@@ -6,8 +6,8 @@
 //! `.pcraft` and as the PSD section divider's open/closed folder type, toggled through
 //! `layer.setExpanded` (a view change: no history step).
 
-use egui::{Rect, Sense, Shape, Stroke, pos2, vec2};
 use brahma_doc::{Document, Layer, LayerContent};
+use egui::{Rect, Sense, Shape, Stroke, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

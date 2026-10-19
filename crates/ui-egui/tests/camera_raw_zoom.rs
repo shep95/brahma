@@ -1,7 +1,7 @@
 //! Camera Raw navigation uses the real modal shell and never changes document history.
+use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, theme::ThemeKind};
 use egui::{Event, Key, Modifiers, PointerButton, Pos2, Rect, pos2, vec2};
 use egui_kittest::{Harness, kittest::Queryable};
-use brahma_ui_egui::{BrahmaApp, camera_raw_ui, control, theme::ThemeKind};
 use serde_json::{Value, json};
 
 fn fixture(ppp: f32) -> Harness<'static, BrahmaApp> {

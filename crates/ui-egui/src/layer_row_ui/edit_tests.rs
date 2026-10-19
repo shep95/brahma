@@ -1,8 +1,8 @@
 //! Type editing through real Layers panel mouse and keyboard events (#537).
 
+use brahma_doc::{LayerContent, LayerId};
 use egui::{Event, Modifiers, PointerButton, Pos2, pos2, vec2};
 use egui_kittest::Harness;
-use brahma_doc::{LayerContent, LayerId};
 use serde_json::json;
 
 use crate::BrahmaApp;

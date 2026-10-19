@@ -1,8 +1,8 @@
 //! The Freeform Pen and Curvature Pen (#1054): gestures through the canvas commit the same paths
 //! the Pen does.
 
-use egui::Modifiers;
 use brahma_doc::{LayerContent, Path};
+use egui::Modifiers;
 use serde_json::json;
 
 use crate::BrahmaApp;

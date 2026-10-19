@@ -13,10 +13,10 @@
 //!
 //! Each click is one command and one history step; a click on nothing it can edit does nothing.
 
-use egui::{Color32, Modifiers, Pos2, Stroke};
 use brahma_doc::vector::Path;
 use brahma_geom::Point;
 use brahma_vector::edit::{self, Hit};
+use egui::{Color32, Modifiers, Pos2, Stroke};
 
 use crate::BrahmaApp;
 use crate::canvas::ToolEvent;

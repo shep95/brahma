@@ -286,8 +286,8 @@ mod tests {
     use super::*;
     use crate::canvas::{ToolEvent, tool_event};
     use crate::crop_ui::{CropDrag, corners};
-    use egui::{Modifiers, Pos2, pos2};
     use brahma_doc::{Color, ColorMode, Document, SampleType, Size};
+    use egui::{Modifiers, Pos2, pos2};
     use serde_json::json;
 
     const NONE: Modifiers = Modifiers::NONE;

@@ -18,9 +18,9 @@
 
 use std::time::Instant;
 
-use eframe::egui_wgpu::RenderState;
 use brahma_engine::Session;
 use brahma_ui_egui::gpu_canvas::GpuCanvas;
+use eframe::egui_wgpu::RenderState;
 use serde_json::{Value, json};
 
 fn arg(args: &[String], name: &str) -> Option<String> {
@@ -128,10 +128,8 @@ fn main() {
     // `--json out.json` (`cargo xtask perf`): open and first refresh (every op includes them),
     // the canvas texture size and the process's peak RSS.
     let json_out = arg(&args, "--json");
-    let mut json_rows = vec![
-        brahma_testkit::perf::row("open (decode + document)", &[t_open], None, None),
-        brahma_testkit::perf::row("first refresh", &[t_first], None, None),
-    ];
+    let mut json_rows =
+        vec![brahma_testkit::perf::row("open (decode + document)", &[t_open], None, None), brahma_testkit::perf::row("first refresh", &[t_first], None, None)];
     if let Some((g, _)) = gpu
         && let Some((format, bytes)) = g.texture_info(s.active().expect("doc").doc.id.0)
     {

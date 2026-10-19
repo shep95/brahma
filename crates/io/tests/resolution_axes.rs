@@ -3,13 +3,13 @@
 
 mod common;
 
-use common::*;
 use brahma_codecs::{ChannelLayout, EncodeOptions, Format, Image, Metadata, SampleType as CSample};
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::*;
 use brahma_psd::resources::ids;
 use brahma_psd::testgen;
 use brahma_psd::{Compression, ImageResource, ResolutionInfo, Version};
+use common::*;
 
 fn resolution_notes(r: &ImportResult) -> Vec<&String> {
     r.warnings.iter().filter(|w| w.contains("vertical resolution")).collect()

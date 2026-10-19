@@ -3365,3 +3365,25 @@ curves	Smooth	매끄럽게
 	Model (blank = provider default)	모델(비워 두면 제공자 기본값)
 	OpenAI API key	OpenAI API 키
 	OpenAI	OpenAI
+	Aesthetic Advisor	미학 조언
+	Feeling	느낌
+	Build around the foreground color	전경색을 기준으로 구성
+	Touch screen	터치 스크린
+	Recommend	추천
+	Read the document	문서 읽기
+	Measure the open image's lightness, contrast, edges and hues, and recommend from what it already says	열린 이미지의 밝기, 대비, 가장자리, 색상을 측정해 이미 말하고 있는 것에서 추천합니다
+	Click a swatch to make it the foreground color	견본을 클릭하면 전경색이 됩니다
+	The document reads as	문서의 인상
+	Color scheme	색 구성
+	Placement and measurement	배치와 치수
+	From the research	연구에서
+	Neutral	중립
+	Trust	신뢰
+	Calm	차분함
+	Urgency	긴급
+	Wonder	경이
+	Playful	장난스러움
+	Dense	조밀
+	Comfortable	편안
+	Airy	여유
+	Corner Radius	모서리 반경

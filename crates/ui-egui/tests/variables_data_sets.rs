@@ -1,7 +1,7 @@
-use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::state::DialogKind;
+use egui_kittest::Harness;
+use egui_kittest::kittest::Queryable;
 use serde_json::{Map, json};
 
 fn app_with_variables_dialog(cur: u64) -> BrahmaApp {

@@ -2,10 +2,10 @@
 //! ⌥ draws from the centre (both together work too), a "W × H px" readout follows the cursor, and
 //! modifiers held before the drag still pick add/subtract (#188) instead of constraining.
 
+use brahma_geom::Rect;
 use egui::{Modifiers, PointerButton, Pos2, pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_geom::Rect;
 use serde_json::json;
 
 use crate::BrahmaApp;

@@ -15,8 +15,8 @@
 //!   stacked above it (in one history step), and makes it the active layer;
 //! - the release cursor is the clip cursor struck through.
 
-use egui::{Pos2, Rangef, Rect, Sense, vec2};
 use brahma_doc::{Document, LayerContent, LayerId};
+use egui::{Pos2, Rangef, Rect, Sense, vec2};
 use serde_json::{Value, json};
 
 use crate::layer_row_ui::{RIGHT_PAD, RowRects};

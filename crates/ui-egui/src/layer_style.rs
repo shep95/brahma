@@ -13,9 +13,9 @@
 //!   opacity, fill opacity, channels, knockout, the Advanced Blending switches, Blend If) plus
 //!   the page-only `blendIfChannel`; `channelNames`: the document's colour channels.
 
-use egui::{Color32, RichText, Sense, Stroke, StrokeKind, vec2};
 use brahma_doc::effects::{FxPaint, GlowSource, StrokePosition};
 use brahma_doc::{Effect, Layer};
+use egui::{Color32, RichText, Sense, Stroke, StrokeKind, vec2};
 use serde_json::{Map, Value, json};
 
 use crate::theme::Tokens;
@@ -965,8 +965,7 @@ pub fn body(app: &mut BrahmaApp, ui: &mut egui::Ui, f: &mut Map<String, Value>) 
                         ui.horizontal(|ui| {
                             ui.label(RichText::new(tl!(&label)).color(t.text_dim));
                             let mut cur = disp.get(key).and_then(Value::as_str).unwrap_or("Normal").to_string();
-                            let opts: Vec<(String, &str)> =
-                                brahma_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
+                            let opts: Vec<(String, &str)> = brahma_color::BlendMode::LAYER_MODES.iter().map(|m| (m.label().to_string(), m.label())).collect();
                             if widgets::dropdown(ui, &format!("fx-blend-{sel_kind}"), &mut cur, &opts, 150.0) {
                                 let value = json!(cur);
                                 disp[key] = value.clone();
@@ -1657,9 +1656,7 @@ mod tests {
         let mut app = BrahmaApp::new(brahma_engine::Session::new(), Default::default());
         let mut layer = brahma_doc::Layer::new("L", brahma_doc::LayerContent::Adjustment(brahma_doc::Adjustment::Invert));
         layer.advanced.knockout = brahma_doc::Knockout::Deep;
-        for mode in
-            [brahma_color::ColorMode::Rgb, brahma_color::ColorMode::Cmyk, brahma_color::ColorMode::Lab, brahma_color::ColorMode::Grayscale]
-        {
+        for mode in [brahma_color::ColorMode::Rgb, brahma_color::ColorMode::Cmyk, brahma_color::ColorMode::Lab, brahma_color::ColorMode::Grayscale] {
             let mut f = initial_fields(&layer, Some(BLENDING), 120.0);
             set_blending_fields(&mut f, &layer, mode);
             let mut out = ctx.run_ui(Default::default(), |ui| body(&mut app, ui, &mut f));

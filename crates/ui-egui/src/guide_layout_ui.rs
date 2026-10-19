@@ -1,7 +1,7 @@
 //! Photoshop-style guide layout dialog. Its preview is a pure guide overlay, never an edit.
 
-use egui::{Color32, Stroke};
 use brahma_doc::{Document, Guides};
+use egui::{Color32, Stroke};
 use serde_json::{Map, Value, json};
 
 use crate::{BrahmaApp, theme::Tokens, widgets};

@@ -2,9 +2,9 @@
 //! (A), and the Pen with ⌘/Ctrl (Direct Selection) or ⌥/Alt (Convert Point). #3204: Convert Point
 //! is a tool of its own, in the Pen's flyout.
 
-use egui::Modifiers;
 use brahma_doc::vector::Path;
 use brahma_geom::Point;
+use egui::Modifiers;
 use serde_json::json;
 
 use super::{Drag, PathRef};

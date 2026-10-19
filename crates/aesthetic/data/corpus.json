@@ -1,0 +1,1089 @@
+[
+ {
+  "title": "1666 — newton prism experiment",
+  "domain": "color systems",
+  "summary": "the first systematic decomposition of visible light into spectral components. mechanism: refraction angle varies by wavelength. what it produced: the color wheel as a closed loop (conceptually incorrect — the spectrum is open; wrapping red to violet was a perceptual invention).",
+  "tags": [
+   "color",
+   "layout"
+  ]
+ },
+ {
+  "title": "1810 — goethe's farbenlehre",
+  "domain": "color systems",
+  "summary": "mechanism: color as psychological phenomenon rather than physical fact. goethe rejected newton's mechanistic account and studied simultaneous contrast, afterimages, chromatic shadows. what succeeded: the description of simultaneous contrast (a grey on white appears darker than the same grey on black) was accurate perceptual science, confirmed by 20th-century psychophysics.",
+  "tags": [
+   "color",
+   "perception"
+  ]
+ },
+ {
+  "title": "1905 — munsell color system",
+  "domain": "color systems",
+  "summary": "mechanism: three independent dimensions (hue, value, chroma) arranged so perceptually equal steps produce equal visual differences. first color solid designed by measurement rather than geometry. what succeeded: the perceptual uniformity principle became the foundation of every subsequent professional color system.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "1931 — CIE XYZ color space",
+  "domain": "color systems",
+  "summary": "mechanism: mathematical description of human color vision based on color-matching experiments. defined the standard observer. what succeeded: universal reference frame for all subsequent color science.",
+  "tags": [
+   "color",
+   "performance"
+  ]
+ },
+ {
+  "title": "1976 — CIELAB",
+  "domain": "color systems",
+  "summary": "mechanism: perceptually uniform transformation of XYZ. L* = lightness, a* = green-red axis, b* = blue-yellow axis. what succeeded: much more uniform than XYZ in practice.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "1990s — web-safe palette (216 colors)",
+  "domain": "color systems",
+  "summary": "mechanism: colors that would render consistently across 8-bit displays on mac and windows. what succeeded: eliminated dithering artifacts. what failed: became obsolete the moment 24-bit color became standard, but the web-safe palette constrained design thinking for a decade afterward.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "2000s — CSS named colors, hex, rgb()",
+  "domain": "color systems",
+  "summary": ". mechanism: rgb values mapped to display phosphor intensities. what this produced: a generation of designers working in display-gamma-encoded sRGB without knowing it.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "oklch",
+  "domain": "color systems",
+  "summary": "is the current working standard for perceptual color systems in CSS. the OKLab model (björn ottosson, 2020) corrects the hue distortion in CIELAB, particularly in blues. oklch is the cylindrical form: L (lightness 0-1), C (chroma 0-0.4+), H (hue angle 0-360).",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "display-p3",
+  "domain": "color systems",
+  "summary": "covers approximately 25% more of the visible spectrum than sRGB. wide-gamut monitors (apple pro display XDR, most modern OLED panels, iPhones since 12) can display colors outside the sRGB gamut. CSS now allows specifying these colors: `color(display-p3 1 0.2 0)` is a red more saturated than any sRGB red.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "color-mix()",
+  "domain": "color systems",
+  "summary": "in CSS allows: `color-mix(in oklch, red 40%, blue)` — mixing colors in a specified color space. mixing in oklch rather than sRGB prevents the muddy desaturated midpoints that sRGB mixing produces (the sRGB mixing problem: mixing a pure red and a pure green in sRGB passes through a dark desaturated muddy brown, because sRGB is not perceptually linear).",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "relative color syntax",
+  "domain": "color systems",
+  "summary": ": `oklch(from var(--brand-color) calc(l + 0.1) c h)` — derive a tint or shade by adjusting only the lightness component of an existing color. this makes color token systems dramatically simpler: one base color + relative adjustments = full scale, entirely in CSS, without preprocessor logic.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "color systems: present patterns",
+  "domain": "color systems",
+  "summary": "css color level 4 and 5 are actively shipping (2024-2026). the currently available color functions in major browsers: oklch(), oklab(), display-p3, color-mix(), relative color syntax.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "color systems: future prediction [finding]",
+  "domain": "color systems",
+  "summary": "within 2-4 years, oklch will be the default operating color space for design systems. design tokens will be specified in oklch. the transition will be driven by three forces: (1) figma will add native oklch support, (2) the CSS color level 5 relative color syntax will make oklch-based scales trivially computed in CSS, (3) display-p3 will become the baseline display standard as OLED adoption continues.",
+  "tags": [
+   "color",
+   "motion"
+  ]
+ },
+ {
+  "title": "gutenberg, 1450",
+  "domain": "typography",
+  "summary": "movable type introduced the concept of the type matrix — individual letterforms cast from identical molds. the constraint: every character at every size required separate physical casting. the visual consequence: display sizes and text sizes were designed differently, because the optical corrections needed at 6pt were different from those needed at 72pt.",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "the punchcutter era (1450-1900)",
+  "domain": "typography",
+  "summary": "mechanism: letterforms were drawn, cut as steel punches, struck into copper matrices, and cast as type metal. what this produced: the intimate relationship between the designer's hand and the physical form of the letter. the stroke modulation in garamond, caslon, bodoni — each reflects the physical tool (broad-nib pen in garamond, engraving tool in bodoni).",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "1957 — helvetica",
+  "domain": "typography",
+  "summary": "mechanism: a neo-grotesque sans-serif designed for maximum neutrality. the intention was to evacuate personality from type and let the content speak. what succeeded: achieved the intended neutrality well enough to become the default choice for corporate identity systems across four decades.",
+  "tags": [
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "1984 — bitmapped fonts on the macintosh",
+  "domain": "typography",
+  "summary": "mechanism: typefaces designed on a pixel grid at specific sizes (9, 12, 18, 24pt) for 72dpi screens. susan kare designed the Chicago, Geneva, Monaco, and Cairo fonts. what this produced: a new aesthetic vocabulary — the pixel as a design unit.",
+  "tags": [
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "1996 — hinting and TrueType",
+  "domain": "typography",
+  "summary": "mechanism: hinting instructions embedded in font files tell the rasterizer how to adjust letterform geometry to align with pixel grid. what succeeded: significantly improved screen readability at small sizes on low-dpi displays. what failed: hinting is labor-intensive, non-portable across rasterizers, and became obsolete at high-dpi (retina) resolutions where the pixel grid is fine enough that sub-pixel adjustments a…",
+  "tags": [
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "2016 — variable fonts (opentype 1.8)",
+  "domain": "typography",
+  "summary": "mechanism: a single font file contains a design space defined by axes (weight, width, optical size, slant, and custom axes). any point in the design space can be interpolated at runtime. the physical change: reduced file size for multi-weight type systems, continuous variation rather than discrete jumps.",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "typography: present patterns",
+  "domain": "typography",
+  "summary": "the current state: variable fonts are deployed primarily for weight variation. the typical implementation: `@font-face { font-variation-settings: 'wght' 400; }` with hover states that shift weight. the opsz axis is the most underdeployed capability — only a handful of production systems wire `font-optical-sizing: auto` and confirm it is doing anything.",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "typography: future prediction [finding]",
+  "domain": "typography",
+  "summary": "the next phase is type-as-behavior. variable font axes will be driven by real-time signals — reading speed, ambient light, user preference learned over sessions, content density, viewport velocity during scroll. this is not speculative: the CSS font-variation-settings property already accepts any value at runtime.",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "1996 — animated GIFs on the web",
+  "domain": "css animation",
+  "summary": "mechanism: multiple frames stored in a single GIF file, rendered sequentially. what this produced: the first widespread web animation format. what failed: no control from CSS or JS, no compositing, crude color quantization (256 colors), terrible performance, no pause/play.",
+  "tags": [
+   "color",
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "2006 — flash animation at peak",
+  "domain": "css animation",
+  "summary": "mechanism: SWF files compiled from ActionScript, rendered by the Flash Player plugin. frame-based animation with tweening, timeline, scripted control. what succeeded: the first environment where complex, interactive animation was possible on the web at scale.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "2009 — CSS transitions",
+  "domain": "css animation",
+  "summary": "mechanism: animate between two states by interpolating property values over time. `transition: opacity 0.3s ease-in-out`. the architecture: the browser computes the intermediate values.",
+  "tags": [
+   "motion"
+  ]
+ },
+ {
+  "title": "2012 — CSS @keyframes and animation property",
+  "domain": "css animation",
+  "summary": "mechanism: define named sets of CSS values at percentage waypoints through a timeline, attach them to elements. `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`. what succeeded: looping, multi-step animations without JavaScript.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "2014 — GSAP (greensock animation platform)",
+  "domain": "css animation",
+  "summary": "mechanism: JavaScript library providing a timeline API for sequencing and controlling animations. additive animation (stacking multiple tweens on the same property), high-performance DOM manipulation, precise scrubbing. what succeeded: the timeline abstraction made complex choreographed animations tractable.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "view transitions API (2023-2025, shipped in chrome 111+, safari 18+)",
+  "domain": "css animation",
+  "summary": "mechanism: `document.startViewTransition(() => { /* DOM update */ })`. the browser captures a snapshot of the current DOM, applies the update, and animates between the two states using CSS animations named with `::view-transition-old` and `::view-transition-new` pseudo-elements. the default animation: a cross-fade.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "scroll timeline API (2023, shipping in chrome 115+)",
+  "domain": "css animation",
+  "summary": "mechanism: `new ScrollTimeline({ source: element })` links an animation's progress to a scroll position. CSS alternative: `animation-timeline: scroll()`. what this enables: scroll-driven animations that run entirely on the compositor thread (no JavaScript in the critical path, no jank).",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "CSS @starting-style (2023-2024)",
+  "domain": "css animation",
+  "summary": "mechanism: defines the style an element has when it first enters the DOM (before it transitions to its normal style). `@starting-style { .modal { opacity: 0; transform: translateY(10px); } }`. what this solves: the long-standing problem of animating elements into view on creation — previously required JavaScript to add a class on the next frame.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "CSS offset-path animation",
+  "domain": "css animation",
+  "summary": "mechanism: `offset-path: path('M 0 0 C 100 0 100 100 200 100')` — moves an element along an SVG path. what this enables: motion paths defined entirely in CSS, animating along curves, along scroll progress via scroll timeline. the current deployment gap: very few production systems use this despite it being available since 2020.",
+  "tags": [
+   "motion"
+  ]
+ },
+ {
+  "title": "spring physics in animation",
+  "domain": "css animation",
+  "summary": "the cubic-bezier easing model is a 2-parameter approximation of a physical spring. it is not the same as a spring. a real spring is defined by mass, stiffness, and damping — three parameters — and the output is a velocity function that overshoots and oscillates.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "css animation: present patterns",
+  "domain": "css animation",
+  "summary": "*view transitions API (2023-2025, shipped in chrome 111+, safari 18+).* mechanism: `document.startViewTransition(() => { /* DOM update */ })`. the browser captures a snapshot of the current DOM, applies the update, and animates between the two states using CSS animations named with `::view-transition-old` and `::view-transition-new` pseudo-elements. the default animation: a cross-fade.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "css animation: future prediction [finding]",
+  "domain": "css animation",
+  "summary": "the next transition: animation as a layer of the design system, not a collection of component-level decisions. design tokens for motion — duration scales, easing vocabularies, spring configurations — are beginning to appear (material design's motion tokens, IBM carbon's motion specs) but are not yet as systematized as color and typography tokens. within 2-3 years, motion tokens will be as fundamental to design system…",
+  "tags": [
+   "color",
+   "motion",
+   "type"
+  ]
+ },
+ {
+  "title": "1974 — ed catmull, texture mapping",
+  "domain": "shaders and glsl",
+  "summary": "mechanism: projecting a 2D image onto a 3D surface by mapping UV coordinates. each fragment on the rendered polygon looks up a texel from the texture. what succeeded: the ability to represent fine detail without geometric complexity.",
+  "tags": []
+ },
+ {
+  "title": "1984 — cook-torrance reflectance model",
+  "domain": "shaders and glsl",
+  "summary": "the physical basis for specular reflection on surfaces. mechanism: a microfacet model where roughness is described by a statistical distribution of tiny mirror facets. the BRDF (bidirectional reflectance distribution function) has three terms: distribution (D), fresnel (F), geometry (G).",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "1985 — perlin noise",
+  "domain": "shaders and glsl",
+  "summary": "ken perlin, written for the original TRON movie. mechanism: a gradient noise function that produces smooth, continuous random variation. the function: for each grid point, assign a random gradient vector.",
+  "tags": [
+   "3d",
+   "generative",
+   "layout"
+  ]
+ },
+ {
+  "title": "1989 — renderman shading language",
+  "domain": "shaders and glsl",
+  "summary": "the first dedicated shader language. mechanism: programs that execute per-surface-point (surface shaders) or per-light (light shaders) to compute material appearance. what this produced: the programmable shader concept — material appearance as code, not a fixed pipeline.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "2001 — nvidia geforce 3, programmable vertex and pixel shaders",
+  "domain": "shaders and glsl",
+  "summary": "the first consumer GPU with truly programmable shaders. mechanism: vertex programs (small assembly-like programs replacing the fixed-function T&L pipeline) and pixel programs (replacing the fixed-function texture blending). what this produced: demo scene aesthetics, the first real-time procedural effects (lens flares, water, fur).",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "2004 — GLSL 1.0 released with OpenGL 2.0",
+  "domain": "shaders and glsl",
+  "summary": "mechanism: C-like language for writing vertex and fragment shaders. replaced assembly-level shader languages. the architecture: vertex shader runs once per vertex (transforms 3D position to clip space, computes per-vertex attributes).",
+  "tags": [
+   "3d",
+   "color"
+  ]
+ },
+ {
+  "title": "shadertoy (inigo quilez, 2013-present)",
+  "domain": "shaders and glsl",
+  "summary": "the community that pushed GLSL fragment shaders to their current state. the architecture: single fragment shader, uniforms `iTime`, `iResolution`, `iMouse`. everything is a function of the pixel coordinate and time.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "shaders and glsl: present patterns",
+  "domain": "shaders and glsl",
+  "summary": "*shadertoy (inigo quilez, 2013-present).* the community that pushed GLSL fragment shaders to their current state. the architecture: single fragment shader, uniforms `iTime`, `iResolution`, `iMouse`. everything is a function of the pixel coordinate and time.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "shaders and glsl: future prediction [finding]",
+  "domain": "shaders and glsl",
+  "summary": "GLSL fragment shaders are being partially displaced by compute shaders (WebGPU compute pipeline). the architectural shift: a compute shader is not tied to the graphics pipeline. it runs arbitrary parallel computation.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "webgpu: present patterns",
+  "domain": "webgpu",
+  "summary": "WebGPU (shipped chrome 113, may 2023; safari partial, firefox partial as of 2025). the architectural difference from webgl:",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "webgpu: future prediction [finding]",
+  "domain": "webgpu",
+  "summary": "WebGPU compute shaders will enable a class of visual effects that are currently impossible on the web: real-time fluid simulation (SPH or FLIP methods), stable sorting of millions of particles for depth-correct transparency, real-time global illumination via ReSTIR (reservoir-based spatiotemporal importance resampling), neural network inference for style transfer at 60fps. the aesthetic shift: effects that look physi…",
+  "tags": [
+   "3d",
+   "accessibility",
+   "performance"
+  ]
+ },
+ {
+  "title": "1982 — william t. reeves, \"particle systems\"",
+  "domain": "particle systems",
+  "summary": "(siggraph paper). the formal introduction of the particle system as a technique for rendering \"fuzzy objects\" — fire, smoke, water, explosions. mechanism: emit particles from a source, apply forces (gravity, wind, turbulence), render each particle as a small primitive, destroy particles after a lifespan.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "1986 — craig reynolds, boids",
+  "domain": "particle systems",
+  "summary": "three rules governing individual agent behavior that produce emergent flocking: (1) separation — avoid crowding neighbors, (2) alignment — steer toward average heading of neighbors, (3) cohesion — steer toward average position of neighbors. no central controller. the flocking emerges from local rules.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "GPU instancing for particle rendering",
+  "domain": "particle systems",
+  "summary": "render thousands to millions of particles in a single draw call by using three.js `InstancedMesh` or raw WebGL instanced drawing. each instance gets a matrix or attribute array entry. the GPU draws all instances in parallel.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "three.js particles (points geometry):",
+  "domain": "particle systems",
+  "summary": "```javascript const count = 100000; const positions = new Float32Array(count * 3); for (let i = 0; i < count; i++) { positions[i * 3 + 0] = (Math.random() - 0.5) * 10; positions[i * 3 + 1] = (Math.random() - 0.5) * 10; positions[i * 3 + 2] = (Math.random() - 0.5) * 10; } const geometry = new THREE.BufferGeometry(); geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3)); const material = new THREE.…",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "curl noise particle advection",
+  "domain": "particle systems",
+  "summary": "the most visually compelling current particle aesthetic: particles advected (carried) through a curl noise field. curl noise (robert bridson, 2007) is derived from a 3D noise field by taking the curl of the gradient — producing a divergence-free vector field (no sinks or sources, particles never bunch up). the visual result: fluid-like filamentary motion with no clumping.",
+  "tags": [
+   "3d",
+   "generative",
+   "motion"
+  ]
+ },
+ {
+  "title": "particle systems: present patterns",
+  "domain": "particle systems",
+  "summary": "*GPU instancing for particle rendering.* render thousands to millions of particles in a single draw call by using three.js `InstancedMesh` or raw WebGL instanced drawing. each instance gets a matrix or attribute array entry. the GPU draws all instances in parallel.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "particle systems: future prediction [finding]",
+  "domain": "particle systems",
+  "summary": "particle systems will merge with neural rendering. instead of each particle being a point or sprite, each particle will be a small neural radiance representation — a tiny learned volumetric object. the aggregate of millions of these produces photorealistic volumetric effects (fire, smoke, clouds) at real-time rates.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "example: the correct shadow formula for a material design card (elevation 4dp):",
+  "domain": "gestalt completion in UI",
+  "summary": "```css .card { box-shadow: 0 2px 4px -1px rgba(0,0,0,0.2), /* key shadow — direct light */ 0 4px 5px 0px rgba(0,0,0,0.14), /* mid shadow */ 0 1px 10px 0px rgba(0,0,0,0.12); /* ambient shadow */ } ``` the three-layer shadow approximates the key light + ambient light split that physical objects produce. the key shadow (sharp, directional) encodes light direction. the ambient shadow (soft, uniform) encodes the ambient l…",
+  "tags": []
+ },
+ {
+  "title": "fractal brownian motion (fbm)",
+  "domain": "glsl, webgl, generative art, creative coding",
+  "summary": "sum of noise octaves with geometrically decreasing amplitude and geometrically increasing frequency. each octave adds detail at a finer scale. the result has energy at all spatial frequencies below the initial frequency, falling off as 1/f (pink noise spectrum). root: energy distributed across scales with no characteristic scale",
+  "tags": [
+   "3d",
+   "generative",
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "view transition API page morphing",
+  "domain": "css, web animation, navigation UX",
+  "summary": "document.startViewTransition(async () => { await updateDOM(); // your state update }); // css for custom transition: @keyframes slide-from-right { from { transform: translateX(100%); } } @keyframes slide-to-left { to { transform: translateX(-100%); } } root: perceptual object permanence — the user's visual system assumes objects persist unless destroyed. view transitions leverage this by maintaining visual continuity of an element across state changes.",
+  "tags": [
+   "layout",
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "oklch-based design token color scales",
+  "domain": "design systems, CSS color, token architecture",
+  "summary": "/* define base hue as custom property */ root: perceptual uniformity — the mapping from numerical value to perceived quantity is linear",
+  "tags": [
+   "accessibility",
+   "color"
+  ]
+ },
+ {
+  "title": "boids / emergent flocking",
+  "domain": "particle systems, generative art, creative coding",
+  "summary": "class Boid { update(boids) { const neighbors = boids.filter(b => dist(this, b) < PERCEPTION_RADIUS); // separation: steer away from too-close neighbors const separation = neighbors .filter(b => dist(this, b) < AVOID_RADIUS) .reduce((acc, b) => acc.sub(b.pos.sub(this.pos).normalize().div(dist(this, b))), vec2(0, 0)); // alignment: match average velocity of neighbors const avgVel = neighbors.reduce((acc, b) => acc.add(… root: local interaction producing global coordination without central control — the minimal suffic",
+  "tags": [
+   "3d",
+   "generative",
+   "layout",
+   "motion",
+   "perception",
+   "type"
+  ]
+ },
+ {
+  "title": "reaction-diffusion / turing patterns",
+  "domain": "generative art, creative coding, shaders, simulations",
+  "summary": "// Gray-Scott reaction-diffusion system // u and v are two chemical concentrations // u is the activator (autocatalytic) // v is the inhibitor // update rule (per pixel, per frame): // du/dt = Du * laplacian(u) - u*v*v + f*(1-u) // dv/dt = Dv * laplacian(v) + u*v*v - (f+k)*v // where: // Du, Dv = diffusion rates (Du > Dv produces patterns) // f = feed rate (rate u is added) // k = kill rate (rate v is removed) // lap… root: local self-reinforcement + long-range inhibition = pattern. this is the minimal sufficient c",
+  "tags": [
+   "3d",
+   "generative",
+   "performance",
+   "type"
+  ]
+ },
+ {
+  "title": "scroll-driven animation via CSS scroll timeline",
+  "domain": "CSS animation, scroll UX, interaction design",
+  "summary": "/* CSS-only scroll animation */ @keyframes reveal { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } .element { animation: reveal linear; animation-timeline: scroll(); /* links to nearest scroll container */ animation-range: entry 0% entry 100%; /* plays during element's entry into viewport */ } /* progress bar — links to page scroll */ .progress-bar { transform-origin:… root: direct mapping between user action (scroll input) and visual state (animation progress) — ze",
+  "tags": [
+   "layout",
+   "motion",
+   "perception",
+   "performance"
+  ]
+ },
+ {
+  "title": "variable font kinetic typography",
+  "domain": "typography, web animation, css animation, creative coding",
+  "summary": "/* animate font-weight via variable font wght axis */ @keyframes pulse-weight { 0%, 100% { font-variation-settings: 'wght' 300; } 50% { font-variation-settings: 'wght' 900; } } .kinetic { font-family: 'Recursive', sans-serif; animation: pulse-weight 1.2s ease-in-out infinite; } /* per-character stagger using split text + CSS custom properties */ .word span { display: inline-block; animation: pulse-weight 1.2s ease-in… root: continuous variation in a discrete medium — type was always discrete (you chose a weight) bu",
+  "tags": [
+   "generative",
+   "layout",
+   "motion",
+   "performance",
+   "type"
+  ]
+ },
+ {
+  "title": "convergence: 1/f noise across all creative media",
+  "domain": "cross-domain",
+  "summary": "the 1/f power spectrum (where power ∝ 1/frequency) appears in: - fbm noise (the foundational generative texture) - musical melodies (pitch sequences in classical and pop music have ~1/f power spectra — measured by voss and clark, 1975) - human heartbeat interval variation (healthy HRV has 1/f characteristics — pathological states lose it) - geological strata thickness distribution - neural firing patterns across cortical areas - stock price return volatility (not price, but volatility) - visual scene complexity (th…",
+  "tags": [
+   "color",
+   "generative",
+   "layout",
+   "motion",
+   "perception",
+   "type"
+  ]
+ },
+ {
+  "title": "convergence: damped harmonic oscillator across physics, music, UI, biology",
+  "domain": "cross-domain",
+  "summary": "the equation `m·x'' + c·x' + k·x = F(t)` is: - the spring animation equation (UI) - the equation of a pendulum (small angle) - the equation of a tuning fork decay - the model of cochlear basilar membrane frequency response (how your ear decodes pitch) - the model of circadian rhythm entrainment (how your body clock synchronizes to light) - the model for how power grids respond to sudden load changes the design gap: UI spring parameters are set by feel, not by correspondence to physical objects. there is no conventi…",
+  "tags": [
+   "layout",
+   "motion"
+  ]
+ },
+ {
+  "title": "convergence: voronoi diagrams across crystallography, cell biology, UI, generative art",
+  "domain": "cross-domain",
+  "summary": "voronoi partitioning (divide space into regions, each region belongs to the nearest seed point) appears in: - crystal grain structure (each grain is the voronoi region of its seed nucleus) - cell territory in tissues (each cell controls the voronoi region of its center) - giraffe coat patterns (patches are approximate voronoi regions) - bone trabecular structure (voronoi-like load-path optimization) - CSS grid (the explicit placement algorithm is a kind of voronoi partitioning) - package loading UI (skeleton screen…",
+  "tags": [
+   "3d",
+   "generative",
+   "layout"
+  ]
+ },
+ {
+  "title": "convergence: reaction-diffusion ↔ architectural generation ↔ biological morphogenesis",
+  "domain": "cross-domain",
+  "summary": "turing's 1952 paper wasn't about art. it was about how embryos develop — why a bilaterally symmetric fertilized egg produces an asymmetric organism with specific pattern features (stripes, spots, limb placements). the same equations that produce leopard spots produce: - the branching structure of blood vessel networks - the branching structure of tree root systems - the crack pattern in drying mud - the meandering of rivers - certain architectural forms (natural ventilation pathways in termite mounds) **the gap not…",
+  "tags": [
+   "generative",
+   "layout"
+  ]
+ },
+ {
+  "title": "convergence: wave function collapse (WFC) across procedural generation, quantum mechanics, constraint propagation",
+  "domain": "cross-domain",
+  "summary": "WFC algorithm (maxim gumin, 2016): generate a grid-based output such that each cell's content is consistent with its neighbors, informed by example patterns. the algorithm: maintain a superposition of possible states for each cell, collapse the cell with minimum entropy first (most constrained), propagate the constraint reductions to neighbors. repeat until all cells are collapsed. the convergence: - quantum measurement: before observation, a quantum system is in superposition.",
+  "tags": [
+   "color",
+   "generative",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "1963 — edward lorenz, the lorenz attractor",
+  "domain": "generative art — strange attractors",
+  "summary": "context: lorenz was modeling atmospheric convection. three coupled differential equations: ``` dx/dt = σ(y - x) dy/dt = x(ρ - z) - y dz/dt = xy - βz ``` with σ=10, ρ=28, β=8/3. what emerged: a trajectory in 3D state space that never repeats, never intersects itself, traces a butterfly shape.",
+  "tags": []
+ },
+ {
+  "title": "1976 — rössler attractor",
+  "domain": "generative art — strange attractors",
+  "summary": "otto rössler simplified lorenz: ``` dx/dt = -y - z dy/dt = x + ay dz/dt = b + z(x - c) ``` with a=0.2, b=0.2, c=5.7. the visual form: a band that folds over itself once per orbit, accumulating sheets like a crumpled piece of paper. rössler studied this as the simplest possible chaos.",
+  "tags": []
+ },
+ {
+  "title": "1994 — thomas attractor (rené thomas)",
+  "domain": "generative art — strange attractors",
+  "summary": "a symmetric three-component system with a single parameter: ``` dx/dt = sin(y) - bx dy/dt = sin(z) - by dz/dt = sin(x) - bz ``` at b≈0.208: a dense space-filling trajectory with a strong visual texture. at higher b values: less chaotic, more periodic.",
+  "tags": []
+ },
+ {
+  "title": "surface:",
+  "domain": "generative art — strange attractors",
+  "summary": "a line tracing an infinite non-repeating path through space, producing a complex beautiful shape.",
+  "tags": []
+ },
+ {
+  "title": "technical:",
+  "domain": "generative art — strange attractors",
+  "summary": "a trajectory in state space of a deterministic system with no noise, whose behavior is nonetheless unpredictable over long time horizons due to exponential sensitivity to initial conditions.",
+  "tags": [
+   "generative"
+  ]
+ },
+ {
+  "title": "structural:",
+  "domain": "generative art — strange attractors",
+  "summary": "the attractor exists in phase space — each point is a state of the system (position and velocity). the trajectory in phase space is the movie of the system's evolution. the attractor's geometry is the set of all states the system visits in the long run.",
+  "tags": [
+   "generative"
+  ]
+ },
+ {
+  "title": "cross-domain:",
+  "domain": "generative art — strange attractors",
+  "summary": "- population dynamics: predator-prey systems with three or more species can exhibit chaotic dynamics. the trajectories in (prey, predator, mesopredator) space trace strange attractors. - economic cycles: certain coupled economic models (investment, income, interest) produce lorenz-like dynamics.",
+  "tags": [
+   "generative"
+  ]
+ },
+ {
+  "title": "root:",
+  "domain": "generative art — strange attractors",
+  "summary": "the irreducible mechanic is *a stable instability* — a system that repeatedly returns to the same region of state space (stability) while never returning to any specific state it has already been in (instability). the aesthetic appeal of strange attractors is this tension: order (the shape) coexisting with disorder (the trajectory).",
+  "tags": [
+   "generative"
+  ]
+ },
+ {
+  "title": "1973-1982: the phong model",
+  "domain": "3D in the browser — physically based rendering",
+  "summary": "phong shading (bui tuong phong, 1973): decompose light into ambient + diffuse + specular. specular is approximated as `dot(reflect(L, N), V)^shininess`. no physical basis.",
+  "tags": []
+ },
+ {
+  "title": "1984-1994: physical reflectance models",
+  "domain": "3D in the browser — physically based rendering",
+  "summary": "cook-torrance (1982): treat the surface as composed of microfacets, each a perfect mirror. the BRDF is: ``` f(l, v) = D(h) · F(v, h) · G(l, v, h) / (4 · (n·l) · (n·v)) ``` where: - D: normal distribution function — how many microfacets have their normal aligned with H - F: Fresnel equation — ratio of reflected to refracted light, angle-dependent - G: geometric attenuation — mutual shadowing/masking of microfacets",
+  "tags": []
+ },
+ {
+  "title": "2012: Disney BSDF (physically based shading in film)",
+  "domain": "3D in the browser — physically based rendering",
+  "summary": "brent burley at disney research presented a unified material model. the key contributions: the GGX normal distribution (sharper peaks than Beckmann, matches real measurements better), the Disney diffuse model (replaces lambertian with a roughness-dependent diffuse term), the parametrization (roughness 0-1, metallic 0-1, specular 0-1 instead of physically correct but opaque parameters). this became the standard for al…",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "hyperdetail accumulation:",
+  "domain": "ai-generated aesthetics",
+  "summary": "diffusion models trained on curated image datasets develop a bias toward high detail in all regions simultaneously. real photographs have selective focus. diffusion models produce uniform detail density regardless of scene composition.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "smooth-artificial skin:",
+  "domain": "ai-generated aesthetics",
+  "summary": "human face generation produces skin that is smooth in a way that doesn't correspond to any real human complexion. the diffusion model averages across the vast human face training distribution, producing an idealized average face texture. the tell: no pores, no real variation in skin texture, no microfacets — the skin looks like a painted render, not a photograph.",
+  "tags": []
+ },
+ {
+  "title": "object-concept tension:",
+  "domain": "ai-generated aesthetics",
+  "summary": "when a prompt specifies unusual combinations (\"a chair made of clouds\"), the model interprets both \"chair\" and \"cloud\" via their most statistically common representations and attempts to merge them. the result often has the visual structure of one object (chair) applied as a texture from another (cloud), rather than a synthesis. the tell: the object of one type and the material of another don't resolve into a coheren…",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "convergence: the imperfection aesthetic across film, photography, vinyl records, and AI",
+  "domain": "cross-domain",
+  "summary": "there is a consistent historical pattern: when a new medium achieves technical perfection, artists immediately begin artificially reintroducing the imperfections of the previous medium. - digital audio achieved perfect silence → artists reintroduce vinyl crackle and tape hiss (lo-fi aesthetics) - digital photography eliminated film grain → photographers add grain in post (VSCO, Lightroom) - digital video eliminated tape artifacts → cinematographers add scan lines and VHS noise (vaporwave, retro aesthetics) - CG ren…",
+  "tags": [
+   "generative",
+   "type"
+  ]
+ },
+ {
+  "title": "convergence: self-similarity at multiple scales (fractals) across nature, music, architecture, code",
+  "domain": "cross-domain",
+  "summary": "the same pattern of self-similarity appears at multiple scales in: - natural forms: coastlines (Mandelbrot), ferns (IFS), lungs (bronchi → bronchioles → alveoli), rivers (tributary networks), snowflakes (Koch curve) - music: Bach's fugues (a theme developed at multiple scales simultaneously), chaos music, spectral music - architecture: fractal urbanism (medieval city structure has higher fractal dimension than modernist planned cities), Sagrada Família (self-similar decorative elements), traditional Japanese archit…",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "convergence: the grammar-of-structure ↔ grammar-of-code isomorphism",
+  "domain": "cross-domain",
+  "summary": "every formal visual language has an analog in programming language structure: - *CSS grid* is a coordinate geometry: named lines, track sizes, placement rules. its grammar is that of linear algebra (matrices, projections). - *flexbox* is a directional flow with wrapping — the grammar of stack and queue operations (push, pop, wrap). - *SVG path grammar* (M, L, C, Q, A, Z commands) is a formal grammar equivalent to a context-free grammar over geometric operations.",
+  "tags": [
+   "3d",
+   "color",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "trust:",
+  "domain": "emotional design",
+  "summary": "- high contrast between text and background - symmetrical layouts - generous whitespace (signals that nothing is hidden) - muted, cooler color palettes (blue → authority, stability) - serif typefaces (long track record → institutional trust) - consistent spacing and alignment (predictability → reliability) - real photography vs. illustration (photography triggers more direct reality-testing)",
+  "tags": [
+   "color",
+   "emotion",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "urgency:",
+  "domain": "emotional design",
+  "summary": "- warm colors (red, orange, yellow — fire/blood associations) - irregular layout (asymmetry → instability → action required) - tight spacing (compression → pressure) - fast animation (urgency does not wait) - high saturation (signals intensity) - vertical layout emphasis (pointing down → calls to action)",
+  "tags": [
+   "color",
+   "emotion",
+   "layout",
+   "motion"
+  ]
+ },
+ {
+  "title": "calm:",
+  "domain": "emotional design",
+  "summary": "- cool colors with low saturation (sky, water, mist) - horizontal emphasis (ground, horizon, stillness) - generous whitespace - slow or absent animation - rounded forms (no sharp edges → no threats) - sans-serif type with relaxed tracking",
+  "tags": [
+   "color",
+   "layout",
+   "motion",
+   "type"
+  ]
+ },
+ {
+  "title": "wonder:",
+  "domain": "emotional design",
+  "summary": "- unexpected scale change (very large or very small in relation to what's expected) - visual depth (layers, parallax, 3D) - ambiguity (incomplete visual information that the mind completes) - unexpected color combinations (unfamiliar → novel → wonder) - generative or mathematical forms (reveals order in apparent randomness) - animation that moves at different speeds simultaneously (complex depth)",
+  "tags": [
+   "color",
+   "emotion",
+   "generative",
+   "motion"
+  ]
+ },
+ {
+  "title": "playfulness:",
+  "domain": "emotional design",
+  "summary": "- off-grid placement (deliberate rule-breaking) - bold solid colors with high saturation - motion that doesn't follow physics (cartoon easing, overshoots) - irregular shapes (hand-drawn feel, imprecision signals human origin) - warm yellows, bright greens, saturated magentas - typography that breaks visual silence (display faces, irregular baseline)",
+  "tags": [
+   "color",
+   "layout",
+   "motion",
+   "type"
+  ]
+ },
+ {
+  "title": "calm visual environments:",
+  "domain": "emotional design",
+  "summary": "low spatial frequency dominance (few sharp edges, soft gradients), low contrast, high luminance, high hue uniformity",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "arousing visual environments:",
+  "domain": "emotional design",
+  "summary": "high spatial frequency content (many sharp edges, rich textures), high contrast, medium luminance, hue variety",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "perlin flow field visualization",
+  "domain": "creative coding, generative art, p5.js, canvas",
+  "summary": "1. create a grid of angle values using Perlin noise 2. each cell contains a unit vector at that angle 3. root: making invisible fields visible through accumulated particle traces",
+  "tags": [
+   "3d",
+   "color",
+   "generative",
+   "layout"
+  ]
+ },
+ {
+  "title": "L-system stochastic plant generation",
+  "domain": "generative art, creative coding, canvas API, SVG",
+  "summary": "axiom → iterate rules n times → turtle interpret result string stochastic variant: each symbol has probability-weighted alternative productions produces plant forms: branching trees, coral, root systems, fernlike structures root: recursive growth rules applied locally → global emergent form",
+  "tags": [
+   "generative",
+   "type"
+  ]
+ },
+ {
+  "title": "audio-reactive FFT visualization",
+  "domain": "web audio API, canvas, WebGL, creative coding",
+  "summary": "AudioContext → AnalyserNode → getByteFrequencyData() → Float32Array of frequency bins [0-255] per bin → map bins to visual parameters → render each frame root: cross-modal sensory integration — the human brain is not separated into isolated sensory channels; audio and visual information are integrated at the subcortical level",
+  "tags": [
+   "3d",
+   "color",
+   "emotion",
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "penrose tiling and aperiodic geometry",
+  "domain": "generative art, mathematical art, pattern, background design",
+  "summary": "two tile types: kite (wide rhombus) and dart (narrow rhombus) matching rules: colored edges must match at boundaries substitution system (analogy to L-systems but for tiles): kite → kite + 2 half-darts dart → dart + kite iterate substitution → aperiodic tiling of the plane code approach — de Bruijn pentagrid method: 1. create 5 sets of parallel lines, equally angularly spaced (72° apart) 2. each pair of lines from di… root: projecting from higher-dimensional periodic structure to lower-dimensional space produces ap",
+  "tags": [
+   "color",
+   "generative",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "convergence: the stack-as-depth metaphor across z-index, CSS layers, neural networks, memory",
+  "domain": "cross-domain",
+  "summary": "the stack data structure (LIFO: last in, first out) appears identically in: - CSS z-index: elements with higher z-index appear \"on top\" — a stack ordered by z value - CSS cascade layers: `@layer` creates an ordered stack of style precedences - browser rendering: the stacking context model — elements create stacking contexts that are rendered as layers - L-system turtle state: the `[` and `]` characters push/pop a stack of turtle states - call stack in programming: function invocations push/pop frames - neural netwo…",
+  "tags": [
+   "accessibility",
+   "generative",
+   "performance"
+  ]
+ },
+ {
+  "title": "convergence: the observer-collapse mechanic across quantum mechanics, visual perception, interaction design",
+  "domain": "cross-domain",
+  "summary": "three systems where *observation changes the state of the thing observed:* 1. *quantum measurement:* the wave function collapse (the state is a superposition until measured) 2. *visual perception:* the perceptual system completes ambiguous figures into definite percepts. the same image (the Necker cube) collapses to one orientation, then the other.",
+  "tags": [
+   "motion",
+   "perception"
+  ]
+ },
+ {
+  "title": "convergence: the L-system ↔ programming recursion ↔ architectural recursion",
+  "domain": "cross-domain",
+  "summary": "all three are the same formal structure: - L-system: a symbol expands to a string containing itself (recursion in the production rule) → branching forms - recursive function: a function calls itself with smaller input → tree-shaped call graph - Christopher Alexander's pattern language: each architectural pattern (town square) contains smaller patterns (fountain, benches), which contain smaller patterns (seating geometry) → self-similar at multiple scales the specific visual connection: draw a recursive function as…",
+  "tags": [
+   "generative"
+  ]
+ },
+ {
+  "title": "context:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "walter gropius founded the bauhaus in weimar as a synthesis of fine art and craft. the institution sought to reunify art and industry following the industrialization-driven split. the core belief: form follows function, but functional objects can also be beautiful.",
+  "tags": []
+ },
+ {
+  "title": "visual signatures:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "primary colors (red, yellow, blue) + black and white. simple geometric forms (circle, triangle, square — kandinsky's shape-color correspondences). strong grid structure.",
+  "tags": [
+   "color",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "key formal principles:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "the bauhaus grid was not decorative — it was the load-bearing structure. every element is placed on the grid or deliberately departed from it. the absence of ornament is itself an aesthetic statement: ornament conceals the underlying structure; bauhaus revealed it.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "translation to current practice:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "bauhaus principles are the direct ancestors of modern UI design — the grid system, the hierarchy of visual elements, the use of geometric primitives as the default shape vocabulary. tailwindCSS, figma's auto-layout, and CSS grid are bauhaus ideas implemented as software.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "the specific translation that hasn't happened:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "bauhaus workshop integration — bauhaus students learned typography, photography, painting, theater, furniture, and architecture simultaneously and synthesized across them. the current design system industry separates brand (colors/type), product (UI components), and motion (animation). the bauhaus synthesis would treat all three as expressions of a unified visual language from a single set of structural principles.",
+  "tags": [
+   "color",
+   "motion",
+   "type"
+  ]
+ },
+ {
+  "title": "specific formal inventions:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "the typographic grid was formalized by Swiss designers (Josef Müller-Brockmann's \"Grid Systems in Graphic Design,\" 1961). the insight: a mathematical grid that encompasses the full page — margins, columns, rows, baseline grid — allows complex information to be organized with a single rule system. the designer chooses the grid first, then places everything within it.",
+  "tags": [
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "the mechanism behind Swiss style's durability:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "it solved the organizing problem at the right level of abstraction. the grid is not a visual style — it is a constraint system. constraints reduce decisions while maintaining consistency.",
+  "tags": [
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "architectural origin:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "concrete left exposed, structure made visible, scale deliberately overwhelming, materials undecorated. the buildings by Le Corbusier (Chandigarh), Paul Rudolph, Marcel Breuer. the aesthetic is confrontational — it refuses to conceal the weight and difficulty of the material.",
+  "tags": [
+   "type"
+  ]
+ },
+ {
+  "title": "web brutalism:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "the aesthetic inverse of smooth modern UI design. characteristics: high contrast (black on white, or lurid color combinations), raw HTML appearance, unconventional typography (oversized, misaligned, stacked), visible structure (borders, grid lines, functional elements used decoratively), deliberate violation of visual smoothness conventions.",
+  "tags": [
+   "color",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "the mechanism:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "web brutalism exploits the strong expectations the web has established (cards, rounded corners, shadows, whitespace) and violates them deliberately. the visual effect of violation: the user must actively decode the interface rather than passively scanning it. this creates engagement — the brutalist site is harder to use, but the difficulty is experienced as visual energy.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "formal vocabulary:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "- raw `border: 1px solid black` rather than drop shadows - default browser stylesheet aesthetics deliberately preserved - large flat color fields (often the 90s web palette) - collision typography — text and images overlapping - broken grid or deliberately non-grid layout - hover effects that are dramatic (cursors that change radically, entire sections that invert)",
+  "tags": [
+   "color",
+   "layout",
+   "type"
+  ]
+ },
+ {
+  "title": "contemporary examples:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "balenciaga.com (deliberately dysfunctional luxury brand site), bloomberg businessweek digital, the original brutalist web movement sites.",
+  "tags": []
+ },
+ {
+  "title": "why brutalism matters technically:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "it reveals that the visual conventions of \"good\" UI design are not perceptual requirements — they are cultural agreements. rounded corners don't improve usability. they signal \"friendly.\" dropping them doesn't make the interface less functional.",
+  "tags": []
+ },
+ {
+  "title": "origin:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "a design trend from early 2020 on dribbble. single-designer concept pieces popularized the look. defined by: light background, elements that appear to rise from the background or recede into it, achieved by two shadow directions (light source from upper left: light shadow on lower-right, dark shadow on upper-left).",
+  "tags": []
+ },
+ {
+  "title": "why it failed for accessibility:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "the contrast between the element and its background is deliberately low — that's the aesthetic. the element appears to emerge from the same surface. this produces contrast ratios that consistently fail WCAG AA (4.5:1 for text).",
+  "tags": [
+   "accessibility",
+   "color"
+  ]
+ },
+ {
+  "title": "the legitimate insight in neomorphism:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "the two-shadow technique is a physically motivated simulation of embossed plastic under a single directional light. if all shadows in a UI use the same light direction and the same light-dark shadow pairing, the interface has a consistent implied physical environment. the failure was in the specific application (extremely low contrast backgrounds), not in the physical light consistency principle.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "visual signature:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "frosted glass panels floating over colorful gradients. implemented via CSS `backdrop-filter: blur()`.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "the perceptual mechanism:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "`backdrop-filter: blur()` blurs the content *behind* the element, not the element itself. the result: the element appears transparent, with the background visible but defocused. the defocusing (blur) suggests that the element is closer to the viewer than the background — depth from focus.",
+  "tags": []
+ },
+ {
+  "title": "the depth model:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "cameras blur objects that are out of focus (depth of field). when an element has a blurred background, the perceptual system reads it as: the element is in focus (close to the viewer), the background is out of focus (further away). this is physically incorrect for flat screens — nothing is actually at different depths — but the perceptual system interprets focus-based depth cues automatically.",
+  "tags": []
+ },
+ {
+  "title": "the performance cost:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "`backdrop-filter: blur()` triggers compositing. the browser must capture the content behind the element, apply the blur, and composite the result. on complex pages with many blurred elements, this is GPU-expensive.",
+  "tags": [
+   "3d"
+  ]
+ },
+ {
+  "title": "current deployment:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "apple's macOS/iOS design language, visionOS ornament material, linear.app, arc browser, many contemporary SaaS products. has become the default \"modern\" aesthetic for premium/consumer-facing products.",
+  "tags": []
+ },
+ {
+  "title": "why it reads as premium:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "dark backgrounds with glowing colored light implies night photography, which implies equipment quality. the aesthetic is borrowed from long-exposure night photography and astrophotography — contexts where technological sophistication produces beauty.",
+  "tags": [
+   "color",
+   "dark"
+  ]
+ },
+ {
+  "title": "the compositional grammar:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "bento grids create visual rhythm through variation in card size while maintaining the underlying regularity of the grid. the large card and small cards together imply a hierarchy — the large card contains the primary message, the small cards contain supporting details. this is the classical magazine layout principle translated to component grids.",
+  "tags": [
+   "layout"
+  ]
+ },
+ {
+  "title": "why it works compositionally:",
+  "domain": "aesthetic movements — full taxonomy",
+  "summary": "irregular rectangle arrangements are visually interesting because the eye has multiple paths through the layout. a uniform grid has one path (left-to-right, row by row). an irregular grid has multiple valid reading orders.",
+  "tags": [
+   "color",
+   "layout"
+  ]
+ },
+ {
+  "title": "d3.js as grammar of graphics implementation:",
+  "domain": "data visualization aesthetics",
+  "summary": "```javascript // d3 scatter plot — explicit grammar of graphics mapping const svg = d3.select('#chart') .append('svg') .attr('width', width + margin.left + margin.right) .attr('height', height + margin.top + margin.bottom);",
+  "tags": []
+ },
+ {
+  "title": "exploratory:",
+  "domain": "data visualization aesthetics",
+  "summary": "the viewer interacts freely. tools: crossfilter.js, vega-lite, observable plot. the viewer drives.",
+  "tags": []
+ },
+ {
+  "title": "explanatory:",
+  "domain": "data visualization aesthetics",
+  "summary": "the designer drives. one intended path. scrollytelling: the user scrolls, the story unfolds, the chart transitions frame by frame through a predetermined sequence.",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "scrollytelling implementation:",
+  "domain": "data visualization aesthetics",
+  "summary": "```javascript // scrollama.js — the canonical scrollytelling library const scroller = scrollama();",
+  "tags": []
+ },
+ {
+  "title": "convergence: the small multiple / facet / comparative view across visualization, photography, cinema, architecture",
+  "domain": "cross-domain",
+  "summary": "the small multiple (Edward Tufte) — showing the same visualization multiple times with one variable changed — appears across domains: - *data visualization:* trellis/faceted plots (ggplot2 `facet_wrap`, d3 small multiples) — the same chart for each category - *contact sheet photography:* multiple small prints of the same subject at different exposures or moments — Garry Winogrand's working method - *comic strips:* sequential panels showing the same character across time — the comparison of states is the narrative -…",
+  "tags": [
+   "motion",
+   "performance"
+  ]
+ },
+ {
+  "title": "convergence: the easing curve as music rhythm as physical spring",
+  "domain": "cross-domain",
+  "summary": "three systems encoding the same temporal structure: 1. *cubic-bezier easing:* a curve from (0,0) to (1,1) describing the time-to-value mapping of an animation. `cubic-bezier(0.25, 0.1, 0.25, 1.0)` is the standard \"ease\" curve — slow start, fast middle, slow end. 2.",
+  "tags": [
+   "motion"
+  ]
+ },
+ {
+  "title": "convergence: information compression ↔ aesthetic compression ↔ language compression",
+  "domain": "cross-domain",
+  "summary": "three domains that compress information to its essential structure: 1. *Kolmogorov complexity (algorithmic information theory):* the length of the shortest program that produces a given string. the measure of how much intrinsic structure a sequence has. 2.",
+  "tags": [
+   "color"
+  ]
+ },
+ {
+  "title": "convergence: the viewing-from-position constraint across perception, physics, design",
+  "domain": "cross-domain",
+  "summary": "the observer position determines what is visible — this appears identically in: 1. *physics (relativity):* there is no view from nowhere. every observation is from a frame of reference. what is simultaneous for one observer may not be for another.",
+  "tags": [
+   "generative",
+   "perception",
+   "performance"
+  ]
+ }
+]

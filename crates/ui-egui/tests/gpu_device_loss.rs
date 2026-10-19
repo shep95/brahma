@@ -3,12 +3,12 @@
 //! documents stay. Both an injected loss and a real `Device::destroy()` are covered. Skips when
 //! there is no GPU adapter.
 
-use eframe::egui_wgpu::RenderState;
 use brahma_color::{Color, ColorMode, SampleType};
 use brahma_doc::{Document, Size};
 use brahma_gpu::Fault;
 use brahma_ui_egui::gpu_canvas::{self, GpuCanvas};
 use brahma_ui_egui::{BrahmaApp, gpu_status};
+use eframe::egui_wgpu::RenderState;
 use serde_json::json;
 
 use brahma_testkit::gpu_lock;

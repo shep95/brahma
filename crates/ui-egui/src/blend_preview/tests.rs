@@ -1,12 +1,12 @@
 //! #970: hovering a blend mode in the Layers panel previews it on the canvas; only a choice
 //! records a history step.
 
+use brahma_color::BlendMode;
+use brahma_doc::LayerId;
 use egui::accesskit::Role;
 use egui::{PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
-use brahma_color::BlendMode;
-use brahma_doc::LayerId;
 use serde_json::json;
 
 use super::{damage, display_doc, hover};

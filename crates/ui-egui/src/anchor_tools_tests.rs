@@ -1,9 +1,9 @@
 //! #1044: the Add Anchor Point and Delete Anchor Point tools insert and remove anchors on the
 //! paths Direct Selection edits, one history step per click.
 
-use egui::Modifiers;
 use brahma_doc::vector::Path;
 use brahma_geom::Point;
+use egui::Modifiers;
 use serde_json::json;
 
 use crate::BrahmaApp;

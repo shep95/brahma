@@ -1,12 +1,12 @@
 //! Camera Raw scope interaction. View state is in UiState; filter edits still commit through
 //! the existing filter.cameraRaw command. Image analysis is cached per completed proxy revision.
 use crate::{camera_raw_ui::CameraRawDialog, state::CameraRawScopeState, theme::Tokens, widgets};
-use egui::{Align2, Color32, FontId, Pos2, Rect, Sense, Stroke, TextureHandle, pos2, vec2};
 use brahma_algo::{
     camera_raw::CameraRaw,
     histogram::clipping,
     vectorscope::{HUES, SATURATIONS, Vectorscope},
 };
+use egui::{Align2, Color32, FontId, Pos2, Rect, Sense, Stroke, TextureHandle, pos2, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 

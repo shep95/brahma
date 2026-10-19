@@ -2,10 +2,10 @@
 //! Invert, not only brush strokes. A fresh Reveal All mask has no tiles, so inverting it only
 //! changes the surface's default pixel; the thumbnail cache key must see that.
 
-use egui::vec2;
-use egui_kittest::Harness;
 use brahma_doc::LayerId;
 use brahma_raster::Surface;
+use egui::vec2;
+use egui_kittest::Harness;
 use serde_json::json;
 
 use crate::mask_thumbs_ui::THUMB_MASK;

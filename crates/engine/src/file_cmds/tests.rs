@@ -1248,3 +1248,43 @@ fn batch_naming_rejects_outputs_that_replace_inputs_before_processing() {
     assert_eq!(std::fs::read(&first).unwrap(), before[0]);
     assert_eq!(std::fs::read(&second).unwrap(), before[1]);
 }
+
+/// `cornerRadius` on a flat save: pixels or a percentage of the shorter side. The corners of a
+/// PNG come out transparent, the centre stays opaque; JPEG (no alpha) still saves; bad values
+/// are errors, never panics.
+#[test]
+fn corner_radius_rounds_a_flat_export() {
+    let dir = tmp("corners");
+    let mut s = Session::new();
+    s.execute("file.new", json!({"width": 40, "height": 20, "background": "#ff0000"})).unwrap();
+    let out = join(&dir, "round.png");
+    s.execute("file.saveACopy", json!({"path": out, "cornerRadius": 8})).unwrap();
+    let img = brahma_codecs::decode(&std::fs::read(&out).unwrap()).unwrap();
+    assert!(img.layout().has_alpha(), "{:?}", img.layout());
+    let px = |x: u32, y: u32| {
+        let v = img.to_normalized();
+        let c = img.layout().channels();
+        let i = (y as usize * 40 + x as usize) * c;
+        v[i + c - 1]
+    };
+    assert_eq!(px(0, 0), 0.0, "corner is transparent");
+    assert_eq!(px(39, 19), 0.0, "opposite corner is transparent");
+    assert_eq!(px(20, 10), 1.0, "centre is opaque");
+    assert_eq!(px(20, 0), 1.0, "edge midpoint is opaque");
+    // A percentage of the shorter side (20 px): "25%" = 5 px.
+    assert_eq!(corner_radius_param(&s, &json!({"cornerRadius": "25%"}), "x").unwrap(), 5.0);
+    assert_eq!(corner_radius_param(&s, &json!({"cornerRadius": "90%"}), "x").unwrap(), 10.0, "capped at half");
+    assert_eq!(corner_radius_param(&s, &json!({}), "x").unwrap(), 0.0);
+    // A format without alpha still saves (the corners go white).
+    let jpg = join(&dir, "round.jpg");
+    s.execute("file.saveACopy", json!({"path": jpg, "cornerRadius": "40%"})).unwrap();
+    let j = brahma_codecs::decode(&std::fs::read(&jpg).unwrap()).unwrap();
+    assert!(!j.layout().has_alpha());
+    let v = j.to_normalized();
+    assert!(v[0] > 0.85 && v[1] > 0.85 && v[2] > 0.85, "corner is white: {:?}", &v[..3]);
+    let mid = (10 * 40 + 20) * 3;
+    assert!(v[mid] > 0.85 && v[mid + 1] < 0.2, "centre is red: {:?}", &v[mid..mid + 3]);
+    for bad in [json!(-1), json!("abc"), json!("-5%"), json!(true), json!([1])] {
+        assert!(s.execute("file.saveACopy", json!({"path": join(&dir, "bad.png"), "cornerRadius": bad})).is_err(), "{bad}");
+    }
+}

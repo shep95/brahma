@@ -13,8 +13,8 @@
 //! The list itself ([`preset_list`]) is shared with the Brush Preset picker (`brush_picker`), so
 //! both show, pick and organise presets the same way; each keeps its own view state.
 
-use egui::{Color32, RichText, Sense, Stroke, pos2, vec2};
 use brahma_engine::paint::{BrushPreset, MAX_BRUSH_SIZE};
+use egui::{Color32, RichText, Sense, Stroke, pos2, vec2};
 use serde_json::json;
 
 use crate::brush_panel::{BrushesPanelState, BrushesView, Renaming, UNGROUPED, commit_gesture, full_uv, grouped_presets, run_or_status};

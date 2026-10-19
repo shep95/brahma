@@ -10,12 +10,12 @@ use crate::point_curve as curve_edit;
 use crate::state::CurvesEditorState as CurveUi;
 use std::sync::Arc;
 
-use egui::{Color32, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_doc::adjust::{HueRange, ToneSpace};
 use brahma_doc::{Adjustment, LayerId};
 use brahma_engine::adjust_params::{self, HUE_RANGES, PHOTO_FILTERS};
 use brahma_engine::presets::Group;
 use brahma_engine::presets::gradients::GradientPreset;
+use egui::{Color32, Pos2, Rect, RichText, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

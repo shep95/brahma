@@ -8,7 +8,6 @@ mod common;
 
 use std::sync::Arc;
 
-use common::*;
 use brahma_color::{BlendMode, ColorMode, SampleType};
 use brahma_doc::adjust::{CurvePoint, LevelsChannel};
 use brahma_doc::adjust::{HueRange, ToneSpace};
@@ -16,6 +15,7 @@ use brahma_doc::*;
 use brahma_geom::Rect;
 use brahma_io::*;
 use brahma_psd::PsdFile;
+use common::*;
 
 const TOL: f32 = 1.0 / 255.0 + 1e-5;
 

@@ -186,6 +186,10 @@ pub struct ExportOptions {
     /// File Compatibility (see [`PsdExportOptions::maximize_compatibility`]). On by default, as
     /// Photoshop's Always.
     pub psd_maximize_compatibility: bool,
+    /// Flat formats: round the image's corners by this radius (pixels of the exported image;
+    /// 0 = square). The corners become transparent where the format keeps alpha (PNG, WebP,
+    /// TIFF…) and white where it doesn't (JPEG). Clamped to half the shorter side.
+    pub corner_radius: f32,
 }
 
 impl Default for ExportOptions {
@@ -198,6 +202,7 @@ impl Default for ExportOptions {
             tga_bits: None,
             image_previews: true,
             psd_maximize_compatibility: true,
+            corner_radius: 0.0,
         }
     }
 }

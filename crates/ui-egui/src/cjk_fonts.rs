@@ -23,11 +23,11 @@
 //! before the system Japanese fonts, in the Japanese slot of the same locale order. Without
 //! craft-fonts (and on the web, which never embeds them) nothing changes.
 
-use egui::epaint::text::{FontInsert, FontPriority, InsertFontFamily};
-use egui::{FontData, FontFamily, FontId, Shape};
 use brahma_text::cjk::{self, CjkChar, CjkScript, FontFile};
 use brahma_text::craft_fonts::{self, CraftFont};
 use brahma_text::scripts::{self, Script};
+use egui::epaint::text::{FontInsert, FontPriority, InsertFontFamily};
+use egui::{FontData, FontFamily, FontId, Shape};
 use std::path::PathBuf;
 
 /// Skip absurdly large files (a corrupt or non-font path must not eat memory).

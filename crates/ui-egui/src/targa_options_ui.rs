@@ -8,7 +8,7 @@
 
 use brahma_io::TgaBits;
 
-use crate::{ExportSettings, BrahmaApp};
+use crate::{BrahmaApp, ExportSettings};
 
 /// A save waiting on the Targa Options answer.
 pub struct Prompt {

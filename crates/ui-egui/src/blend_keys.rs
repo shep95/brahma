@@ -4,8 +4,8 @@
 //! an engine command (`tools.setBrush`, `layer.setProps`), so it records and undoes like a pick
 //! from the dropdown.
 
-use egui::{Event, Key};
 use brahma_color::BlendMode;
+use egui::{Event, Key};
 use serde_json::json;
 
 use crate::BrahmaApp;

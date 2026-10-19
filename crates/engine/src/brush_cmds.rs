@@ -11,9 +11,7 @@ use brahma_geom::Rect;
 use brahma_paint::mixer::{MixerSettings, apply_mixer_stroke};
 use brahma_paint::replace::{Limits, ReplaceMode, ReplaceSettings, Sampling, apply_color_replacement, color_replacement_effect};
 use brahma_paint::tile::PREVIEW_SIDE;
-use brahma_paint::{
-    BrushPreset, BrushSettings, GrayTile, Pattern, PresetCaptures, StoredTile, Stroke, StrokePoint, StrokeRenderer, TipShape, render_stroke,
-};
+use brahma_paint::{BrushPreset, BrushSettings, GrayTile, Pattern, PresetCaptures, StoredTile, Stroke, StrokePoint, StrokeRenderer, TipShape, render_stroke};
 use brahma_raster::Surface;
 use serde_json::{Value, json};
 

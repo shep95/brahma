@@ -3,11 +3,11 @@
 use std::collections::VecDeque;
 use std::sync::PoisonError;
 
-use egui::{ColorImage, Rect, TextureHandle, TextureOptions, pos2, vec2};
 use brahma_color::{ColorMode, PixelFormat, SampleType};
 use brahma_doc::TextLayer;
 use brahma_engine::prefs::FontPreview;
 use brahma_geom::Affine;
+use egui::{ColorImage, Rect, TextureHandle, TextureOptions, pos2, vec2};
 
 const SAMPLE: &str = "AaBbCc";
 /// Alef, lam, meem and ain: a face lacking any of them is not treated as an Arabic face.

@@ -9,9 +9,9 @@
 
 use std::sync::mpsc::{Receiver, TryRecvError};
 
-use egui::ColorImage;
 use brahma_engine::edit_menu_cmds::ContentAwareScalePreview;
 use brahma_engine::jobs::JobCtx;
+use egui::ColorImage;
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

@@ -2,9 +2,9 @@
 //! moved with the Move tool (drag one off the canvas to delete it), all through undoable engine
 //! commands (`view.newGuide` / `view.moveGuide` / `view.deleteGuide`).
 
-use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, pos2, vec2};
 use brahma_doc::Document;
 use brahma_engine::prefs::{GuidesGridAndSlices, Unit};
+use egui::{Align2, Color32, Pos2, Rect, Sense, Stroke, pos2, vec2};
 use serde_json::json;
 
 use crate::BrahmaApp;

@@ -4,11 +4,11 @@
 #[path = "support/current_affinity.rs"]
 mod fixture;
 
-use fixture::{Marker, document};
 use brahma_affinity::synth::Method;
 use brahma_doc::Document;
 use brahma_geom::Rect;
 use brahma_io::{ExportOptions, export, import};
+use fixture::{Marker, document};
 
 fn boards(doc: &Document) -> Vec<(String, Rect)> {
     doc.artboards().into_iter().map(|(_, name, a)| (name.to_string(), a.rect)).collect()

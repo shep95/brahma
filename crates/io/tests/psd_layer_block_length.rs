@@ -6,10 +6,10 @@
 
 mod common;
 
-use common::Features;
 use brahma_color::{ColorMode, SampleType};
 use brahma_io::*;
 use brahma_psd::PsdFile;
+use common::Features;
 
 fn be(b: &[u8], at: usize, long: bool) -> usize {
     if long { u64::from_be_bytes(b[at..at + 8].try_into().unwrap()) as usize } else { u32::from_be_bytes(b[at..at + 4].try_into().unwrap()) as usize }

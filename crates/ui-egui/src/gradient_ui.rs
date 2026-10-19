@@ -13,12 +13,12 @@
 
 use std::sync::Arc;
 
-use egui::emath::GuiRounding;
-use egui::{Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use brahma_compose::gradient_fill as gf;
 use brahma_doc::{Document, Fill, GradientStyle, Layer, LayerContent, LayerId};
 use brahma_engine::gradient_fill_cmds as cmds;
 use brahma_engine::presets::gradients as gradient_presets;
+use egui::emath::GuiRounding;
+use egui::{Color32, Pos2, Rect, Sense, Stroke, StrokeKind, pos2, vec2};
 use serde_json::{Value, json};
 
 use crate::BrahmaApp;

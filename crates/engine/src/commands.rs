@@ -1024,13 +1024,7 @@ fn build() -> Vec<CommandSpec> {
             destructive_adjust(
                 s,
                 "Desaturate",
-                Adjustment::HueSaturation {
-                    hue: 0.0,
-                    saturation: -100.0,
-                    lightness: 0.0,
-                    colorize: false,
-                    ranges: brahma_doc::adjust::HueRange::defaults(),
-                },
+                Adjustment::HueSaturation { hue: 0.0, saturation: -100.0, lightness: 0.0, colorize: false, ranges: brahma_doc::adjust::HueRange::defaults() },
                 &Value::Null,
             )
         }),
@@ -1364,6 +1358,7 @@ fn build() -> Vec<CommandSpec> {
     v.extend(crate::layer_copy_cmds::specs());
     v.extend(crate::prefs::specs());
     v.extend(crate::ai::specs());
+    v.extend(crate::aesthetic_cmds::specs());
     v.extend(crate::edit_menu_cmds::specs());
     v.extend(crate::fill_key_cmds::specs());
     v.extend(crate::sample_cmds::specs());

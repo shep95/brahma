@@ -5,10 +5,10 @@
 //! runs offscreen on wgpu with real egui pointer events. Skips when no GPU adapter exists (like
 //! `drag_preview_canvas.rs`).
 
-use egui::{Modifiers, PointerButton, Pos2};
 use brahma_ui_egui::BrahmaApp;
 use brahma_ui_egui::canvas::ViewXform;
 use brahma_ui_egui::control::{ControlRequest, handle};
+use egui::{Modifiers, PointerButton, Pos2};
 use serde_json::{Value, json};
 
 type Harness = egui_kittest::Harness<'static, BrahmaApp>;
