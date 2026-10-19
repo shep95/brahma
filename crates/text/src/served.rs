@@ -17,14 +17,15 @@
 //! ([`request_for_languages`]). The manifest's SHA-256 becomes the fetch's Subresource Integrity
 //! ([`ServedFont::integrity`]).
 
-use std::sync::{Mutex, PoisonError};
+use std::sync::{Mutex, OnceLock, PoisonError};
 
 /// One font file listed in a served font manifest.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ServedFont {
     /// The family the file registers as (its typographic family name, `name` ID 16, else ID 1).
     pub family: String,
-    /// Path relative to the site root, e.g. `fonts/open-sans/OpenSans-Regular.ttf`.
+    /// Path relative to the site root, e.g. `fonts/open-sans/OpenSans-Regular.ttf`, or an
+    /// absolute `https://` URL (the Google Fonts catalogue, [`google_fonts`]).
     pub file: String,
     /// ISO 15924 scripts the manifest lists for the file (`Arab`, `Jpan`, …); empty when absent.
     pub scripts: Vec<String>,
@@ -149,9 +150,14 @@ fn base64(data: &[u8]) -> String {
     s
 }
 
+/// A file to fetch and its Subresource Integrity value, when known.
+pub type FileRef = (String, Option<String>);
+
 struct State {
     /// Families the host can serve, installed or not.
     families: Vec<String>,
+    /// The files of each family.
+    files: Vec<(String, Vec<FileRef>)>,
     /// Script fallbacks, `(script, family)`: the first one per script is used.
     fallbacks: Vec<(String, String)>,
     /// Families to fetch, not yet taken by [`take_requests`].
@@ -160,7 +166,7 @@ struct State {
     generation: u64,
 }
 
-static STATE: Mutex<State> = Mutex::new(State { families: Vec::new(), fallbacks: Vec::new(), requested: Vec::new(), generation: 0 });
+static STATE: Mutex<State> = Mutex::new(State { families: Vec::new(), files: Vec::new(), fallbacks: Vec::new(), requested: Vec::new(), generation: 0 });
 
 fn state() -> std::sync::MutexGuard<'static, State> {
     STATE.lock().unwrap_or_else(PoisonError::into_inner)
@@ -180,15 +186,107 @@ pub fn add_families(families: impl IntoIterator<Item = String>) {
     }
 }
 
-/// Adds the fonts of a manifest: their families (as [`add_families`]) and their script fallbacks.
+/// Adds the fonts of a manifest: their families (as [`add_families`]), their files (the first
+/// listing of a family wins, so a host's own manifest beats the catalogue when it comes first)
+/// and their script fallbacks.
 pub fn add_fonts(fonts: &[ServedFont]) {
     add_families(fonts.iter().map(|f| f.family.clone()));
     let mut s = state();
+    for f in fonts {
+        let idx = match s.files.iter().position(|(fam, _)| *fam == f.family) {
+            Some(i) => i,
+            None => {
+                s.files.push((f.family.clone(), Vec::new()));
+                s.files.len() - 1
+            }
+        };
+        if let Some((_, entry)) = s.files.get_mut(idx)
+            && !entry.iter().any(|(file, _)| *file == f.file)
+        {
+            entry.push((f.file.clone(), f.integrity.clone()));
+        }
+    }
     for pair in script_fallbacks(fonts) {
         if !s.fallbacks.contains(&pair) {
             s.fallbacks.push(pair);
         }
     }
+}
+
+/// The files to fetch for a served family (empty for one nobody listed).
+pub fn files_for(family: &str) -> Vec<FileRef> {
+    state().files.iter().find(|(fam, _)| fam == family).map(|(_, v)| v.clone()).unwrap_or_default()
+}
+
+/// The commit of github.com/google/fonts the catalogue was distilled from; every file is fetched
+/// from it, so a family never changes under a document.
+pub const GOOGLE_FONTS_COMMIT: &str = "47d54ca1ebb14fd864695f1d39dc734f39017c33";
+
+/// Where a catalogue file lives: the pinned commit on GitHub's raw host (CORS-enabled).
+pub const GOOGLE_FONTS_BASE: &str = "https://raw.githubusercontent.com/google/fonts";
+
+/// One family of the Google Fonts catalogue (`data/google_fonts.tsv`, distilled by
+/// `scripts/google_fonts_catalog.py` from the repository's `METADATA.pb` files; every family is
+/// under the OFL, Apache or UFL licence, and no font bytes ship with brahma).
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CatalogFont {
+    pub family: &'static str,
+    /// `sans-serif`, `serif`, `display`, `handwriting` or `monospace`.
+    pub category: &'static str,
+    /// Directory in the repository, e.g. `ofl/opensans`.
+    pub dir: &'static str,
+    /// File names to fetch: the variable fonts, or regular, italic, bold and bold italic.
+    pub files: Vec<&'static str>,
+    /// Fallback scripts (ISO 15924) the family's subsets cover.
+    pub scripts: Vec<&'static str>,
+}
+
+const GOOGLE_FONTS_TSV: &str = include_str!("../data/google_fonts.tsv");
+
+/// The catalogue, parsed once.
+pub fn google_catalog() -> &'static [CatalogFont] {
+    static CATALOG: OnceLock<Vec<CatalogFont>> = OnceLock::new();
+    CATALOG.get_or_init(|| {
+        GOOGLE_FONTS_TSV
+            .lines()
+            .filter(|l| !l.is_empty() && !l.starts_with('#'))
+            .filter_map(|l| {
+                let mut f = l.split('\t');
+                let (family, category, dir, files) = (f.next()?.trim(), f.next()?.trim(), f.next()?.trim(), f.next()?.trim());
+                // `|` separates files and scripts: variable font names carry commas (`[wdth,wght]`).
+                let scripts = f.next().unwrap_or("").split('|').map(str::trim).filter(|s| !s.is_empty()).collect();
+                let files: Vec<&'static str> = files.split('|').map(str::trim).filter(|s| !s.is_empty()).collect();
+                if family.is_empty() || dir.is_empty() || files.is_empty() || !is_relative_path(dir) || files.iter().any(|x| !is_relative_path(x)) {
+                    return None;
+                }
+                Some(CatalogFont { family, category, dir, files, scripts })
+            })
+            .collect()
+    })
+}
+
+/// The catalogue as served fonts, one per file, ready for [`add_fonts`]. The URL points at the
+/// pinned commit; the shell fetches it the first time the family is picked or needed.
+pub fn google_fonts() -> Vec<ServedFont> {
+    google_catalog()
+        .iter()
+        .flat_map(|c| {
+            c.files.iter().map(move |file| ServedFont {
+                family: c.family.to_string(),
+                // Variable font names carry `[axes]`: percent-encoded, so every HTTP client and
+                // the browser's URL parser agree on the path.
+                file: format!("{GOOGLE_FONTS_BASE}/{GOOGLE_FONTS_COMMIT}/{}/{}", c.dir, file.replace('[', "%5B").replace(']', "%5D")),
+                scripts: c.scripts.iter().map(|s| (*s).to_string()).collect(),
+                integrity: None,
+            })
+        })
+        .collect()
+}
+
+/// The catalogue's category of a family (`None` for fonts from elsewhere), for font menus that
+/// group or filter by it.
+pub fn google_category(family: &str) -> Option<&'static str> {
+    google_catalog().iter().find(|c| c.family == family).map(|c| c.category)
 }
 
 /// The served families that are some script's fallback (the font database adds the ones it has
@@ -278,6 +376,46 @@ pub fn take_requests() -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_google_catalogue_lists_every_family_with_files_and_fallbacks_first() {
+        let cat = google_catalog();
+        assert!(cat.len() >= 1900, "{} families", cat.len());
+        let mut seen = std::collections::HashSet::new();
+        for c in cat {
+            assert!(seen.insert(c.family), "duplicate {}", c.family);
+            assert!(!c.files.is_empty() && c.files.len() <= 4, "{}: {:?}", c.family, c.files);
+            assert!(["sans-serif", "serif", "display", "handwriting", "monospace"].contains(&c.category), "{}: {}", c.family, c.category);
+            assert!(c.dir.starts_with("ofl/") || c.dir.starts_with("apache/") || c.dir.starts_with("ufl/"), "{}: {}", c.family, c.dir);
+        }
+        for f in ["Open Sans", "Roboto", "Lato", "Noto Sans JP", "Playfair Display", "JetBrains Mono"] {
+            assert!(seen.contains(f), "missing {f}");
+        }
+        let fonts = google_fonts();
+        assert!(fonts.len() >= cat.len());
+        assert!(fonts[0].file.starts_with("https://raw.githubusercontent.com/google/fonts/47d54ca1"));
+        let open_sans = fonts.iter().find(|f| f.family == "Open Sans").unwrap();
+        assert!(open_sans.file.ends_with("/ofl/opensans/OpenSans%5Bwdth,wght%5D.ttf"), "{}", open_sans.file);
+        // The Noto Sans families lead, so they are the script fallbacks.
+        let fb = script_fallbacks(&fonts);
+        for (script, family) in
+            [("Arab", "Noto Sans Arabic"), ("Jpan", "Noto Sans JP"), ("Hans", "Noto Sans SC"), ("Kore", "Noto Sans KR"), ("Thai", "Noto Sans Thai")]
+        {
+            assert!(fb.contains(&(script.to_string(), family.to_string())), "{script}: {fb:?}");
+        }
+        assert_eq!(google_category("Roboto"), Some("sans-serif"));
+        assert_eq!(google_category("Nope"), None);
+    }
+
+    #[test]
+    fn files_of_added_fonts_are_remembered_first_listing_wins() {
+        add_fonts(&[ServedFont { family: "Zz Test".into(), file: "fonts/zz/a.ttf".into(), scripts: vec![], integrity: Some("sha256-x".into()) }]);
+        add_fonts(&[ServedFont { family: "Zz Test".into(), file: "https://example.org/b.ttf".into(), scripts: vec![], integrity: None }]);
+        let files = files_for("Zz Test");
+        assert_eq!(files.len(), 2);
+        assert_eq!(files[0], ("fonts/zz/a.ttf".to_string(), Some("sha256-x".to_string())));
+        assert!(files_for("Nobody").is_empty());
+    }
 
     #[test]
     fn reads_craft_fonts_manifest_lines() {

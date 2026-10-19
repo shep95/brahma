@@ -1,6 +1,5 @@
 //! The browser shell: web `Services`, drag-and-drop, and the eframe web runner.
 
-use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
@@ -27,19 +26,6 @@ const CANVAS_ID: &str = "brahma_canvas";
 /// Fonts the host serves next to the page (`brahma_ui_egui::served_fonts`): craft-fonts' manifest
 /// format, each file relative to the site root. No manifest (a 404) means no served fonts.
 const FONTS_MANIFEST: &str = "fonts/manifest.txt";
-
-/// The served fonts: the manifest once read, and what the network has delivered.
-#[derive(Default)]
-struct ServedFonts {
-    /// Font files by family, each with its Subresource Integrity value when the manifest has one.
-    files: HashMap<String, Vec<(String, Option<String>)>>,
-    /// Families fetched or being fetched: each one once per page load.
-    fetched: HashSet<String>,
-    /// Downloaded files waiting for the next frame: (family, bytes).
-    arrived: Vec<(String, Vec<u8>)>,
-}
-
-type Served = Arc<Mutex<ServedFonts>>;
 
 pub fn start() {
     eframe::WebLogger::init(log::LevelFilter::Info).ok();
@@ -79,8 +65,7 @@ pub fn start() {
                 Box::new(move |cc| {
                     BrahmaApp::setup_context(&cc.egui_ctx, ThemeKind::Pro);
                     let inbox: Inbox = Arc::default();
-                    let served: Served = Arc::default();
-                    load_font_manifest(served.clone(), cc.egui_ctx.clone());
+                    load_font_manifest(cc.egui_ctx.clone());
                     let (session, warnings) = crate::preset_bridge::session(presets.clone());
                     preset_warnings.extend(warnings);
                     let mut app = BrahmaApp::new(session, services(inbox.clone()));
@@ -97,7 +82,7 @@ pub fn start() {
                     }
                     let unsaved = Arc::new(AtomicBool::new(false));
                     guard_unload(unsaved.clone());
-                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, served, database, presets }))
+                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, database, presets }))
                 }),
             )
             .await;
@@ -163,7 +148,7 @@ fn query() -> String {
 }
 
 /// Reads the served font manifest, if the host has one, and lists its families in the font menus.
-fn load_font_manifest(served: Served, ctx: egui::Context) {
+fn load_font_manifest(ctx: egui::Context) {
     wasm_bindgen_futures::spawn_local(async move {
         // Most hosts serve no fonts: a missing manifest is the normal case, not an error.
         let Ok(bytes) = fetch_bytes(FONTS_MANIFEST, None).await else { return };
@@ -176,13 +161,9 @@ fn load_font_manifest(served: Served, ctx: egui::Context) {
         for s in skipped {
             log::warn!("{FONTS_MANIFEST}: skipped {s}");
         }
-        let mut files: HashMap<String, Vec<(String, Option<String>)>> = HashMap::new();
-        for f in &fonts {
-            files.entry(f.family.clone()).or_default().push((f.file.clone(), f.integrity.clone()));
-        }
-        log::info!("brahma-web: {} served font families", files.len());
-        served.lock().unwrap_or_else(|e| e.into_inner()).files = files;
-        // The families for the font menus, and the script fallbacks (the manifest's `scripts`).
+        log::info!("brahma-web: {} served font files", fonts.len());
+        // The families for the font menus, their files, and the script fallbacks (the
+        // manifest's `scripts`); `served_fonts::serve` fetches them when asked for.
         served_fonts::add_fonts(&fonts);
         // Fetch now the fallbacks of the scripts the browser's languages use (an Arabic reader gets
         // the Arabic font before typing); the rest is fetched when text or a font menu needs it.
@@ -257,7 +238,6 @@ struct WebShell {
     title: String,
     /// Read by the `beforeunload` listener ([`guard_unload`]).
     unsaved: Arc<AtomicBool>,
-    served: Served,
     database: Option<web_sys::IdbDatabase>,
     presets: crate::preset_bridge::Bridge,
 }
@@ -291,38 +271,6 @@ impl WebShell {
         }
         self.unsaved.store(self.app.has_unsaved_work() || self.presets.unsaved(), Ordering::Relaxed);
     }
-
-    /// Fetches the served families asked for (picked in a font menu, or needed by a layout) and
-    /// installs the files that arrived.
-    fn serve_fonts(&mut self, ctx: &egui::Context) {
-        let requested = served_fonts::take_requests();
-        let (fetch, arrived) = {
-            let mut s = self.served.lock().unwrap_or_else(|e| e.into_inner());
-            let mut fetch = Vec::new();
-            for family in requested {
-                if let Some(files) = s.files.get(&family).cloned()
-                    && s.fetched.insert(family.clone())
-                {
-                    fetch.extend(files.into_iter().map(|(file, integrity)| (family.clone(), file, integrity)));
-                }
-            }
-            (fetch, std::mem::take(&mut s.arrived))
-        };
-        for (family, file, integrity) in fetch {
-            let served = self.served.clone();
-            let ctx = ctx.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                match fetch_bytes(&file, integrity.as_deref()).await {
-                    Ok(bytes) => {
-                        served.lock().unwrap_or_else(|e| e.into_inner()).arrived.push((family, bytes));
-                        ctx.request_repaint();
-                    }
-                    Err(e) => log::error!("couldn't fetch served font {file}: {e}"),
-                }
-            });
-        }
-        served_fonts::install(&mut self.app, arrived);
-    }
 }
 
 impl eframe::App for WebShell {
@@ -342,7 +290,6 @@ impl eframe::App for WebShell {
                 }
             });
         }
-        self.serve_fonts(ctx);
         self.app.logic(ctx, frame);
         self.save_presets(ctx);
         self.sync_title();
@@ -428,6 +375,11 @@ fn services(inbox: Inbox) -> Services {
             brahma_codecs::encode(&img, brahma_codecs::Format::Png, &EncodeOptions::default()).map_err(|e| e.to_string())
         })),
         inbox: Some(inbox),
+        fetch_url: Some(Box::new(|url, integrity, reply| {
+            wasm_bindgen_futures::spawn_local(async move {
+                reply(fetch_bytes(&url, integrity.as_deref()).await);
+            });
+        })),
         http: Some(Box::new(|req, reply| {
             wasm_bindgen_futures::spawn_local(async move {
                 reply(fetch_post(&req).await);

@@ -386,6 +386,10 @@ pub type EncodePngFn = Box<dyn Fn(u32, u32, &[u8]) -> Result<Vec<u8>, String>>;
 /// frame and calls the reply with the status and body, or a transport error.
 pub type HttpReply = Box<dyn FnOnce(Result<(u16, String), String>) + Send>;
 pub type HttpFn = Box<dyn Fn(brahma_engine::ai_chat::HttpRequest, HttpReply)>;
+/// One GET of a font file (`served_fonts`): the URL (relative to the site, or absolute https),
+/// an optional Subresource Integrity value, and the reply with the bytes or why not.
+pub type FetchReply = Box<dyn FnOnce(Result<Vec<u8>, String>) + Send>;
+pub type FetchFn = Box<dyn Fn(String, Option<String>, FetchReply)>;
 /// Put an RGBA8 image (width, height, pixels) on the OS clipboard.
 pub type ClipboardSetFn = Box<dyn FnMut(u32, u32, &[u8]) -> Result<(), String>>;
 /// Read an RGBA8 image from the OS clipboard.
@@ -474,6 +478,8 @@ pub struct Services {
     pub encode_png: Option<EncodePngFn>,
     /// The assistant's HTTP calls to the AI provider the user picked (`None`: no assistant).
     pub http: Option<HttpFn>,
+    /// Fetches a served font file on demand (`None`: only the bundled and system fonts).
+    pub fetch_url: Option<FetchFn>,
     /// Open a URL in the system browser (native). Falls back to `ctx.open_url` (web) when unset.
     pub open_url: Option<OpenUrlFn>,
     /// Preferences ▸ General ▸ Beep When Done: the platform's default beep, played when a
@@ -1780,6 +1786,7 @@ impl eframe::App for BrahmaApp {
         // Caps Lock state read from the OS once per frame (see `Services::caps_lock`): the canvas
         // cursor block needs it before the frame renders. `None` (Wayland/web) keeps `false`.
         self.caps_lock = self.services.caps_lock.as_mut().is_some_and(|f| f());
+        served_fonts::serve(self, ctx);
         if !self.styled {
             Self::setup_context(ctx, self.ui.theme);
             self.styled = true;

@@ -455,6 +455,7 @@ pub fn native(automation: Option<brahma_automation::AuthorizedWorkspace>) -> Ser
         })),
         inbox: None,
         http: Some(Box::new(http_post)),
+        fetch_url: Some(Box::new(fetch_font)),
         open_url: Some(Box::new(|url: &str| open::that(url).map_err(|e| e.to_string()))),
         beep: Some(platform_beep),
         clipboard_set_image: Some({
@@ -583,6 +584,49 @@ pub fn export_flat(doc: &Document, path: &str) -> Result<Vec<u8>, String> {
         _ => img,
     };
     brahma_codecs::encode(&img, format, &EncodeOptions::default()).map_err(|e| e.to_string())
+}
+
+/// A served font file for `served_fonts` (the Google Fonts catalogue): read from the font cache
+/// under the settings directory when it is there, else downloaded on a thread and cached. The
+/// cache file is named by the URL's hash, so a different commit never serves stale bytes.
+fn fetch_font(url: String, _integrity: Option<String>, reply: brahma_ui_egui::FetchReply) {
+    let cache = crate::app_dirs::config_dir().map(|d| d.join("font-cache").join(format!("{:016x}.bin", fnv1a(&url))));
+    if let Some(path) = &cache
+        && let Ok(bytes) = std::fs::read(path)
+        && !bytes.is_empty()
+    {
+        reply(Ok(bytes));
+        return;
+    }
+    let spawned = std::thread::Builder::new().name("font fetch".into()).spawn(move || {
+        let agent = ureq::AgentBuilder::new().timeout(std::time::Duration::from_secs(120)).user_agent("brahma").build();
+        let outcome = (|| {
+            use std::io::Read as _;
+            let resp = agent.get(&url).call().map_err(|e| e.to_string())?;
+            let mut bytes = Vec::new();
+            resp.into_reader().take(64 << 20).read_to_end(&mut bytes).map_err(|e| e.to_string())?;
+            if bytes.is_empty() {
+                return Err("empty answer".to_string());
+            }
+            Ok(bytes)
+        })();
+        if let (Ok(bytes), Some(path)) = (&outcome, &cache)
+            && let Some(dir) = path.parent()
+            && std::fs::create_dir_all(dir).is_ok()
+            && let Err(e) = write_atomic(path, bytes)
+        {
+            log::warn!("font cache: could not write {}: {e}", path.display());
+        }
+        reply(outcome);
+    });
+    if let Err(e) = spawned {
+        log::error!("font fetch: could not start the thread: {e}");
+    }
+}
+
+/// FNV-1a over `s`: a stable file name for a URL.
+fn fnv1a(s: &str) -> u64 {
+    s.bytes().fold(0xcbf2_9ce4_8422_2325u64, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3))
 }
 
 /// The assistant's HTTP POST, on its own thread so a slow provider never blocks a frame. A 4xx

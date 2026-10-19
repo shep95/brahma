@@ -44,7 +44,7 @@ so also its default). every push goes there.
 | 19 | this file | ongoing |
 | 20 | export / download with rounded corners | done: `cornerRadius` (px or "20%") on every flat save command, corner radius slider in export as |
 | 21 | ai assistant sidebar: drives every command, persona from the shepherd file, any provider's keys from any country, sees the canvas | done: window › assistant (sparkles button on the rail). engine `ai_chat.rs` (anthropic / openai-compatible / gemini protocols, tools search_commands, run_command, inspect_document, look_at_canvas), 28 provider presets in `ai.rs` (`ai.providers`), persona `crates/aesthetic/data/persona.md`. open: streaming, a transcript saved per document |
-| 23 | every font: the full google fonts catalogue (~1,941 families) on demand + system fonts | todo (plan below) |
+| 23 | every font: the full google fonts catalogue on demand + system fonts | done: 1,929 families from the pinned commit (`crates/text/data/google_fonts.tsv`), fetched on first use on web (service-worker cached) and desktop (disk cache); system fonts were already loaded on the desktop. open: a category filter in the font menu, previews of unfetched families |
 
 ## plans for the open tasks
 
@@ -52,14 +52,6 @@ so also its default). every push goes there.
   `web.rs`; desktop: `http_post` on a thread in `services.rs`). the web build can only reach
   providers that allow browser calls (anthropic with the direct-browser header, openai, google,
   openrouter, groq, mistral, deepseek do); others need the desktop build or a proxy base url.
-- **23 fonts.** the google fonts catalogue (`families.csv` + `METADATA.pb` per family, fetched
-  from github.com/google/fonts at a pinned commit; api.fontsource and jsdelivr are unreachable
-  from the build container) is distilled into a compact table compiled into `brahma-text`
-  (family, category, styles, file paths). the font picker lists all of them; selecting one
-  fetches the file from `https://raw.githubusercontent.com/google/fonts/<pin>/<path>` (web:
-  `fetch_bytes`, desktop: `ureq`) and installs it through `served_fonts::install`, cached in the
-  service worker (web) or the app data dir (desktop). system fonts are enumerated with
-  `fontdb` on desktop. never commit font files.
 
 ## in flight (task 14 and 18)
 

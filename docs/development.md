@@ -61,6 +61,22 @@ cargo test --doc --workspace               # nextest does not run doctests
 
 cargo-nextest runs each test in its own process. `.config/nextest.toml` puts the GPU tests (`brahma-gpu`, and ui-egui's integration and canvas/GPU tests) in a group of at most 4 at a time, because each process opens its own wgpu device and the in-process `gpu_lock()` no longer serializes them. on a 32-thread windows machine the full workspace went from 297 s (`cargo test`) to about 120 s (#2204). ignored tests run with `cargo nextest run --run-ignored only`. ci still runs `cargo test`, and a full `cargo test` stays the final check before a pr.
 
+## fonts on demand (google fonts catalogue)
+
+every family of google fonts (about 1,900, all under the OFL, apache or UFL) is listed in the font
+menus of both the desktop app and the web build without shipping a byte of font data: the
+catalogue `crates/text/data/google_fonts.tsv` (family, category, repository directory, the files
+to fetch, fallback scripts) is compiled into `brahma-text` (`served::google_catalog`), and a family
+is fetched from the pinned commit `served::GOOGLE_FONTS_COMMIT` on `raw.githubusercontent.com` the
+first time it is picked or a layout needs it (`ui-egui/src/served_fonts.rs` › `serve`, through
+`Services::fetch_url`: a browser fetch on the web, cached by the service worker; a thread with a
+disk cache under the settings directory on the desktop). the noto sans families lead the catalogue
+so they are the fallbacks for arabic, hebrew, devanagari, thai, khmer, lao, burmese, japanese,
+chinese and korean text. regenerate the catalogue with
+`python3 -I crates/text/scripts/google_fonts_catalog.py <dir of METADATA.pb files> crates/text/data/google_fonts.tsv`
+and bump the commit constant together. a host's own `fonts/manifest.txt` (craft-fonts format)
+is still read first on the web and wins for the families it lists.
+
 ## fonts (craft-fonts)
 
 font assets shared by the #houseofasher apps live in storytold/craft-fonts, never in this repo: don't commit font files here (inter and JetBrains mono in `assets/fonts/` are the only exceptions; new fonts go to craft-fonts). the rules are in `craftrules/standards/fonts.md` in a sibling `craftrules` checkout (see below); that repository is not public, so outside contributors can ask a maintainer for the rules that apply to their change.
