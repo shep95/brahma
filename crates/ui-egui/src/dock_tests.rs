@@ -1,7 +1,7 @@
 //! Dock layout tests (#88): fixed group heights, splitters, collapse, reorder, persistence.
 
 use egui::{Modifiers, PointerButton, Pos2, Rect, vec2};
-use egui_kittest::Harness;
+use egui_kittest::{Harness, kittest::Queryable};
 use serde_json::json;
 
 use super::*;
@@ -33,7 +33,9 @@ fn last_expanded_group_fills_the_column() {
 #[test]
 fn short_columns_squeeze_groups_down_to_their_minimum_and_never_go_negative() {
     let l = DockLayout::default();
-    let hs = l.heights_for(&ESSENTIALS, 400.0, 28.0);
+    // 60 pt taller than the 400 pt this test began with: Layers' minimum grew from 140 to 200
+    // (room for its header rows, #5820), and the squeeze above it is unchanged.
+    let hs = l.heights_for(&ESSENTIALS, 460.0, 28.0);
     assert_eq!(hs[2].1, Group::Layers.min_height(), "Layers keeps its minimum: {hs:?}");
     assert_eq!(hs[0].1, Group::Color.compact_height(), "the group farthest from Layers gives way last");
     assert!(hs[1].1 < Group::Properties.compact_height());
@@ -952,7 +954,7 @@ fn navigator_preview_fills_its_group_and_keeps_aspect() {
     for theme in [ThemeKind::ProMedium, ThemeKind::Studio] {
         let mut sizes = Vec::new();
         for tall in [150.0, 260.0, 420.0] {
-            let mut h = Harness::builder().with_size(vec2(1200.0, 1000.0)).with_max_steps(64).build_eframe(move |cc| {
+            let mut h = Harness::builder().with_size(vec2(1200.0, 1200.0)).with_max_steps(64).build_eframe(move |cc| {
                 BrahmaApp::setup_context(&cc.egui_ctx, theme);
                 let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
                 app.ui.theme = theme;
@@ -1147,4 +1149,58 @@ fn brush_settings_window_is_closed_on_restart_but_can_be_reopened() {
     let mut workspace = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
     apply(&mut workspace, &saved);
     assert!(workspace.ui.panels.brush_settings, "switching workspaces still restores their saved layout");
+}
+
+/// Below `panels::COMPACT_WIDTH` the dock leaves the canvas: the rail opens one group as a
+/// drawer over it, a second click or a press outside closes it (#5820).
+#[test]
+fn a_narrow_window_turns_the_dock_into_a_drawer_opened_from_the_rail() {
+    use crate::panels::{compact_layout, drawer_group};
+    let app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+    let mut h = harness(app, vec2(700.0, 600.0), ThemeKind::Pro);
+    h.run_steps(2);
+    assert!(compact_layout(&h.ctx));
+    assert!(last_rects(&h.ctx).is_empty(), "no docked groups in the compact layout: {:?}", last_rects(&h.ctx));
+    assert_eq!(drawer_group(&h.ctx), None);
+    // The rail is the only thing on the right: its Layers button opens the Layers drawer.
+    let layers_button = h.get_by_label("Layers");
+    let at = layers_button.rect().center();
+    h.event(egui::Event::PointerMoved(at));
+    h.run_steps(1);
+    h.event(egui::Event::PointerButton { pos: at, button: PointerButton::Primary, pressed: true, modifiers: Modifiers::NONE });
+    h.run_steps(1);
+    h.event(egui::Event::PointerButton { pos: at, button: PointerButton::Primary, pressed: false, modifiers: Modifiers::NONE });
+    h.run_steps(30);
+    assert_eq!(drawer_group(&h.ctx), Some(Group::Layers));
+    let drawer = rect_of(&h, Group::Layers);
+    assert!(drawer.width() >= 160.0 && drawer.right() <= at.x, "the drawer sits beside the rail, over the canvas: {drawer:?}");
+    assert!(drawer.left() > 60.0, "the canvas keeps room on the left: {drawer:?}");
+    // A press on the canvas, outside the drawer, closes it.
+    let outside = Pos2::new(60.0, 300.0);
+    h.event(egui::Event::PointerMoved(outside));
+    h.run_steps(1);
+    h.event(egui::Event::PointerButton { pos: outside, button: PointerButton::Primary, pressed: true, modifiers: Modifiers::NONE });
+    h.run_steps(1);
+    h.event(egui::Event::PointerButton { pos: outside, button: PointerButton::Primary, pressed: false, modifiers: Modifiers::NONE });
+    h.run_steps(30);
+    assert_eq!(drawer_group(&h.ctx), None);
+    assert!(last_rects(&h.ctx).is_empty(), "the drawer is gone: {:?}", last_rects(&h.ctx));
+}
+
+/// A column shorter than the groups' minimum heights scrolls instead of squeezing a group under
+/// its own header rows.
+#[test]
+fn a_short_column_scrolls_instead_of_squeezing_groups_under_their_headers() {
+    let l = DockLayout::default();
+    let need = l.min_column_height(&ESSENTIALS, 28.0);
+    assert_eq!(need, 80.0 + 80.0 + 200.0 + 2.0 * GAP);
+    let app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+    let mut h = harness(app, vec2(1200.0, 300.0), ThemeKind::Pro);
+    h.run_steps(2);
+    let rects = last_rects(&h.ctx);
+    for (g, r) in &rects {
+        assert!(r.height() >= g.min_height() - 0.5, "{g:?} squeezed to {r:?}");
+    }
+    let layers = rect_of(&h, Group::Layers);
+    assert!(layers.bottom() > 300.0, "the column overflows and scrolls: {layers:?}");
 }

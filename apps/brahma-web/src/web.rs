@@ -97,7 +97,7 @@ pub fn start() {
                     }
                     let unsaved = Arc::new(AtomicBool::new(false));
                     guard_unload(unsaved.clone());
-                    Ok(Box::new(WebShell { app, inbox, unsaved, served, database, presets }))
+                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, served, database, presets }))
                 }),
             )
             .await;
@@ -223,6 +223,9 @@ async fn fetch_bytes(url: &str, integrity: Option<&str>) -> Result<Vec<u8>, Stri
 struct WebShell {
     app: BrahmaApp,
     inbox: Inbox,
+    /// The browser tab's title as last set: the active document's name (eframe's web backend
+    /// ignores `ViewportCommand::Title`, so the shell mirrors it to `document.title`).
+    title: String,
     /// Read by the `beforeunload` listener ([`guard_unload`]).
     unsaved: Arc<AtomicBool>,
     served: Served,
@@ -231,6 +234,17 @@ struct WebShell {
 }
 
 impl WebShell {
+    /// Keep the browser tab (and the installed app's window) titled after the active file.
+    fn sync_title(&mut self) {
+        let want = brahma_ui_egui::panels::window_title(&self.app);
+        if self.title != want
+            && let Some(document) = web_sys::window().and_then(|w| w.document())
+        {
+            document.set_title(&want);
+            self.title = want;
+        }
+    }
+
     fn save_presets(&mut self, ctx: &egui::Context) {
         if let Some(db) = self.database.clone()
             && let Some(batch) = self.presets.begin()
@@ -302,6 +316,7 @@ impl eframe::App for WebShell {
         self.serve_fonts(ctx);
         self.app.logic(ctx, frame);
         self.save_presets(ctx);
+        self.sync_title();
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {

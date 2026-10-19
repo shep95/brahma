@@ -1,0 +1,33 @@
+{
+  "name": "brahma",
+  "short_name": "brahma",
+  "description": "open-source image editor: edit photos and layered psd documents in the browser, offline too.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#141310",
+  "theme_color": "#141310",
+  "categories": ["graphics", "photo", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "image/png": [".png"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/webp": [".webp"],
+        "image/tiff": [".tif", ".tiff"],
+        "image/vnd.adobe.photoshop": [".psd", ".psb"],
+        "application/x-brahma": [".pcraft"]
+      }
+    }
+  ],
+  "launch_handler": { "client_mode": "focus-existing" }
+}

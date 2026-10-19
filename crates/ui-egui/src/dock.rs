@@ -99,8 +99,9 @@ impl Group {
     /// The smallest height an expanded group can be dragged or squeezed to.
     pub fn min_height(self) -> f32 {
         match self {
-            Group::Layers => 140.0,
-            Group::Brushes => 100.0,
+            // Three fixed header rows (kind filter, blend, lock) plus one layer row and the footer.
+            Group::Layers => 200.0,
+            Group::Brushes => 120.0,
             _ => 80.0,
         }
     }
@@ -330,6 +331,13 @@ impl DockLayout {
     /// rest. Groups the user never resized give way first, down to their compact heights, so
     /// the filler gets its preferred height (Layers: ~10 rows, #147); when the column is still
     /// too short every group gives way down to its minimum height.
+    /// The shortest column that shows every group at its minimum (collapsed ones at `strip`):
+    /// below this the column scrolls (see [`show`]).
+    pub fn min_column_height(&self, shown: &[Group], strip: f32) -> f32 {
+        let groups: f32 = shown.iter().map(|g| if self.is_collapsed(*g) { strip } else { g.min_height() }).sum();
+        groups + GAP * shown.len().saturating_sub(1) as f32
+    }
+
     pub fn heights_for(&self, shown: &[Group], avail: f32, strip: f32) -> Vec<(Group, f32)> {
         let avail = if avail.is_finite() { avail.max(0.0) } else { 0.0 };
         let filler = shown.iter().rposition(|g| !self.is_collapsed(*g));
@@ -431,6 +439,15 @@ pub fn last_rects(ctx: &egui::Context) -> Vec<(Group, Rect)> {
     ctx.data(|d| d.get_temp::<Vec<(Group, Rect)>>(rects_id())).unwrap_or_default()
 }
 
+/// Forget the rects of the last frame's groups: for a frame that draws none (the compact
+/// layout with its drawer closed), so tests and automation don't see stale geometry.
+pub fn clear_last_rects(ctx: &egui::Context) {
+    ctx.data_mut(|d| {
+        d.remove::<Vec<(Group, Rect)>>(rects_id());
+        d.remove::<Vec<StripRects>>(strips_id());
+    });
+}
+
 fn rects_id() -> egui::Id {
     egui::Id::new("dock-group-rects")
 }
@@ -480,7 +497,27 @@ fn strips_id() -> egui::Id {
 
 /// Draw the `shown` groups (any order; the layout decides) filling `ui`. `body` draws one
 /// group's tab content.
-pub fn show(app: &mut BrahmaApp, ui: &mut egui::Ui, shown: &[Group], mut body: impl FnMut(&mut BrahmaApp, &mut egui::Ui, Group, usize)) {
+pub fn show(app: &mut BrahmaApp, ui: &mut egui::Ui, shown: &[Group], body: impl FnMut(&mut BrahmaApp, &mut egui::Ui, Group, usize)) {
+    let t = Tokens::get(ui.ctx());
+    let strip = if t.pro { 28.0 } else { 40.0 };
+    let order: Vec<Group> = app.ui.dock.order().into_iter().filter(|g| shown.contains(g)).collect();
+    // A column too short for every group's minimum (a short window, a phone held sideways)
+    // scrolls as a whole instead of squeezing groups under their own header rows (#5820).
+    let needed = app.ui.dock.min_column_height(&order, strip);
+    let avail = ui.available_rect_before_wrap();
+    if needed > avail.height() + 0.5 {
+        ui.spacing_mut().scroll.fade.strength = 0.0;
+        egui::ScrollArea::vertical().id_salt("dock-column-overflow").auto_shrink([false, false]).show(ui, |ui| {
+            let area = Rect::from_min_size(ui.cursor().min, vec2(ui.available_width(), needed));
+            ui.allocate_rect(area, Sense::hover());
+            show_in(app, ui, &order, area, strip, body);
+        });
+    } else {
+        show_in(app, ui, &order, avail, strip, body);
+    }
+}
+
+fn show_in(app: &mut BrahmaApp, ui: &mut egui::Ui, order: &[Group], area: Rect, strip: f32, mut body: impl FnMut(&mut BrahmaApp, &mut egui::Ui, Group, usize)) {
     let t = Tokens::get(ui.ctx());
     let auto_collapse = app.session.prefs().workspace.auto_collapse_icon_panels;
     if auto_collapse {
@@ -490,9 +527,7 @@ pub fn show(app: &mut BrahmaApp, ui: &mut egui::Ui, shown: &[Group], mut body: i
             d.insert_temp(peek_id(), None::<Group>);
         });
     }
-    let strip = if t.pro { 28.0 } else { 40.0 };
-    let order: Vec<Group> = app.ui.dock.order().into_iter().filter(|g| shown.contains(g)).collect();
-    let area = ui.available_rect_before_wrap();
+    let order: Vec<Group> = order.to_vec();
     let heights = app.ui.dock.heights_for(&order, area.height(), strip);
     let locked = app.session.prefs().workspace_locked;
     let rects = rects_after_layout(&heights, area);

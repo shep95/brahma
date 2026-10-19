@@ -1648,12 +1648,46 @@ pub fn status_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) {
 
 // ----------------------------------------------------------------------------- dock
 
+/// Below this window width (points) the dock no longer sits beside the canvas: it would leave
+/// no room to work on a phone, a split-screen tablet or a narrow browser window. The icon rail
+/// stays and opens one panel group at a time as a drawer over the canvas (`compact_drawer`).
+pub const COMPACT_WIDTH: f32 = 760.0;
+
+/// Whether the compact layout is in effect this frame.
+pub fn compact_layout(ctx: &egui::Context) -> bool {
+    ctx.content_rect().width() < COMPACT_WIDTH
+}
+
+fn drawer_id() -> egui::Id {
+    egui::Id::new("dock-drawer")
+}
+
+/// The panel group open as a drawer in the compact layout, if any.
+pub fn drawer_group(ctx: &egui::Context) -> Option<crate::dock::Group> {
+    ctx.data(|d| d.get_temp::<Option<crate::dock::Group>>(drawer_id())).flatten()
+}
+
+/// Open `g` as the drawer (revealing it if it was hidden or collapsed), or close the drawer.
+pub fn set_drawer(app: &mut BrahmaApp, ctx: &egui::Context, g: Option<crate::dock::Group>) {
+    if let Some(g) = g {
+        crate::dock::reveal(app, g);
+        ctx.data_mut(|d| d.insert_temp(drawer_id().with("last"), g));
+    }
+    ctx.data_mut(|d| d.insert_temp(drawer_id(), g));
+    ctx.request_repaint();
+}
+
 pub fn right_dock(app: &mut BrahmaApp, ui: &mut egui::Ui) {
     // Even legacy destinations must discard gestures captured by an earlier workspace.
     let customized = crate::panel_docking::show(app, ui);
     let t = Tokens::get(ui.ctx());
     let p = app.ui.panels.clone();
-    if t.pro && !customized {
+    let compact = compact_layout(ui.ctx()) && !customized;
+    if !compact && drawer_group(ui.ctx()).is_some() {
+        // Back to a wide window: the drawer's group is simply docked again.
+        set_drawer(app, ui.ctx(), None);
+    }
+    if t.pro && !customized && !compact {
         dock_panels(app, ui, &p, &t);
     }
     // Narrow icon rail, unless an embedding app hides it: shows, expands or collapses panel groups.
@@ -1678,24 +1712,95 @@ pub fn right_dock(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                     ("clock", tl!("History"), Group::History),
                     ("brush", tl!("Brushes"), Group::Brushes),
                 ];
+                let drawer = drawer_group(ui.ctx());
                 for (icon, name, g) in entries {
                     // Studio floats Properties outside the dock.
                     let docked = t.pro || g != Group::Properties;
-                    let on = if customized { crate::panel_docking::rail_on(app, g) } else { g.shown(&p) && !(docked && app.ui.dock.is_collapsed(g)) };
+                    let on = if compact {
+                        drawer == Some(g)
+                    } else if customized {
+                        crate::panel_docking::rail_on(app, g)
+                    } else {
+                        g.shown(&p) && !(docked && app.ui.dock.is_collapsed(g))
+                    };
                     if icons::rail_button(ui, icon, rb, on, name).clicked() {
-                        if customized {
+                        if compact {
+                            set_drawer(app, ui.ctx(), if on { None } else { Some(g) });
+                        } else if customized {
                             crate::panel_docking::rail_click(app, g);
                         } else {
                             crate::dock::rail_click(app, g, docked);
                         }
                     }
                 }
+                ui.ctx().data_mut(|d| d.insert_temp(drawer_id().with("rail"), ui.max_rect()));
             });
     }
-    if !t.pro && !customized {
+    if !t.pro && !customized && !compact {
         dock_panels(app, ui, &p, &t);
     }
+    if compact {
+        compact_drawer(app, ui, &t);
+    }
     crate::dock::persist(app, ui.ctx());
+}
+
+/// The compact layout's drawer: one panel group over the canvas edge beside the rail, slid in
+/// with the motion spring, closed by its rail button, Escape, or a press anywhere outside it.
+fn compact_drawer(app: &mut BrahmaApp, ui: &mut egui::Ui, t: &Tokens) {
+    use crate::dock::Group;
+    let ctx = ui.ctx().clone();
+    let open = drawer_group(&ctx);
+    // The group drawn while the drawer slides out is the one that was open.
+    let Some(g) = open.or_else(|| ctx.data(|d| d.get_temp::<Group>(drawer_id().with("last")))) else {
+        crate::dock::clear_last_rects(&ctx);
+        return;
+    };
+    if open.is_some() && ctx.input(|i| i.key_pressed(egui::Key::Escape)) {
+        set_drawer(app, &ctx, None);
+    }
+    let how = crate::motion::open_progress(&ctx, drawer_id().with("slide"), drawer_group(&ctx).is_some());
+    if how <= 0.0 {
+        crate::dock::clear_last_rects(&ctx);
+        return;
+    }
+    // The space the canvas gets: everything the bars, toolbar and rail left.
+    let avail = ui.available_rect_before_wrap();
+    let width = (avail.width() - 12.0).clamp(160.0, 340.0);
+    let rtl = crate::direction::is_rtl();
+    let x = if rtl { avail.left() - width * (1.0 - how) } else { avail.right() - width * how };
+    let rect = Rect::from_min_size(pos2(x, avail.top()), vec2(width, avail.height()));
+    ctx.data_mut(|d| d.insert_temp(drawer_id().with("rect"), rect));
+    egui::Area::new(drawer_id().with("area"))
+        .order(egui::Order::Middle)
+        .fixed_pos(rect.min)
+        .constrain(false)
+        .interactable(true)
+        .show(&ctx, |ui| {
+            ui.set_clip_rect(rect.intersect(ctx.content_rect()));
+            // A soft edge on the canvas side so the drawer reads as a layer above the image.
+            let edge = if rtl { rect.right() } else { rect.left() };
+            for i in 0..6 {
+                let a = (6 - i) as f32 * 9.0 * how;
+                let off = i as f32;
+                let xx = if rtl { edge + off } else { edge - off };
+                ui.painter().line_segment([pos2(xx, rect.top()), pos2(xx, rect.bottom())], Stroke::new(1.0, Color32::from_black_alpha(a as u8)));
+            }
+            egui::Frame::NONE.fill(t.dock).inner_margin(egui::Margin::same(2)).show(ui, |ui| {
+                ui.set_min_size(rect.size() - vec2(4.0, 4.0));
+                ui.set_max_size(rect.size() - vec2(4.0, 4.0));
+                crate::dock::show(app, ui, &[g], dock_body);
+            });
+        });
+    // A press outside the drawer and the rail closes it (the press still reaches what it hit).
+    if open.is_some()
+        && let Some(p) = ctx.input(|i| i.pointer.any_pressed().then(|| i.pointer.press_origin()).flatten())
+    {
+        let rail = ctx.data(|d| d.get_temp::<Rect>(drawer_id().with("rail"))).unwrap_or(Rect::NOTHING);
+        if !rect.contains(p) && !rail.contains(p) && !ctx.egui_is_using_pointer() {
+            set_drawer(app, &ctx, None);
+        }
+    }
 }
 
 /// The dock's width range (points). It is the right dock, on the left in a right-to-left UI.
