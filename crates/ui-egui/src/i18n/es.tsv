@@ -4196,3 +4196,12 @@ navigator	Zoom	Zoom
 	Edits for this photo	Ediciones para esta foto
 	Applied	Aplicado
 	Balanced as it is: nothing the measurements would change.	Equilibrada tal cual: las mediciones no cambiarían nada.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	generó una imagen
+	generating a picture of	generando una imagen de
+	as a new layer	como capa nueva
+	as a new document	como documento nuevo
+	Images	Imágenes
+	The image model the assistant generates pictures with (blank = the provider's usual one).	El modelo de imagen con el que el asistente genera imágenes (vacío = el habitual del proveedor).
+	Image model (blank = provider default)	Modelo de imagen (vacío = predeterminado del proveedor)

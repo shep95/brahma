@@ -4153,3 +4153,12 @@ cameraRaw	Yellow	Sárga
 	Edits for this photo	Szerkesztések ehhez a fotóhoz
 	Applied	Alkalmazva
 	Balanced as it is: nothing the measurements would change.	Így kiegyensúlyozott: a mérések semmin nem változtatnának.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	képet készített
+	generating a picture of	kép készítése:
+	as a new layer	új rétegként
+	as a new document	új dokumentumként
+	Images	Képek
+	The image model the assistant generates pictures with (blank = the provider's usual one).	A képmodell, amellyel az asszisztens képeket készít (üres = a szolgáltató szokásos modellje).
+	Image model (blank = provider default)	Képmodell (üres = a szolgáltató alapértelmezése)

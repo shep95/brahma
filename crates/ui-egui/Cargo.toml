@@ -40,6 +40,10 @@ base64 = "0.22"
 # Inflating the translation catalogs, stored deflated (build.rs); already linked through brahma-io.
 flate2 = { workspace = true }
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+# A monotonic clock in the browser (`gpu_canvas::now_ms`: autosave timing, frame pacing).
+web-time = "1.1"
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 rayon = { workspace = true }
 # Safe native UI-language APIs (Windows/macOS); no subprocess or web dependency.

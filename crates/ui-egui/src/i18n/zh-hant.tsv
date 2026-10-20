@@ -2835,3 +2835,12 @@ curves	Smooth	平滑
 	Edits for this photo	這張照片的編輯建議
 	Applied	已套用
 	Balanced as it is: nothing the measurements would change.	現在已經平衡：測量結果不會改變任何東西。
+
+# Assistant: picture generation (generate_image)
+	generated a picture	產生了一張圖片
+	generating a picture of	正在產生圖片:
+	as a new layer	作為新圖層
+	as a new document	作為新文件
+	Images	圖片
+	The image model the assistant generates pictures with (blank = the provider's usual one).	助理產生圖片所用的圖像模型(留空 = 供應商的常用模型)。
+	Image model (blank = provider default)	圖像模型(留空 = 供應商預設)

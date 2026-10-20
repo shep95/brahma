@@ -3843,3 +3843,12 @@ navigator	Zoom	Zvětšení
 	Edits for this photo	Úpravy pro tuto fotku
 	Applied	Použito
 	Balanced as it is: nothing the measurements would change.	Vyvážené tak, jak je: měření by nic neměnila.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	vygeneroval obrázek
+	generating a picture of	generuje obrázek:
+	as a new layer	jako novou vrstvu
+	as a new document	jako nový dokument
+	Images	Obrázky
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Obrazový model, kterým asistent generuje obrázky (prázdné = obvyklý model poskytovatele).
+	Image model (blank = provider default)	Obrazový model (prázdné = výchozí poskytovatele)

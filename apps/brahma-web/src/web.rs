@@ -61,6 +61,14 @@ pub fn start() {
                 (None, bridge, Vec::new())
             }
         };
+        // Recovery records from an earlier tab (see `recovery`); without storage there is no autosave.
+        let (recovery_db, recovery_entries) = match crate::recovery::load().await {
+            Ok((db, entries)) => (Some(db), entries),
+            Err(e) => {
+                log::warn!("crash recovery unavailable: {e}");
+                (None, Vec::new())
+            }
+        };
         let pen_target = canvas.clone();
         let result = eframe::WebRunner::new()
             .start(
@@ -73,6 +81,7 @@ pub fn start() {
                     let (session, warnings) = crate::preset_bridge::session(presets.clone());
                     preset_warnings.extend(warnings);
                     let mut app = BrahmaApp::new(session, services(inbox.clone()));
+                    crate::recovery::install(&mut app.services, recovery_db, recovery_entries, cc.egui_ctx.clone());
                     if !preset_warnings.is_empty() {
                         brahma_ui_egui::notices::post(&mut app, i18n::t("Some brush presets could not be loaded"), preset_warnings, true, None);
                     }
@@ -89,7 +98,7 @@ pub fn start() {
                     let pasted: Pasted = Arc::default();
                     listen_paste(pasted.clone(), cc.egui_ctx.clone());
                     app.services.clipboard_get_image = Some(clipboard_image_service(pasted.clone()));
-                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, pasted, database, presets }))
+                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, pasted, database, presets, idle: crate::recovery::IdleFlush::new() }))
                 }),
             )
             .await;
@@ -466,6 +475,8 @@ struct WebShell {
     pasted: Pasted,
     database: Option<web_sys::IdbDatabase>,
     presets: crate::preset_bridge::Bridge,
+    /// Autosave a pause after edits (see `recovery::IdleFlush`).
+    idle: crate::recovery::IdleFlush,
 }
 
 impl WebShell {
@@ -486,6 +497,22 @@ impl WebShell {
         } else {
             let bytes = self.pasted.lock().unwrap_or_else(|e| e.into_inner()).bytes.clone();
             self.inbox.lock().unwrap_or_else(|e| e.into_inner()).push(("pasted image".into(), bytes));
+        }
+    }
+
+    /// Ask the shell's autosave to run once edits have paused for a few seconds.
+    fn flush_after_edits(&mut self, ctx: &egui::Context) {
+        if !self.app.session.prefs().file_handling.autosave {
+            return;
+        }
+        let dirty = self.app.session.documents().iter().filter(|d| d.is_dirty()).map(|d| (d.doc.id.0, d.revision));
+        match self.idle.tick(crate::recovery::fingerprint(dirty), js_sys::Date::now()) {
+            crate::recovery::Flush::Idle => {}
+            crate::recovery::Flush::After(ms) => ctx.request_repaint_after(std::time::Duration::from_millis(u64::from(ms))),
+            crate::recovery::Flush::Now => {
+                brahma_ui_egui::prefs_ui::autosave_now(&mut self.app);
+                ctx.request_repaint();
+            }
         }
     }
 
@@ -539,6 +566,7 @@ impl eframe::App for WebShell {
         self.apply_paste();
         self.app.logic(ctx, frame);
         self.save_presets(ctx);
+        self.flush_after_edits(ctx);
         self.sync_title();
     }
 

@@ -23,6 +23,7 @@ brahma-engine = { workspace = true }
 brahma-io = { workspace = true }
 brahma-codecs = { workspace = true }
 brahma-doc = { workspace = true }
+brahma-format = { workspace = true }
 brahma-ui-egui = { workspace = true }
 egui = { workspace = true }
 log = { workspace = true }

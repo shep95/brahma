@@ -909,6 +909,7 @@ dependencies = [
 name = "brahma-engine"
 version = "0.9.0"
 dependencies = [
+ "base64 0.22.1",
  "blake3",
  "brahma-aesthetic",
  "brahma-affinity",
@@ -1167,6 +1168,7 @@ dependencies = [
  "serde_json",
  "sys-locale",
  "toml",
+ "web-time",
  "winsafe",
 ]
 
@@ -1188,6 +1190,7 @@ dependencies = [
  "brahma-codecs",
  "brahma-doc",
  "brahma-engine",
+ "brahma-format",
  "brahma-io",
  "brahma-paint",
  "brahma-psd",

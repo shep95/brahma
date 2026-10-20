@@ -3910,3 +3910,12 @@ curves	Smooth	スムーズ
 	Edits for this photo	この写真への編集
 	Applied	適用しました
 	Balanced as it is: nothing the measurements would change.	このままでバランスが取れています。測定値が変えるものはありません。
+
+# Assistant: picture generation (generate_image)
+	generated a picture	画像を生成
+	generating a picture of	画像を生成中:
+	as a new layer	新規レイヤーとして
+	as a new document	新規ドキュメントとして
+	Images	画像
+	The image model the assistant generates pictures with (blank = the provider's usual one).	アシスタントが画像生成に使う画像モデル(空欄 = プロバイダーの標準)。
+	Image model (blank = provider default)	画像モデル(空欄 = プロバイダーの既定)

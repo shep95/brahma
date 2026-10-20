@@ -3238,3 +3238,12 @@ curves	Smooth	Lisser
 	Edits for this photo	Retouches pour cette photo
 	Applied	Appliqué
 	Balanced as it is: nothing the measurements would change.	Équilibrée telle quelle : les mesures ne changeraient rien.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	a généré une image
+	generating a picture of	génère une image de
+	as a new layer	comme nouveau calque
+	as a new document	comme nouveau document
+	Images	Images
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Le modèle d'image avec lequel l'assistant génère des images (vide = celui habituel du fournisseur).
+	Image model (blank = provider default)	Modèle d'image (vide = valeur par défaut du fournisseur)

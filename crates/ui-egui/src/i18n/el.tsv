@@ -3934,3 +3934,12 @@ curves	Smooth	Εξομάλυνση
 	Edits for this photo	Επεξεργασίες για αυτή τη φωτογραφία
 	Applied	Εφαρμόστηκε
 	Balanced as it is: nothing the measurements would change.	Ισορροπημένη όπως είναι: οι μετρήσεις δεν θα άλλαζαν τίποτα.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	δημιούργησε μια εικόνα
+	generating a picture of	δημιουργεί μια εικόνα:
+	as a new layer	ως νέο επίπεδο
+	as a new document	ως νέο έγγραφο
+	Images	Εικόνες
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Το μοντέλο εικόνας με το οποίο ο βοηθός δημιουργεί εικόνες (κενό = το συνηθισμένο του παρόχου).
+	Image model (blank = provider default)	Μοντέλο εικόνας (κενό = προεπιλογή παρόχου)

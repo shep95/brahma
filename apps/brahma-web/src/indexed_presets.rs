@@ -1,5 +1,6 @@
 //! IndexedDB owns durable bytes; the engine sees only the bounded, Send memory bridge.
 //! Each batch commits tips, groups and index together, and success means transaction completion.
+//! The request, timeout and transaction helpers are shared with `recovery`.
 use js_sys::{Array, Function, Promise, Uint8Array};
 use wasm_bindgen::{JsCast, JsValue, closure::Closure};
 use wasm_bindgen_futures::JsFuture;
@@ -10,9 +11,9 @@ use brahma_engine::preset_store::MAX_STORE_BYTES;
 
 const DATABASE: &str = "brahma.presets";
 const FILES: &str = "files";
-const TIMEOUT_MS: f64 = 10_000.0;
+pub(crate) const TIMEOUT_MS: f64 = 10_000.0;
 
-fn js(e: JsValue) -> String {
+pub(crate) fn js(e: JsValue) -> String {
     if let Some(exception) = e.dyn_ref::<web_sys::DomException>() {
         format!("{}: {}", exception.name(), exception.message())
     } else {
@@ -22,12 +23,12 @@ fn js(e: JsValue) -> String {
 
 /// Listeners are detached even when startup or a write times out.
 type Listener = (EventTarget, &'static str, Closure<dyn FnMut(Event)>);
-struct Listeners(Vec<Listener>);
+pub(crate) struct Listeners(Vec<Listener>);
 impl Listeners {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self(Vec::new())
     }
-    fn add(&mut self, target: &EventTarget, name: &'static str, f: impl FnMut(Event) + 'static) -> Result<(), JsValue> {
+    pub(crate) fn add(&mut self, target: &EventTarget, name: &'static str, f: impl FnMut(Event) + 'static) -> Result<(), JsValue> {
         let cb = Closure::<dyn FnMut(Event)>::new(f);
         target.add_event_listener_with_callback(name, cb.as_ref().unchecked_ref())?;
         self.0.push((target.clone(), name, cb));
@@ -42,12 +43,12 @@ impl Drop for Listeners {
     }
 }
 
-struct Pending {
-    promise: Promise,
+pub(crate) struct Pending {
+    pub(crate) promise: Promise,
     _listeners: Listeners,
 }
 
-fn request(request: &IdbRequest) -> Pending {
+pub(crate) fn request(request: &IdbRequest) -> Pending {
     let mut listeners = Listeners::new();
     let promise = Promise::new(&mut |resolve, reject| {
         let req = request.clone();
@@ -75,13 +76,13 @@ fn request(request: &IdbRequest) -> Pending {
 }
 
 /// A single deadline bounds the whole startup read, not ten seconds per record.
-async fn before(promise: &Promise, deadline: f64) -> Result<JsValue, String> {
+pub(crate) async fn before(promise: &Promise, deadline: f64) -> Result<JsValue, String> {
     let window = web_sys::window().ok_or("no window")?;
     let mut timer = None;
     let mut callback = None;
     let timeout = Promise::new(&mut |_, reject| {
         let cb = Closure::<dyn FnMut()>::new(move || {
-            let _ = reject.call1(&JsValue::NULL, &JsValue::from_str("browser preset storage timed out"));
+            let _ = reject.call1(&JsValue::NULL, &JsValue::from_str("browser storage timed out"));
         });
         timer = Some(window.set_timeout_with_callback_and_timeout_and_arguments_0(
             cb.as_ref().unchecked_ref(),
@@ -96,14 +97,16 @@ async fn before(promise: &Promise, deadline: f64) -> Result<JsValue, String> {
     result
 }
 
-async fn open(deadline: f64) -> Result<IdbDatabase, String> {
+/// Open `database` at version 1 with one object store `store` (created on first use), within
+/// `deadline`.
+pub(crate) async fn open_store(database: &str, store: &'static str, deadline: f64) -> Result<IdbDatabase, String> {
     let factory = web_sys::window().ok_or("no window")?.indexed_db().map_err(js)?.ok_or("IndexedDB unavailable")?;
-    let req = factory.open_with_u32(DATABASE, 1).map_err(js)?;
+    let req = factory.open_with_u32(database, 1).map_err(js)?;
     let mut upgrade = Listeners::new();
     let upgrade_req = req.clone();
     upgrade
         .add(&req, "upgradeneeded", move |_| {
-            let result = upgrade_req.result().and_then(|v| v.dyn_into::<IdbDatabase>()).and_then(|db| db.create_object_store(FILES));
+            let result = upgrade_req.result().and_then(|v| v.dyn_into::<IdbDatabase>()).and_then(|db| db.create_object_store(store));
             if result.is_err()
                 && let Some(tx) = upgrade_req.transaction()
             {
@@ -113,7 +116,7 @@ async fn open(deadline: f64) -> Result<IdbDatabase, String> {
         .map_err(js)?;
     let pending = request(&req);
     match before(&pending.promise, deadline).await {
-        Ok(value) => value.dyn_into().map_err(|_| "invalid preset database".into()),
+        Ok(value) => value.dyn_into().map_err(|_| "invalid database".into()),
         Err(e) => {
             // An open request cannot be cancelled (another tab may block its upgrade). Keep
             // its handlers alive and close any late connection; never hydrate a live session.
@@ -133,7 +136,7 @@ async fn open(deadline: f64) -> Result<IdbDatabase, String> {
 
 pub async fn load() -> Result<(IdbDatabase, Bridge, Vec<String>), String> {
     let deadline = js_sys::Date::now() + TIMEOUT_MS;
-    let db = open(deadline).await?;
+    let db = open_store(DATABASE, FILES, deadline).await?;
     let result = read(&db, deadline).await;
     match result {
         Ok((bridge, warnings)) => Ok((db, bridge, warnings)),
@@ -228,9 +231,19 @@ pub async fn write(db: &IdbDatabase, batch: &Batch) -> Result<(), String> {
         let _ = tx.abort();
         return Err(e);
     }
+    let done = complete(&tx);
+    let result = before(&done.promise, js_sys::Date::now() + TIMEOUT_MS).await.map(|_| ());
+    if result.is_err() {
+        let _ = tx.abort();
+    }
+    result
+}
+
+/// Resolves when `tx` completes, rejects when it aborts or errors.
+pub(crate) fn complete(tx: &web_sys::IdbTransaction) -> Pending {
     let mut listeners = Listeners::new();
     let promise = Promise::new(&mut |resolve, reject| {
-        if let Err(e) = listeners.add(&tx, "complete", move |_| {
+        if let Err(e) = listeners.add(tx, "complete", move |_| {
             let _ = resolve.call0(&JsValue::NULL);
         }) {
             let _ = reject.call1(&JsValue::NULL, &e);
@@ -240,16 +253,12 @@ pub async fn write(db: &IdbDatabase, batch: &Batch) -> Result<(), String> {
             let failed: Function = reject.clone();
             let target: EventTarget = tx.clone().into();
             if let Err(e) = listeners.add(&target, event, move |_| {
-                let e = tx.error().map(JsValue::from).unwrap_or_else(|| JsValue::from_str("preset transaction aborted"));
+                let e = tx.error().map(JsValue::from).unwrap_or_else(|| JsValue::from_str("transaction aborted"));
                 let _ = failed.call1(&JsValue::NULL, &e);
             }) {
                 let _ = reject.call1(&JsValue::NULL, &e);
             }
         }
     });
-    let result = before(&promise, js_sys::Date::now() + TIMEOUT_MS).await.map(|_| ());
-    if result.is_err() {
-        let _ = tx.abort();
-    }
-    result
+    Pending { promise, _listeners: listeners }
 }

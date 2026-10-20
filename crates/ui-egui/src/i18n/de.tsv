@@ -3237,3 +3237,12 @@ curves	Smooth	Glätten
 	Edits for this photo	Änderungen für dieses Foto
 	Applied	Angewendet
 	Balanced as it is: nothing the measurements would change.	Ausgewogen, wie es ist: die Messungen würden nichts ändern.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	hat ein Bild erzeugt
+	generating a picture of	erzeugt ein Bild von
+	as a new layer	als neue Ebene
+	as a new document	als neues Dokument
+	Images	Bilder
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Das Bildmodell, mit dem der Assistent Bilder erzeugt (leer = das übliche des Anbieters).
+	Image model (blank = provider default)	Bildmodell (leer = Standard des Anbieters)

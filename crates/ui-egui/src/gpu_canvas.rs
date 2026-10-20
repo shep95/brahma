@@ -859,15 +859,14 @@ pub fn device_limits(adapter: &wgpu::Adapter) -> wgpu::Limits {
     wgpu::Limits { max_texture_dimension_2d: a.max_texture_dimension_2d, max_buffer_size: a.max_buffer_size, ..base }
 }
 
-/// Milliseconds since first call (monotonic). Always 0 on wasm, where `std::time` is unavailable.
+/// Milliseconds since first call (monotonic); `web_time` stands in for `std::time` in the browser.
 pub fn now_ms() -> f64 {
     #[cfg(not(target_arch = "wasm32"))]
-    {
-        static START: std::sync::OnceLock<std::time::Instant> = std::sync::OnceLock::new();
-        START.get_or_init(std::time::Instant::now).elapsed().as_secs_f64() * 1000.0
-    }
+    use std::time::Instant;
     #[cfg(target_arch = "wasm32")]
-    0.0
+    use web_time::Instant;
+    static START: std::sync::OnceLock<Instant> = std::sync::OnceLock::new();
+    START.get_or_init(Instant::now).elapsed().as_secs_f64() * 1000.0
 }
 
 /// UI-thread timings (CPU side), exponentially smoothed.

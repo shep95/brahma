@@ -3832,3 +3832,12 @@ curves	Smooth	Wygładź
 	Edits for this photo	Edycje dla tego zdjęcia
 	Applied	Zastosowano
 	Balanced as it is: nothing the measurements would change.	Zrównoważone takie, jakie jest: pomiary niczego by nie zmieniły.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	wygenerował obraz
+	generating a picture of	generuje obraz:
+	as a new layer	jako nową warstwę
+	as a new document	jako nowy dokument
+	Images	Obrazy
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Model obrazu, którym asystent generuje obrazy (puste = zwykły model dostawcy).
+	Image model (blank = provider default)	Model obrazu (puste = domyślny dostawcy)

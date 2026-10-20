@@ -3994,3 +3994,12 @@ curves	Smooth	Vloeiend maken
 	Edits for this photo	Bewerkingen voor deze foto
 	Applied	Toegepast
 	Balanced as it is: nothing the measurements would change.	In balans zoals het is: de metingen zouden niets veranderen.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	heeft een afbeelding gemaakt
+	generating a picture of	maakt een afbeelding van
+	as a new layer	als nieuwe laag
+	as a new document	als nieuw document
+	Images	Afbeeldingen
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Het beeldmodel waarmee de assistent afbeeldingen maakt (leeg = het gebruikelijke van de aanbieder).
+	Image model (blank = provider default)	Beeldmodel (leeg = standaard van de aanbieder)

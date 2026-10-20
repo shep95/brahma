@@ -4307,3 +4307,12 @@ shape	Appearance	Izgled
 	Edits for this photo	Измене за ову фотографију
 	Applied	Примењено
 	Balanced as it is: nothing the measurements would change.	Уравнотежено такво какво је: мерења не би ништа променила.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	generisao sliku
+	generating a picture of	generiše sliku:
+	as a new layer	kao novi sloj
+	as a new document	kao novi dokument
+	Images	Slike
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Model slika kojim asistent generiše slike (prazno = uobičajeni model provajdera).
+	Image model (blank = provider default)	Model slika (prazno = podrazumevano provajdera)

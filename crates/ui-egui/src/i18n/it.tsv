@@ -4355,3 +4355,12 @@ shape	Appearance	Aspetto
 	Edits for this photo	Modifiche per questa foto
 	Applied	Applicato
 	Balanced as it is: nothing the measurements would change.	Equilibrata così com'è: le misurazioni non cambierebbero nulla.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	ha generato un'immagine
+	generating a picture of	sta generando un'immagine di
+	as a new layer	come nuovo livello
+	as a new document	come nuovo documento
+	Images	Immagini
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Il modello di immagini con cui l'assistente genera le immagini (vuoto = quello abituale del fornitore).
+	Image model (blank = provider default)	Modello di immagini (vuoto = predefinito del fornitore)

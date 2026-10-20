@@ -3721,3 +3721,12 @@ curves	Smooth	Làm mượt
 	Edits for this photo	Chỉnh sửa cho ảnh này
 	Applied	Đã áp dụng
 	Balanced as it is: nothing the measurements would change.	Đã cân bằng như hiện tại: các phép đo sẽ không thay đổi gì.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	đã tạo một hình ảnh
+	generating a picture of	đang tạo hình ảnh:
+	as a new layer	dưới dạng lớp mới
+	as a new document	dưới dạng tài liệu mới
+	Images	Hình ảnh
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Mô hình ảnh mà trợ lý dùng để tạo hình (để trống = mô hình thường dùng của nhà cung cấp).
+	Image model (blank = provider default)	Mô hình ảnh (để trống = mặc định của nhà cung cấp)

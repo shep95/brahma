@@ -3413,3 +3413,12 @@ curves	Smooth	매끄럽게
 	Edits for this photo	이 사진에 대한 편집
 	Applied	적용됨
 	Balanced as it is: nothing the measurements would change.	이대로 균형이 잡혀 있습니다. 측정값이 바꿀 것이 없습니다.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	이미지 생성
+	generating a picture of	이미지 생성 중:
+	as a new layer	새 레이어로
+	as a new document	새 문서로
+	Images	이미지
+	The image model the assistant generates pictures with (blank = the provider's usual one).	어시스턴트가 이미지를 생성할 때 쓰는 이미지 모델 (비워 두면 제공자의 기본 모델).
+	Image model (blank = provider default)	이미지 모델 (비워 두면 제공자 기본값)

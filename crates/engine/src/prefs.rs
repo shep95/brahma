@@ -885,6 +885,9 @@ pub struct Integrations {
     pub ai_provider: AiProvider,
     /// The model name sent to the provider (empty = the provider's default in [`crate::ai`]).
     pub ai_model: String,
+    /// The image model the assistant's `generate_image` tool asks for (empty = the protocol's
+    /// usual one, see [`crate::ai_image::image_model`]).
+    pub ai_image_model: String,
     /// The user's own Anthropic API key, kept on this device.
     pub anthropic_api_key: String,
     /// The user's own OpenAI API key, kept on this device.
@@ -909,6 +912,7 @@ impl Default for Integrations {
             control_port: 0,
             ai_provider: AiProvider::None,
             ai_model: String::new(),
+            ai_image_model: String::new(),
             anthropic_api_key: String::new(),
             openai_api_key: String::new(),
             google_api_key: String::new(),

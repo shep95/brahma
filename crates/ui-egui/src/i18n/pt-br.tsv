@@ -4024,3 +4024,12 @@ layerLabel	No Color	Sem cor
 	Edits for this photo	Edições para esta foto
 	Applied	Aplicado
 	Balanced as it is: nothing the measurements would change.	Equilibrada como está: as medições não mudariam nada.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	gerou uma imagem
+	generating a picture of	gerando uma imagem de
+	as a new layer	como nova camada
+	as a new document	como novo documento
+	Images	Imagens
+	The image model the assistant generates pictures with (blank = the provider's usual one).	O modelo de imagem com que o assistente gera imagens (vazio = o habitual do provedor).
+	Image model (blank = provider default)	Modelo de imagem (vazio = padrão do provedor)

@@ -3203,3 +3203,12 @@ curves	Smooth	Сгладить
 	Edits for this photo	Правки для этого фото
 	Applied	Применено
 	Balanced as it is: nothing the measurements would change.	Сбалансировано как есть: измерения ничего бы не изменили.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	создал изображение
+	generating a picture of	создаёт изображение:
+	as a new layer	как новый слой
+	as a new document	как новый документ
+	Images	Изображения
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Модель изображений, которой ассистент создаёт картинки (пусто = обычная у провайдера).
+	Image model (blank = provider default)	Модель изображений (пусто = по умолчанию у провайдера)

@@ -3225,3 +3225,12 @@ curves	Smooth	Haluskan
 	Edits for this photo	Suntingan untuk foto ini
 	Applied	Diterapkan
 	Balanced as it is: nothing the measurements would change.	Sudah seimbang: pengukuran tidak akan mengubah apa pun.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	membuat gambar
+	generating a picture of	membuat gambar:
+	as a new layer	sebagai layer baru
+	as a new document	sebagai dokumen baru
+	Images	Gambar
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Model gambar yang dipakai asisten untuk membuat gambar (kosong = model biasa penyedia).
+	Image model (blank = provider default)	Model gambar (kosong = bawaan penyedia)

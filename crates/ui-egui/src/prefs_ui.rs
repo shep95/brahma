@@ -1056,6 +1056,7 @@ fn humanize(key: &str) -> String {
         "adaptiveAesthetics" => return "Adaptive Aesthetics (surfaces and UI font follow the open image)".into(),
         "aiProvider" => return "AI provider".into(),
         "aiModel" => return "Model (blank = provider default)".into(),
+        "aiImageModel" => return "Image model (blank = provider default)".into(),
         "anthropicApiKey" => return "Anthropic API key".into(),
         "openaiApiKey" => return "OpenAI API key".into(),
         "googleApiKey" => return "Google AI API key".into(),

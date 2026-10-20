@@ -1,7 +1,7 @@
 //! Window › Assistant: a chat in a side panel that drives the whole app. The model (any
 //! provider the person holds a key for, see `brahma_engine::ai::PRESETS`) gets four tools:
-//! search the command registry, run any command, inspect the document, and look at the canvas
-//! as a picture. The shell does the HTTP call through `Services::http` (a browser fetch on the
+//! search the command registry, run any command, inspect the document, look at the canvas
+//! as a picture, and generate a picture with the provider's image model (`ai_image`). The shell does the HTTP call through `Services::http` (a browser fetch on the
 //! web, a thread on the desktop); the panel polls for the answer each frame, runs the tools the
 //! model asked for through the engine, and sends the results back until the model answers in
 //! words. Its voice is the persona distilled from the design research (`brahma_aesthetic::PERSONA`).
@@ -15,6 +15,7 @@ use std::collections::HashMap;
 
 use brahma_doc::DocId;
 use brahma_engine::ai_chat::{self, CANVAS_TOOL, MAX_ROUNDS, Message, Reply, StreamParser, ToolCall};
+use brahma_engine::ai_image::{self, IMAGE_TOOL};
 use brahma_engine::prefs::AiProvider;
 use egui::{Color32, RichText, vec2};
 use serde::{Deserialize, Serialize};
@@ -74,6 +75,13 @@ pub struct AssistantUi {
     pub parser: Option<StreamParser>,
     #[serde(skip)]
     pub stream_status: u16,
+    /// Tool calls of the current round still to run (an image generation waits on the network
+    /// before the next one runs).
+    #[serde(skip)]
+    pub pending_calls: Vec<ToolCall>,
+    /// A `generate_image` call in flight: the call and where the provider's answer arrives.
+    #[serde(skip)]
+    pub image_rx: Option<(ToolCall, Receiver<HttpOutcome>)>,
     /// The document this conversation belongs to (`None`: no document), and the others' kept
     /// transcripts: each document has its own conversation.
     #[serde(skip)]
@@ -87,6 +95,8 @@ pub struct AssistantUi {
     pub setup_key: String,
     #[serde(skip)]
     pub setup_model: String,
+    #[serde(skip)]
+    pub setup_image_model: String,
     #[serde(skip)]
     pub setup_base_url: String,
     #[serde(skip)]
@@ -109,11 +119,14 @@ impl Default for AssistantUi {
             stream: None,
             parser: None,
             stream_status: 0,
+            pending_calls: Vec::new(),
+            image_rx: None,
             conversation_doc: None,
             conversations: HashMap::new(),
             setup_provider: String::new(),
             setup_key: String::new(),
             setup_model: String::new(),
+            setup_image_model: String::new(),
             setup_base_url: String::new(),
             setup_loaded: false,
         }
@@ -136,11 +149,14 @@ impl Clone for AssistantUi {
             stream: None,
             parser: None,
             stream_status: 0,
+            pending_calls: Vec::new(),
+            image_rx: None,
             conversation_doc: self.conversation_doc,
             conversations: self.conversations.clone(),
             setup_provider: self.setup_provider.clone(),
             setup_key: self.setup_key.clone(),
             setup_model: self.setup_model.clone(),
+            setup_image_model: self.setup_image_model.clone(),
             setup_base_url: self.setup_base_url.clone(),
             setup_loaded: self.setup_loaded,
         }
@@ -317,7 +333,7 @@ fn poll_stream(app: &mut BrahmaApp, ctx: &egui::Context) -> bool {
 /// either send the results back or finish the turn.
 pub fn poll(app: &mut BrahmaApp, ctx: &egui::Context) {
     sync_conversation(app);
-    if poll_stream(app, ctx) {
+    if poll_image(app, ctx) || poll_stream(app, ctx) {
         return;
     }
     let Some(rx) = app.ui.assistant.rx.as_ref() else { return };
@@ -350,8 +366,30 @@ fn handle_reply(app: &mut BrahmaApp, ctx: &egui::Context, reply: Reply) {
         finish_turn(app);
         return;
     }
-    for call in &reply.tool_calls {
-        let result = run_tool(app, call);
+    app.ui.assistant.pending_calls = reply.tool_calls;
+    drain_tools(app, ctx);
+}
+
+/// Run the round's remaining tool calls in order. An image generation goes out over the
+/// network and the rest wait for it ([`poll_image`] continues here); when every call has its
+/// result, the results go back to the model, or the turn ends after too many rounds.
+fn drain_tools(app: &mut BrahmaApp, ctx: &egui::Context) {
+    while !app.ui.assistant.pending_calls.is_empty() {
+        let call = app.ui.assistant.pending_calls.remove(0);
+        if call.name == IMAGE_TOOL {
+            match start_image(app, ctx, &call) {
+                Ok(rx) => {
+                    app.ui.assistant.image_rx = Some((call, rx));
+                    return;
+                }
+                Err(e) => {
+                    app.ui.assistant.lines.push(Line { kind: LineKind::Tool, text: format!("{}: {e}", tl!("generated a picture")) });
+                    app.ui.assistant.messages.push(Message::ToolResult { call_id: call.id.clone(), name: call.name.clone(), content: format!("could not generate the picture: {e}"), images: vec![] });
+                }
+            }
+            continue;
+        }
+        let result = run_tool(app, &call);
         app.ui.assistant.messages.push(result);
     }
     if app.ui.assistant.rounds >= MAX_ROUNDS {
@@ -360,6 +398,58 @@ fn handle_reply(app: &mut BrahmaApp, ctx: &egui::Context, reply: Reply) {
         return;
     }
     dispatch(app, ctx);
+}
+
+/// Send a `generate_image` call to the provider's image model (never through the streaming
+/// path: the answer is one JSON body). `Err` is the text the model reads back.
+fn start_image(app: &mut BrahmaApp, ctx: &egui::Context, call: &ToolCall) -> Result<Receiver<HttpOutcome>, String> {
+    let ask = ai_image::parse_args(&call.args)?;
+    let req = app.session.ai_request().ok_or("no provider is set up")?;
+    let model = ai_image::image_model(&req, &app.session.prefs().integrations.ai_image_model)?;
+    let request = ai_image::build_image_request(&req, &model, &ask)?;
+    let http = app.services.http.as_ref().ok_or("this build has no network access for pictures")?;
+    let (tx, rx) = channel::<HttpOutcome>();
+    let repaint = ctx.clone();
+    http(
+        request,
+        Box::new(move |outcome| {
+            let _ = tx.send(outcome);
+            repaint.request_repaint();
+        }),
+    );
+    app.ui.assistant.lines.push(Line { kind: LineKind::Tool, text: format!("{} “{}”", tl!("generating a picture of"), ask.name) });
+    Ok(rx)
+}
+
+/// The provider's picture arrived (or not): place it, tell the model, run the rest of the round.
+fn poll_image(app: &mut BrahmaApp, ctx: &egui::Context) -> bool {
+    let Some((_, rx)) = app.ui.assistant.image_rx.as_ref() else { return false };
+    let outcome = match rx.try_recv() {
+        Ok(o) => o,
+        Err(std::sync::mpsc::TryRecvError::Empty) => {
+            ctx.request_repaint_after(std::time::Duration::from_millis(120));
+            return true;
+        }
+        Err(std::sync::mpsc::TryRecvError::Disconnected) => Err("the request was dropped".into()),
+    };
+    let Some((call, _)) = app.ui.assistant.image_rx.take() else { return false };
+    let protocol = app.session.ai_request().map(|r| r.protocol).unwrap_or(Protocol::OpenAi);
+    let name = ai_image::parse_args(&call.args).map(|a| a.name).unwrap_or_else(|_| "Generated".into());
+    let placed = outcome
+        .and_then(|(status, body)| ai_image::parse_image_response(protocol, status, &body))
+        .and_then(|bytes| ai_image::place_generated(&mut app.session, &name, bytes).map_err(|e| e.to_string()));
+    let (content, trace) = match placed {
+        Ok(v) => {
+            app.sync_views();
+            let where_ = if v["placed"] == "layer" { tl!("as a new layer") } else { tl!("as a new document") };
+            (ai_chat::tool_text(&json!({"ok": true, "result": v})), format!("{} “{name}” {where_}", tl!("generated a picture")))
+        }
+        Err(e) => (format!("could not generate the picture: {e}"), format!("{}: {e}", tl!("generated a picture"))),
+    };
+    app.ui.assistant.lines.push(Line { kind: LineKind::Tool, text: trace });
+    app.ui.assistant.messages.push(Message::ToolResult { call_id: call.id, name: call.name, content, images: vec![] });
+    drain_tools(app, ctx);
+    true
 }
 
 /// Run one tool call: the canvas picture here, everything else in the engine. Every call
@@ -434,6 +524,7 @@ fn load_setup(app: &mut BrahmaApp) {
         _ => i.preset_api_key.clone(),
     };
     a.setup_model = i.ai_model.clone();
+    a.setup_image_model = i.ai_image_model.clone();
     a.setup_base_url = i.custom_base_url.clone();
     a.setup_loaded = true;
 }
@@ -444,6 +535,7 @@ fn save_setup(app: &mut BrahmaApp) -> Result<(), String> {
     let a = &app.ui.assistant;
     let mut values = serde_json::Map::new();
     values.insert("integrations.aiModel".into(), json!(a.setup_model.trim()));
+    values.insert("integrations.aiImageModel".into(), json!(a.setup_image_model.trim()));
     match a.setup_provider.as_str() {
         "" => {
             values.insert("integrations.aiProvider".into(), json!("none"));
@@ -637,6 +729,15 @@ fn setup_rows(app: &mut BrahmaApp, ui: &mut egui::Ui, t: &Tokens, save: &mut boo
         widgets::text_field(ui, egui::Id::new("assistant-model"), &mut app.ui.assistant.setup_model, hint, (w - 70.0).max(120.0), true);
     });
     ui.horizontal(|ui| {
+        ui.label(RichText::new(tl!("Images")).color(t.text_dim)).on_hover_text(tl!("The image model the assistant generates pictures with (blank = the provider's usual one)."));
+        let hint = match preset.map(|p| p.protocol) {
+            Some(Protocol::Google) => "gemini-2.5-flash-image",
+            Some(Protocol::Anthropic) => "",
+            _ => "gpt-image-1",
+        };
+        widgets::text_field(ui, egui::Id::new("assistant-image-model"), &mut app.ui.assistant.setup_image_model, hint, (w - 70.0).max(120.0), true);
+    });
+    ui.horizontal(|ui| {
         if widgets::primary_button(ui, tl!("Save"), 64.0).clicked() {
             *save = true;
         }
@@ -754,6 +855,41 @@ mod tests {
         assert!(msgs.iter().any(|m| m["content"].as_array().is_some_and(|c| c.iter().any(|p| p["type"] == "image_url"))), "the canvas picture");
         assert!(second["messages"][0]["content"].as_str().unwrap().contains("shepherd"), "the persona is the system prompt");
         assert!(!bodies[0].contains("\"k\""), "the key goes in headers, never in the body");
+    }
+
+    /// The model asks for a picture: the image request goes to the provider's image endpoint,
+    /// the bytes land as a layer named after the prompt, and the model hears where it went.
+    #[test]
+    fn a_generated_picture_lands_as_a_layer_and_the_model_hears_about_it() {
+        use base64::Engine as _;
+        let img = brahma_codecs::Image::from_u8(6, 4, brahma_codecs::ChannelLayout::Rgba, vec![90; 6 * 4 * 4]).unwrap();
+        let png = brahma_codecs::encode(&img, brahma_codecs::Format::Png, &brahma_codecs::EncodeOptions::default()).unwrap();
+        let image_body = json!({"data": [{"b64_json": base64::engine::general_purpose::STANDARD.encode(png)}]}).to_string();
+        let (mut h, seen) = harness(vec![
+            r##"{"choices":[{"message":{"content":null,"tool_calls":[{"id":"c1","type":"function","function":{"name":"generate_image","arguments":"{\"prompt\":\"a red fox at dusk\",\"size\":\"1024x1024\"}"}}]},"finish_reason":"tool_calls"}]}"##,
+            &image_body,
+            r#"{"choices":[{"message":{"content":"placed the fox."},"finish_reason":"stop"}]}"#,
+        ]);
+        h.state_mut().run("file.new", json!({"width": 40, "height": 30})).unwrap();
+        h.state_mut().ui.assistant.input = "add a fox".into();
+        h.run_steps(1);
+        h.get_by_label("Send").click();
+        h.run_steps(6);
+        let app = h.state();
+        assert!(!app.ui.assistant.busy, "{:?}", app.ui.assistant.lines);
+        let doc = &app.session.active().unwrap().doc;
+        assert_eq!(doc.layers.len(), 2, "the picture is a new layer: {:?} / {:?}", app.ui.assistant.lines, seen.lock().unwrap());
+        assert_eq!(doc.layers.last().unwrap().name, "a red fox at dusk");
+        let bodies = seen.lock().unwrap();
+        assert_eq!(bodies.len(), 3);
+        let image_req: Value = serde_json::from_str(&bodies[1]).unwrap();
+        assert_eq!(image_req["prompt"], "a red fox at dusk");
+        assert_eq!(image_req["model"], "gpt-image-1", "an OpenAI-compatible preset asks its usual image model");
+        let third: Value = serde_json::from_str(&bodies[2]).unwrap();
+        let tool_msg = third["messages"].as_array().unwrap().iter().find(|m| m["role"] == "tool" && m["tool_call_id"] == "c1").unwrap();
+        assert!(tool_msg["content"].as_str().unwrap().contains("\"placed\":\"layer\""), "{tool_msg}");
+        assert_eq!(app.ui.assistant.lines.last().unwrap().text, "placed the fox.");
+        assert!(app.ui.assistant.lines.iter().any(|l| l.kind == LineKind::Tool && l.text.contains("as a new layer")), "{:?}", app.ui.assistant.lines);
     }
 
     /// A streaming shell: the text shows as it arrives, the tool call runs when the stream

@@ -3964,3 +3964,12 @@ cameraData	Lens	Lens
 	Edits for this photo	Bu fotoğraf için düzenlemeler
 	Applied	Uygulandı
 	Balanced as it is: nothing the measurements would change.	Olduğu gibi dengeli: ölçümler hiçbir şeyi değiştirmez.
+
+# Assistant: picture generation (generate_image)
+	generated a picture	bir görsel oluşturdu
+	generating a picture of	görsel oluşturuluyor:
+	as a new layer	yeni katman olarak
+	as a new document	yeni belge olarak
+	Images	Görseller
+	The image model the assistant generates pictures with (blank = the provider's usual one).	Asistanın görsel oluştururken kullandığı görsel modeli (boş = sağlayıcının olağan modeli).
+	Image model (blank = provider default)	Görsel modeli (boş = sağlayıcı varsayılanı)

@@ -93,6 +93,7 @@ pub fn tools() -> Vec<(&'static str, &'static str, Value)> {
             "see the active document as it looks now (a PNG of the composite, at most 1024 px on the long side). call it to judge the image, to find what to change, or to verify an edit.",
             json!({"type": "object", "properties": {}}),
         ),
+        crate::ai_image::tool(),
     ]
 }
 
@@ -381,7 +382,7 @@ fn provider_error(v: &Value) -> Option<String> {
     })
 }
 
-fn snippet(body: &str) -> String {
+pub(crate) fn snippet(body: &str) -> String {
     let t = body.trim();
     let cut: String = t.chars().take(300).collect();
     if cut.len() < t.len() { format!("{cut}…") } else { cut }
@@ -410,6 +411,7 @@ pub fn run_tool(s: &mut Session, name: &str, args: &Value) -> Result<Value> {
         }
         "inspect_document" => Ok(json!({"session": crate::inspect::session(s), "document": s.active().map(crate::inspect::document)})),
         CANVAS_TOOL => Err(EngineError::Other("look_at_canvas is answered by the app shell".into())),
+        crate::ai_image::IMAGE_TOOL => Err(EngineError::Other("generate_image is answered by the app shell (it needs the network)".into())),
         other => Ok(json!({"ok": false, "error": format!("unknown tool `{other}`"), "tools": tools().iter().map(|t| t.0).collect::<Vec<_>>()})),
     }
 }
@@ -475,7 +477,7 @@ pub fn specs() -> Vec<crate::commands::CommandSpec> {
         label: "Run Assistant Tool",
         menu: &[],
         shortcut: None,
-        params: r##"{"name": "search_commands|run_command|inspect_document", "args?": object}"##,
+        params: r##"{"name": "search_commands|run_command|inspect_document", "args?": object} (look_at_canvas and generate_image are answered by the app shell, not here)"##,
         enabled: crate::commands::always,
         run: ai_tool,
         journal: false,
@@ -520,7 +522,7 @@ mod tests {
         assert!(a.headers.iter().any(|(k, v)| k == "Content-Type" && v == "application/json"));
         let body: Value = serde_json::from_str(&a.body).unwrap();
         assert_eq!(body["system"], "sys");
-        assert_eq!(body["tools"].as_array().map(Vec::len), Some(4));
+        assert_eq!(body["tools"].as_array().map(Vec::len), Some(5));
         let msgs = body["messages"].as_array().unwrap();
         assert_eq!(msgs.len(), 4, "the two tool results share one user message: {msgs:?}");
         assert_eq!(msgs[0]["content"][0]["type"], "image");
@@ -547,7 +549,7 @@ mod tests {
         assert_eq!(c[1]["role"], "model");
         assert_eq!(c[1]["parts"][0]["functionCall"]["name"], "run_command");
         assert_eq!(c[2]["parts"].as_array().map(Vec::len), Some(3), "two responses and one picture in one user turn");
-        assert_eq!(body["tools"][0]["function_declarations"].as_array().map(Vec::len), Some(4));
+        assert_eq!(body["tools"][0]["function_declarations"].as_array().map(Vec::len), Some(5));
     }
 
     #[test]
