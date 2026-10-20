@@ -11,14 +11,17 @@
 use std::sync::mpsc::{Receiver, channel};
 
 use brahma_engine::ai::{PRESETS, Protocol};
-use brahma_engine::ai_chat::{self, CANVAS_TOOL, MAX_ROUNDS, Message, Reply, ToolCall};
+use std::collections::HashMap;
+
+use brahma_doc::DocId;
+use brahma_engine::ai_chat::{self, CANVAS_TOOL, MAX_ROUNDS, Message, Reply, StreamParser, ToolCall};
 use brahma_engine::prefs::AiProvider;
 use egui::{Color32, RichText, vec2};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
 use crate::theme::Tokens;
-use crate::{BrahmaApp, icons, widgets};
+use crate::{BrahmaApp, StreamEvent, icons, widgets};
 
 /// The long side of the picture the assistant sees.
 const CANVAS_PX: u32 = 1024;
@@ -64,6 +67,19 @@ pub struct AssistantUi {
     pub rounds: u32,
     #[serde(skip)]
     pub rx: Option<Receiver<HttpOutcome>>,
+    /// A streamed answer in flight: its events, the parser assembling them, the HTTP status.
+    #[serde(skip)]
+    pub stream: Option<Receiver<StreamEvent>>,
+    #[serde(skip)]
+    pub parser: Option<StreamParser>,
+    #[serde(skip)]
+    pub stream_status: u16,
+    /// The document this conversation belongs to (`None`: no document), and the others' kept
+    /// transcripts: each document has its own conversation.
+    #[serde(skip)]
+    pub conversation_doc: Option<DocId>,
+    #[serde(skip)]
+    pub conversations: HashMap<Option<DocId>, (Vec<Line>, Vec<Message>)>,
     /// The preset picked in the setup rows (mirrors the preferences while editing).
     #[serde(skip)]
     pub setup_provider: String,
@@ -90,6 +106,11 @@ impl Default for AssistantUi {
             busy: false,
             rounds: 0,
             rx: None,
+            stream: None,
+            parser: None,
+            stream_status: 0,
+            conversation_doc: None,
+            conversations: HashMap::new(),
             setup_provider: String::new(),
             setup_key: String::new(),
             setup_model: String::new(),
@@ -112,6 +133,11 @@ impl Clone for AssistantUi {
             busy: self.busy,
             rounds: self.rounds,
             rx: None,
+            stream: None,
+            parser: None,
+            stream_status: 0,
+            conversation_doc: self.conversation_doc,
+            conversations: self.conversations.clone(),
             setup_provider: self.setup_provider.clone(),
             setup_key: self.setup_key.clone(),
             setup_model: self.setup_model.clone(),
@@ -171,12 +197,31 @@ fn dispatch(app: &mut BrahmaApp, ctx: &egui::Context) {
         app.ui.assistant.busy = false;
         return;
     };
+    let system = ai_chat::system_prompt(&app.session);
+    // Streamed where the shell can: the answer appears as it is written.
+    if let Some(stream) = app.services.http_stream.as_ref() {
+        let request = ai_chat::build_streaming_request(&req, &system, &app.ui.assistant.messages, MAX_TOKENS);
+        let (tx, rx) = channel::<StreamEvent>();
+        let repaint = ctx.clone();
+        stream(
+            request,
+            Box::new(move |event| {
+                let _ = tx.send(event);
+                repaint.request_repaint();
+            }),
+        );
+        app.ui.assistant.stream = Some(rx);
+        app.ui.assistant.parser = Some(StreamParser::new(req.protocol));
+        app.ui.assistant.stream_status = 0;
+        app.ui.assistant.busy = true;
+        app.ui.assistant.rounds += 1;
+        return;
+    }
     let Some(http) = app.services.http.as_ref() else {
         app.ui.assistant.lines.push(Line { kind: LineKind::Error, text: tl!("This build has no network access for the assistant.").to_string() });
         app.ui.assistant.busy = false;
         return;
     };
-    let system = ai_chat::system_prompt(&app.session);
     let request = ai_chat::build_request(&req, &system, &app.ui.assistant.messages, MAX_TOKENS);
     let (tx, rx) = channel::<HttpOutcome>();
     let repaint = ctx.clone();
@@ -192,9 +237,89 @@ fn dispatch(app: &mut BrahmaApp, ctx: &egui::Context) {
     app.ui.assistant.rounds += 1;
 }
 
+/// The turn is over: the conversation belongs to the document now in front (a turn that
+/// opened or created a document carries its conversation along with it).
+fn finish_turn(app: &mut BrahmaApp) {
+    app.ui.assistant.busy = false;
+    app.ui.assistant.conversation_doc = app.session.active().map(|d| d.doc.id);
+}
+
+/// Each document keeps its own conversation: when the active document changes (and nothing
+/// is in flight), the transcript on screen is stashed and the new document's comes back.
+fn sync_conversation(app: &mut BrahmaApp) {
+    let now = app.session.active().map(|d| d.doc.id);
+    if now == app.ui.assistant.conversation_doc || app.ui.assistant.busy {
+        return;
+    }
+    let a = &mut app.ui.assistant;
+    let lines = std::mem::take(&mut a.lines);
+    let messages = std::mem::take(&mut a.messages);
+    if !lines.is_empty() || !messages.is_empty() {
+        a.conversations.insert(a.conversation_doc, (lines, messages));
+    }
+    if let Some((lines, messages)) = a.conversations.remove(&now) {
+        a.lines = lines;
+        a.messages = messages;
+    }
+    a.conversation_doc = now;
+}
+
+/// Take the streamed events that arrived: feed the parser, finish when the stream ends.
+fn poll_stream(app: &mut BrahmaApp, ctx: &egui::Context) -> bool {
+    let Some(rx) = app.ui.assistant.stream.as_ref() else { return false };
+    let mut finished: Option<Result<(), String>> = None;
+    let mut changed = false;
+    loop {
+        match rx.try_recv() {
+            Ok(StreamEvent::Status(s)) => app.ui.assistant.stream_status = s,
+            Ok(StreamEvent::Chunk(c)) => {
+                if let Some(p) = app.ui.assistant.parser.as_mut() {
+                    changed |= p.feed(&c);
+                }
+            }
+            Ok(StreamEvent::Done) => {
+                finished = Some(Ok(()));
+                break;
+            }
+            Ok(StreamEvent::Error(e)) => {
+                finished = Some(Err(e));
+                break;
+            }
+            Err(std::sync::mpsc::TryRecvError::Empty) => break,
+            Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                finished = Some(Err("the request was dropped".into()));
+                break;
+            }
+        }
+    }
+    if changed {
+        ctx.request_repaint();
+    }
+    let Some(outcome) = finished else {
+        ctx.request_repaint_after(std::time::Duration::from_millis(120));
+        return true;
+    };
+    app.ui.assistant.stream = None;
+    let parser = app.ui.assistant.parser.take();
+    let status = app.ui.assistant.stream_status;
+    let reply = outcome.and_then(|()| parser.ok_or_else(|| "no parser".to_string())?.finish(status));
+    match reply {
+        Err(e) => {
+            app.ui.assistant.lines.push(Line { kind: LineKind::Error, text: e });
+            finish_turn(app);
+        }
+        Ok(reply) => handle_reply(app, ctx, reply),
+    }
+    true
+}
+
 /// Each frame: take the provider's answer if it arrived, run the tools it asked for, and
 /// either send the results back or finish the turn.
 pub fn poll(app: &mut BrahmaApp, ctx: &egui::Context) {
+    sync_conversation(app);
+    if poll_stream(app, ctx) {
+        return;
+    }
     let Some(rx) = app.ui.assistant.rx.as_ref() else { return };
     let outcome = match rx.try_recv() {
         Ok(o) => o,
@@ -210,7 +335,7 @@ pub fn poll(app: &mut BrahmaApp, ctx: &egui::Context) {
     match reply {
         Err(e) => {
             app.ui.assistant.lines.push(Line { kind: LineKind::Error, text: e });
-            app.ui.assistant.busy = false;
+            finish_turn(app);
         }
         Ok(reply) => handle_reply(app, ctx, reply),
     }
@@ -222,7 +347,7 @@ fn handle_reply(app: &mut BrahmaApp, ctx: &egui::Context, reply: Reply) {
     }
     app.ui.assistant.messages.push(Message::Assistant { text: reply.text.clone(), tool_calls: reply.tool_calls.clone() });
     if reply.tool_calls.is_empty() {
-        app.ui.assistant.busy = false;
+        finish_turn(app);
         return;
     }
     for call in &reply.tool_calls {
@@ -231,7 +356,7 @@ fn handle_reply(app: &mut BrahmaApp, ctx: &egui::Context, reply: Reply) {
     }
     if app.ui.assistant.rounds >= MAX_ROUNDS {
         app.ui.assistant.lines.push(Line { kind: LineKind::Error, text: tl!("Stopped after too many steps; ask again to continue.").to_string() });
-        app.ui.assistant.busy = false;
+        finish_turn(app);
         return;
     }
     dispatch(app, ctx);
@@ -412,6 +537,10 @@ pub fn panel(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                 }
                 for line in &app.ui.assistant.lines {
                     transcript_line(ui, &t, line);
+                }
+                // The answer as it is being written.
+                if let Some(partial) = app.ui.assistant.parser.as_ref().map(StreamParser::text).filter(|t| !t.trim().is_empty()) {
+                    transcript_line(ui, &t, &Line { kind: LineKind::Assistant, text: partial.to_string() });
                 }
                 if app.ui.assistant.busy {
                     ui.horizontal(|ui| {
@@ -625,6 +754,54 @@ mod tests {
         assert!(msgs.iter().any(|m| m["content"].as_array().is_some_and(|c| c.iter().any(|p| p["type"] == "image_url"))), "the canvas picture");
         assert!(second["messages"][0]["content"].as_str().unwrap().contains("shepherd"), "the persona is the system prompt");
         assert!(!bodies[0].contains("\"k\""), "the key goes in headers, never in the body");
+    }
+
+    /// A streaming shell: the text shows as it arrives, the tool call runs when the stream
+    /// ends, and each document keeps its own conversation.
+    #[test]
+    fn streamed_answers_appear_as_they_arrive_and_conversations_follow_the_document() {
+        let bodies: Arc<Mutex<Vec<String>>> = Arc::default();
+        let seen = bodies.clone();
+        let answers = Arc::new(Mutex::new(VecDeque::from(vec![
+            vec!["data: {\"choices\":[{\"delta\":{\"content\":\"making \"}}]}\n\n".to_string(), "data: {\"choices\":[{\"delta\":{\"content\":\"it\"}}]}\n\n".to_string(), "data: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"c1\",\"function\":{\"name\":\"run_command\",\"arguments\":\"{\\\"id\\\":\\\"file.new\\\",\\\"params\\\":{\\\"width\\\":20,\\\"height\\\":10}}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n".to_string()],
+            vec!["data: {\"choices\":[{\"delta\":{\"content\":\"done.\"},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n".to_string()],
+        ])));
+        let stream: crate::HttpStreamFn = Box::new(move |req, mut sink| {
+            seen.lock().unwrap().push(req.body.clone());
+            assert!(req.body.contains("\"stream\":true"));
+            sink(StreamEvent::Status(200));
+            for chunk in answers.lock().unwrap().pop_front().unwrap_or_default() {
+                sink(StreamEvent::Chunk(chunk));
+            }
+            sink(StreamEvent::Done);
+        });
+        let services = crate::Services { http_stream: Some(stream), ..Default::default() };
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), services);
+        app.session
+            .execute(
+                "prefs.set",
+                json!({"values": {"integrations.aiProvider": "preset", "integrations.aiPreset": "deepseek", "integrations.presetApiKey": "k"}}),
+            )
+            .unwrap();
+        let ctx = egui::Context::default();
+        send(&mut app, &ctx, "new small canvas");
+        assert!(app.ui.assistant.busy && app.ui.assistant.stream.is_some());
+        poll(&mut app, &ctx);
+        // The first stream ended with a tool call: the command ran and the second request went out.
+        assert_eq!(app.session.active().map(|d| (d.doc.size.width, d.doc.size.height)), Some((20, 10)));
+        poll(&mut app, &ctx);
+        assert!(!app.ui.assistant.busy);
+        let texts: Vec<&str> = app.ui.assistant.lines.iter().filter(|l| l.kind == LineKind::Assistant).map(|l| l.text.as_str()).collect();
+        assert_eq!(texts, vec!["making it", "done."]);
+        assert_eq!(bodies.lock().unwrap().len(), 2);
+        // Another document: a fresh conversation; back again: the old one.
+        let lines_before = app.ui.assistant.lines.len();
+        app.run("file.new", json!({"width": 8, "height": 8})).unwrap();
+        poll(&mut app, &ctx);
+        assert!(app.ui.assistant.lines.is_empty(), "the new document starts clean");
+        app.session.set_active(0);
+        poll(&mut app, &ctx);
+        assert_eq!(app.ui.assistant.lines.len(), lines_before, "the first document's conversation is back");
     }
 
     #[test]

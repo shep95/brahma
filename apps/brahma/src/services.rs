@@ -455,6 +455,7 @@ pub fn native(automation: Option<brahma_automation::AuthorizedWorkspace>) -> Ser
         })),
         inbox: None,
         http: Some(Box::new(http_post)),
+        http_stream: Some(Box::new(http_stream)),
         fetch_url: Some(Box::new(fetch_font)),
         open_url: Some(Box::new(|url: &str| open::that(url).map_err(|e| e.to_string()))),
         beep: Some(platform_beep),
@@ -627,6 +628,61 @@ fn fetch_font(url: String, _integrity: Option<String>, reply: brahma_ui_egui::Fe
 /// FNV-1a over `s`: a stable file name for a URL.
 fn fnv1a(s: &str) -> u64 {
     s.bytes().fold(0xcbf2_9ce4_8422_2325u64, |h, b| (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3))
+}
+
+/// The assistant's streamed POST: body chunks go to the sink as they arrive (whole UTF-8
+/// sequences only), then `Done`.
+fn http_stream(req: brahma_engine::ai_chat::HttpRequest, mut sink: brahma_ui_egui::StreamSink) {
+    use brahma_ui_egui::StreamEvent;
+    let spawned = std::thread::Builder::new().name("assistant stream".into()).spawn(move || {
+        use std::io::Read as _;
+        let agent = ureq::AgentBuilder::new().timeout_connect(std::time::Duration::from_secs(30)).build();
+        let mut r = agent.post(&req.url);
+        for (k, v) in &req.headers {
+            r = r.set(k, v);
+        }
+        let resp = match r.send_string(&req.body) {
+            Ok(resp) => resp,
+            Err(ureq::Error::Status(_, resp)) => resp,
+            Err(e) => {
+                sink(StreamEvent::Error(e.to_string()));
+                return;
+            }
+        };
+        sink(StreamEvent::Status(resp.status()));
+        let mut reader = resp.into_reader();
+        let mut pending: Vec<u8> = Vec::new();
+        let mut buf = [0u8; 8192];
+        loop {
+            match reader.read(&mut buf) {
+                Ok(0) => break,
+                Ok(n) => {
+                    pending.extend_from_slice(&buf[..n]);
+                    // Emit the longest valid UTF-8 prefix; a cut character waits for its rest.
+                    let valid = match std::str::from_utf8(&pending) {
+                        Ok(_) => pending.len(),
+                        Err(e) => e.valid_up_to(),
+                    };
+                    if valid > 0 {
+                        let text = String::from_utf8_lossy(&pending[..valid]).into_owned();
+                        pending.drain(..valid);
+                        sink(StreamEvent::Chunk(text));
+                    }
+                }
+                Err(e) => {
+                    sink(StreamEvent::Error(e.to_string()));
+                    return;
+                }
+            }
+        }
+        if !pending.is_empty() {
+            sink(StreamEvent::Chunk(String::from_utf8_lossy(&pending).into_owned()));
+        }
+        sink(StreamEvent::Done);
+    });
+    if let Err(e) = spawned {
+        log::error!("assistant: could not start the stream thread: {e}");
+    }
 }
 
 /// The assistant's HTTP POST, on its own thread so a slow provider never blocks a frame. A 4xx

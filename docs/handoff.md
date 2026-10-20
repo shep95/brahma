@@ -48,6 +48,7 @@ so also its default). every push goes there.
 | 25 | top bar: undo / redo / revert, aesthetic advisor and assistant toggles; the advisor reads the open photo itself and lists runnable edits (`brahma_aesthetic::edit_suggestions`, `aesthetic.analyze` › `edits`) | done |
 | 26 | rename a document from its tab (double-click; `document.rename`) | done (`ui-egui/src/tab_rename.rs`) |
 | 27 | (1/15) worker-thread decode on the web | done: `brahma_io::decoded` envelope, `Services::decode_async`, `decode-worker.js` runs a second copy of the wasm; 12 mp jpeg: worst main-thread stall 1.7 s → 0.74 s, open 1.26 s. share card `apps/brahma-web/share.jpg` (og:image) from `packaging/web/share-card.py` |
+| 29 | (3/15) streamed assistant replies + a conversation per document | done: `ai_chat::build_streaming_request` + `StreamParser` (anthropic / openai / gemini sse), `Services::http_stream` (web fetch reader, desktop ureq thread), transcript stashed per document |
 | 23 | every font: the full google fonts catalogue on demand + system fonts | done: 1,929 families from the pinned commit (`crates/text/data/google_fonts.tsv`), fetched on first use on web (service-worker cached) and desktop (disk cache); system fonts were already loaded on the desktop. open: a category filter in the font menu, previews of unfetched families |
 
 ## plans for the open tasks

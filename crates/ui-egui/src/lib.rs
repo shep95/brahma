@@ -388,6 +388,17 @@ pub type EncodePngFn = Box<dyn Fn(u32, u32, &[u8]) -> Result<Vec<u8>, String>>;
 /// frame and calls the reply with the status and body, or a transport error.
 pub type HttpReply = Box<dyn FnOnce(Result<(u16, String), String>) + Send>;
 pub type HttpFn = Box<dyn Fn(brahma_engine::ai_chat::HttpRequest, HttpReply)>;
+/// A streamed HTTP POST (the assistant's server-sent events): the status first, then body
+/// chunks as they arrive, then `Done`, or `Error` for a transport failure.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum StreamEvent {
+    Status(u16),
+    Chunk(String),
+    Done,
+    Error(String),
+}
+pub type StreamSink = Box<dyn FnMut(StreamEvent) + Send>;
+pub type HttpStreamFn = Box<dyn Fn(brahma_engine::ai_chat::HttpRequest, StreamSink)>;
 /// One GET of a font file (`served_fonts`): the URL (relative to the site, or absolute https),
 /// an optional Subresource Integrity value, and the reply with the bytes or why not.
 pub type FetchReply = Box<dyn FnOnce(Result<Vec<u8>, String>) + Send>;
@@ -486,6 +497,8 @@ pub struct Services {
     pub encode_png: Option<EncodePngFn>,
     /// The assistant's HTTP calls to the AI provider the user picked (`None`: no assistant).
     pub http: Option<HttpFn>,
+    /// The same, streamed (`None`: the assistant waits for whole answers).
+    pub http_stream: Option<HttpStreamFn>,
     /// Fetches a served font file on demand (`None`: only the bundled and system fonts).
     pub fetch_url: Option<FetchFn>,
     /// Decodes photo formats off the UI thread (`None`: every open decodes inline).

@@ -283,6 +283,65 @@ async fn fetch_bytes(url: &str, integrity: Option<&str>) -> Result<Vec<u8>, Stri
     Ok(js_sys::Uint8Array::new(&body).to_vec())
 }
 
+/// POST `req` and hand the body to `sink` chunk by chunk as the provider streams it.
+async fn fetch_stream(req: &brahma_engine::ai_chat::HttpRequest, mut sink: brahma_ui_egui::StreamSink) {
+    use brahma_ui_egui::StreamEvent;
+    use wasm_bindgen_futures::JsFuture;
+    let js = |e: wasm_bindgen::JsValue| format!("{e:?}");
+    let run = async {
+        let window = web_sys::window().ok_or("no window")?;
+        let headers = web_sys::Headers::new().map_err(js)?;
+        for (k, v) in &req.headers {
+            headers.set(k, v).map_err(js)?;
+        }
+        let init = web_sys::RequestInit::new();
+        init.set_method("POST");
+        init.set_headers(&headers);
+        init.set_body(&wasm_bindgen::JsValue::from_str(&req.body));
+        let resp: web_sys::Response = JsFuture::from(window.fetch_with_str_and_init(&req.url, &init))
+            .await
+            .map_err(|e| {
+                format!(
+                    "the request could not be sent ({}); the provider may not allow calls from a browser page: a desktop build or a proxy endpoint works",
+                    js(e)
+                )
+            })?
+            .dyn_into()
+            .map_err(|_| "not a Response".to_string())?;
+        sink(StreamEvent::Status(resp.status()));
+        let body = resp.body().ok_or("no body")?;
+        let reader: web_sys::ReadableStreamDefaultReader = body.get_reader().dyn_into().map_err(|_| "no stream reader".to_string())?;
+        let mut pending: Vec<u8> = Vec::new();
+        loop {
+            let chunk = JsFuture::from(reader.read()).await.map_err(js)?;
+            let done = js_sys::Reflect::get(&chunk, &"done".into()).ok().and_then(|v| v.as_bool()).unwrap_or(true);
+            if done {
+                break;
+            }
+            if let Ok(value) = js_sys::Reflect::get(&chunk, &"value".into()) {
+                pending.extend(js_sys::Uint8Array::new(&value).to_vec());
+                let valid = match std::str::from_utf8(&pending) {
+                    Ok(_) => pending.len(),
+                    Err(e) => e.valid_up_to(),
+                };
+                if valid > 0 {
+                    let text = String::from_utf8_lossy(&pending[..valid]).into_owned();
+                    pending.drain(..valid);
+                    sink(StreamEvent::Chunk(text));
+                }
+            }
+        }
+        if !pending.is_empty() {
+            sink(StreamEvent::Chunk(String::from_utf8_lossy(&pending).into_owned()));
+        }
+        Ok::<(), String>(())
+    };
+    match run.await {
+        Ok(()) => sink(StreamEvent::Done),
+        Err(e) => sink(StreamEvent::Error(e)),
+    }
+}
+
 /// POST `req` for the assistant and read the status and body; a provider's error status is an
 /// answer, a network or CORS failure is an error.
 async fn fetch_post(req: &brahma_engine::ai_chat::HttpRequest) -> Result<(u16, String), String> {
@@ -567,6 +626,11 @@ fn services(inbox: Inbox) -> Services {
         fetch_url: Some(Box::new(|url, integrity, reply| {
             wasm_bindgen_futures::spawn_local(async move {
                 reply(fetch_bytes(&url, integrity.as_deref()).await);
+            });
+        })),
+        http_stream: Some(Box::new(|req, sink| {
+            wasm_bindgen_futures::spawn_local(async move {
+                fetch_stream(&req, sink).await;
             });
         })),
         http: Some(Box::new(|req, reply| {

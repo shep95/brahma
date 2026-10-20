@@ -610,3 +610,238 @@ mod tests {
         assert!(long.contains("[cut:"));
     }
 }
+
+/// [`build_request`] asking the provider to stream its answer as server-sent events; feed the
+/// body's chunks to a [`StreamParser`] of the same protocol.
+pub fn build_streaming_request(req: &AiRequest, system: &str, messages: &[Message], max_tokens: u32) -> HttpRequest {
+    let mut r = build_request(req, system, messages, max_tokens);
+    match req.protocol {
+        Protocol::Anthropic | Protocol::OpenAi => {
+            if let Ok(mut v) = serde_json::from_str::<Value>(&r.body) {
+                v["stream"] = json!(true);
+                r.body = v.to_string();
+            }
+        }
+        Protocol::Google => {
+            r.url = r.url.replace(":generateContent", ":streamGenerateContent?alt=sse");
+        }
+    }
+    r.headers.push(("Accept".into(), "text/event-stream".into()));
+    r
+}
+
+/// Reassembles a streamed answer: text as it arrives (for the transcript) and the tool calls
+/// once their arguments are complete. Feed it the raw body chunks; [`StreamParser::finish`]
+/// gives the same [`Reply`] the non-streaming parser would.
+#[derive(Debug, Default)]
+pub struct StreamParser {
+    protocol: Option<Protocol>,
+    buffer: String,
+    pub text: String,
+    /// Tool calls being assembled, in arrival order: (id, name, json so far).
+    calls: Vec<(String, String, String)>,
+    stop: String,
+    error: Option<String>,
+    done: bool,
+}
+
+impl StreamParser {
+    pub fn new(protocol: Protocol) -> Self {
+        Self { protocol: Some(protocol), ..Default::default() }
+    }
+
+    /// The text received so far.
+    pub fn text(&self) -> &str {
+        &self.text
+    }
+
+    /// Feed a chunk of the body. Returns true when new text arrived (the transcript redraws).
+    pub fn feed(&mut self, chunk: &str) -> bool {
+        self.buffer.push_str(chunk);
+        let before = self.text.len();
+        // Events end with a blank line; a partial event stays in the buffer.
+        while let Some(end) = self.buffer.find("\n\n") {
+            let event: String = self.buffer.drain(..end + 2).collect();
+            for line in event.lines() {
+                let Some(data) = line.strip_prefix("data:") else { continue };
+                let data = data.trim();
+                if data.is_empty() || data == "[DONE]" {
+                    if data == "[DONE]" {
+                        self.done = true;
+                    }
+                    continue;
+                }
+                let Ok(v) = serde_json::from_str::<Value>(data) else { continue };
+                self.event(&v);
+            }
+        }
+        self.text.len() != before
+    }
+
+    fn event(&mut self, v: &Value) {
+        if let Some(msg) = provider_error(v) {
+            self.error = Some(msg);
+            return;
+        }
+        match self.protocol {
+            Some(Protocol::Anthropic) => match v["type"].as_str() {
+                Some("content_block_start") if v["content_block"]["type"] == "tool_use" => {
+                    self.calls.push((
+                        v["content_block"]["id"].as_str().unwrap_or("call").to_string(),
+                        v["content_block"]["name"].as_str().unwrap_or_default().to_string(),
+                        String::new(),
+                    ));
+                }
+                Some("content_block_delta") => match v["delta"]["type"].as_str() {
+                    Some("text_delta") => self.text.push_str(v["delta"]["text"].as_str().unwrap_or_default()),
+                    Some("input_json_delta") => {
+                        if let Some(last) = self.calls.last_mut() {
+                            last.2.push_str(v["delta"]["partial_json"].as_str().unwrap_or_default());
+                        }
+                    }
+                    _ => {}
+                },
+                Some("message_delta") => {
+                    if let Some(s) = v["delta"]["stop_reason"].as_str() {
+                        self.stop = s.to_string();
+                    }
+                }
+                Some("message_stop") => self.done = true,
+                _ => {}
+            },
+            Some(Protocol::OpenAi) => {
+                let choice = &v["choices"][0];
+                let delta = &choice["delta"];
+                if let Some(t) = delta["content"].as_str() {
+                    self.text.push_str(t);
+                }
+                for c in delta["tool_calls"].as_array().into_iter().flatten() {
+                    let index = c["index"].as_u64().unwrap_or(self.calls.len() as u64) as usize;
+                    while self.calls.len() <= index {
+                        self.calls.push((format!("call-{}", self.calls.len()), String::new(), String::new()));
+                    }
+                    if let Some(slot) = self.calls.get_mut(index) {
+                        if let Some(id) = c["id"].as_str() {
+                            slot.0 = id.to_string();
+                        }
+                        if let Some(n) = c["function"]["name"].as_str() {
+                            slot.1.push_str(n);
+                        }
+                        if let Some(a) = c["function"]["arguments"].as_str() {
+                            slot.2.push_str(a);
+                        }
+                    }
+                }
+                if let Some(s) = choice["finish_reason"].as_str() {
+                    self.stop = s.to_string();
+                }
+            }
+            Some(Protocol::Google) => {
+                let cand = &v["candidates"][0];
+                for part in cand["content"]["parts"].as_array().into_iter().flatten() {
+                    if let Some(t) = part["text"].as_str() {
+                        self.text.push_str(t);
+                    }
+                    if let Some(fc) = part.get("functionCall") {
+                        let n = self.calls.len();
+                        self.calls.push((format!("call-{n}"), fc["name"].as_str().unwrap_or_default().to_string(), fc["args"].to_string()));
+                    }
+                }
+                if let Some(s) = cand["finishReason"].as_str() {
+                    self.stop = s.to_string();
+                }
+            }
+            None => {}
+        }
+    }
+
+    /// Did the stream say it is over?
+    pub fn is_done(&self) -> bool {
+        self.done
+    }
+
+    /// The assembled reply, or the provider's error. `status` is the HTTP status; a non-JSON
+    /// error body (an HTML gateway page) is reported through it.
+    pub fn finish(self, status: u16) -> std::result::Result<Reply, String> {
+        if let Some(e) = self.error {
+            return Err(if status >= 400 { format!("HTTP {status}: {e}") } else { e });
+        }
+        if status >= 400 {
+            return Err(format!("the provider answered HTTP {status}: {}", snippet(&self.buffer)));
+        }
+        let tool_calls = self
+            .calls
+            .into_iter()
+            .filter(|(_, name, _)| !name.is_empty())
+            .map(|(id, name, raw)| {
+                let args = if raw.trim().is_empty() { json!({}) } else { serde_json::from_str::<Value>(&raw).unwrap_or_else(|_| json!({"_raw": raw})) };
+                ToolCall { id, name, args }
+            })
+            .collect();
+        Ok(Reply { text: self.text, tool_calls, stop: self.stop })
+    }
+}
+
+#[cfg(test)]
+mod stream_tests {
+    use super::*;
+    use crate::prefs::AiProvider;
+
+    fn req(protocol: Protocol) -> AiRequest {
+        AiRequest { provider: AiProvider::Preset, protocol, base_url: "https://x.test/v1".into(), model: "m".into(), headers: vec![] }
+    }
+
+    #[test]
+    fn streaming_requests_ask_for_events_per_protocol() {
+        let a = build_streaming_request(&req(Protocol::Anthropic), "s", &[], 10);
+        assert!(a.body.contains("\"stream\":true") && a.headers.iter().any(|(k, v)| k == "Accept" && v == "text/event-stream"));
+        let o = build_streaming_request(&req(Protocol::OpenAi), "s", &[], 10);
+        assert!(o.body.contains("\"stream\":true"));
+        let g = build_streaming_request(&req(Protocol::Google), "s", &[], 10);
+        assert!(g.url.ends_with("/models/m:streamGenerateContent?alt=sse"), "{}", g.url);
+    }
+
+    #[test]
+    fn anthropic_events_assemble_text_and_a_tool_call_across_chunks() {
+        let mut p = StreamParser::new(Protocol::Anthropic);
+        assert!(p.feed("event: content_block_start\ndata: {\"type\":\"content_block_start\",\"content_block\":{\"type\":\"text\"}}\n\ndata: {\"type\":\"content_block_delta\",\"delta\":{\"type\":\"text_delta\",\"text\":\"hel\"}}\n\n"));
+        assert!(p.feed("data: {\"type\":\"content_block_delta\",\"delta\":{\"type\":\"text_delta\",\"text\":\"lo\"}}\n\ndata: {\"type\":\"content_block_start\",\"content_block\":{\"type\":\"tool_use\",\"id\":\"t1\",\"name\":\"run_command\"}}\n\n"));
+        // A chunk cut in the middle of an event waits for the rest.
+        assert!(!p.feed("data: {\"type\":\"content_block_delta\",\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{\\\"id\\\":\\\"fi"));
+        assert!(
+            !p.feed("le.new\\\"}\"}}\n\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"tool_use\"}}\n\ndata: {\"type\":\"message_stop\"}\n\n")
+        );
+        assert_eq!(p.text(), "hello");
+        assert!(p.is_done());
+        let r = p.finish(200).unwrap();
+        assert_eq!(r.stop, "tool_use");
+        assert_eq!(r.tool_calls, vec![ToolCall { id: "t1".into(), name: "run_command".into(), args: json!({"id": "file.new"}) }]);
+    }
+
+    #[test]
+    fn openai_and_google_deltas_assemble_and_errors_surface() {
+        let mut p = StreamParser::new(Protocol::OpenAi);
+        p.feed("data: {\"choices\":[{\"delta\":{\"content\":\"a\"}}]}\n\ndata: {\"choices\":[{\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"c1\",\"function\":{\"name\":\"inspect_\",\"arguments\":\"{\"}}]}}]}\n\n");
+        p.feed("data: {\"choices\":[{\"delta\":{\"content\":\"b\",\"tool_calls\":[{\"index\":0,\"function\":{\"name\":\"document\",\"arguments\":\"}\"}}]},\"finish_reason\":\"tool_calls\"}]}\n\ndata: [DONE]\n\n");
+        assert!(p.is_done());
+        let r = p.finish(200).unwrap();
+        assert_eq!((r.text.as_str(), r.stop.as_str()), ("ab", "tool_calls"));
+        assert_eq!(r.tool_calls[0].name, "inspect_document");
+        assert_eq!(r.tool_calls[0].args, json!({}));
+        let mut g = StreamParser::new(Protocol::Google);
+        g.feed("data: {\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"hi \"}]}}]}\n\ndata: {\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"there\"},{\"functionCall\":{\"name\":\"search_commands\",\"args\":{\"query\":\"blur\"}}}]},\"finishReason\":\"STOP\"}]}\n\n");
+        let r = g.finish(200).unwrap();
+        assert_eq!(r.text, "hi there");
+        assert_eq!(r.tool_calls[0].args["query"], "blur");
+        let mut e = StreamParser::new(Protocol::Anthropic);
+        e.feed("data: {\"type\":\"error\",\"error\":{\"message\":\"overloaded\"}}\n\n");
+        assert!(e.finish(529).unwrap_err().contains("overloaded"));
+        let mut h = StreamParser::new(Protocol::OpenAi);
+        h.feed("<html>bad gateway</html>");
+        assert!(h.finish(502).unwrap_err().contains("502"));
+        // Garbage never panics.
+        let mut j = StreamParser::new(Protocol::Google);
+        j.feed("data: [1,2\n\ndata: null\n\ndata: {\"candidates\":\"x\"}\n\n");
+        assert!(j.finish(200).is_ok());
+    }
+}
