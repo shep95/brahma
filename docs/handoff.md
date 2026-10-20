@@ -29,7 +29,7 @@ so also its default). every push goes there.
 | 3 | lower-case all user-facing text | done (switch in `i18n::set_lowercase`) |
 | 4 | reword "sin-pattern" phrases | done |
 | 5 | bring-your-own ai api keys (preferences › ai integrations) | done |
-| 7 | app icon from the user's silhouette image | **blocked: the image never arrived as a file.** when it does: `python3 packaging/icon-from-image.py <file>` then commit |
+| 7 | app icon from the user's silhouette image | done as a render: the picture arrived only as an inline preview, so `packaging/icon-field-scene.py` draws the scene (figure in a golden field, pale sky) and `icon-from-image.py` rounds it; every size, the favicon and the pwa icons are committed. if the photo arrives as a file: `python3 packaging/icon-from-image.py <file>` and regenerate `apps/brahma-web/icon-*.png` |
 | 8 | warm near-black theme (#141310, gold accent) as default | done |
 | 9 | remove third-party links | done |
 | 10 | full test suite green | done (one pre-existing failure, `smart_object_curves_preview_keeps_its_size_on_a_reduced_proxy`, also fails upstream) |
@@ -44,6 +44,7 @@ so also its default). every push goes there.
 | 19 | this file | ongoing |
 | 20 | export / download with rounded corners | done: `cornerRadius` (px or "20%") on every flat save command, corner radius slider in export as |
 | 21 | ai assistant sidebar: drives every command, persona from the shepherd file, any provider's keys from any country, sees the canvas | done: window › assistant (sparkles button on the rail). engine `ai_chat.rs` (anthropic / openai-compatible / gemini protocols, tools search_commands, run_command, inspect_document, look_at_canvas), 28 provider presets in `ai.rs` (`ai.providers`), persona `crates/aesthetic/data/persona.md`. open: streaming, a transcript saved per document |
+| 24 | adaptive aesthetics: surfaces take the open image's dominant hue, the accent follows a clear hue, the ui font becomes the register's body face (fetched from the catalogue) | done: `ui-egui/src/adaptive.rs`, preference interface › adaptive aesthetics (on by default). github links removed from help and the welcome screen |
 | 23 | every font: the full google fonts catalogue on demand + system fonts | done: 1,929 families from the pinned commit (`crates/text/data/google_fonts.tsv`), fetched on first use on web (service-worker cached) and desktop (disk cache); system fonts were already loaded on the desktop. open: a category filter in the font menu, previews of unfetched families |
 
 ## plans for the open tasks

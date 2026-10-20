@@ -279,6 +279,10 @@ pub struct Interface {
     /// Menus, popups and collapsing sections fade and slide, and scroll areas glide to a new
     /// position. Off, everything changes at once (a reduced-motion mode; #1218, #3273).
     pub enable_animations: bool,
+    /// Adaptive aesthetics: with a document open, the interface's surfaces take on the image's
+    /// dominant hue and the UI font follows the register the image reads as (`ui-egui`'s
+    /// `adaptive`). Off, the theme stays exactly as chosen.
+    pub adaptive_aesthetics: bool,
     /// Move tool drags show only the layer's outline and an arrow, leaving its pixels in place
     /// until release. Off (the default), the pixels follow the pointer live inside the outline.
     pub show_bounding_box_when_dragging_layer: bool,
@@ -315,6 +319,7 @@ impl Default for Interface {
             clip_thumbnails_to_layer_bounds: false,
             show_tooltips: true,
             enable_animations: true,
+            adaptive_aesthetics: true,
             show_bounding_box_when_dragging_layer: false,
             system_title_bar: false,
             notification_auto_hide: true,

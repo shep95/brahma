@@ -90,6 +90,7 @@ pub fn install(app: &mut BrahmaApp, delivered: Vec<(String, Vec<u8>)>) {
         }
         let mut eng = brahma_text::shared().lock().unwrap_or_else(PoisonError::into_inner);
         for (family, bytes) in delivered {
+            crate::adaptive::font_arrived(&family, &bytes);
             let added = eng.fonts.register_font_data(bytes);
             if !added.contains(&family) {
                 log::warn!("a served font file listed as {family:?} registers {added:?}; the family in fonts/manifest.txt must be the font's own");

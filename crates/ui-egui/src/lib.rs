@@ -15,6 +15,7 @@ macro_rules! tl {
 }
 
 pub mod actions;
+pub mod adaptive;
 pub mod adjust_dialog;
 pub mod adjust_editors;
 pub mod adjust_preview;
@@ -572,6 +573,8 @@ pub struct BrahmaApp {
     /// Display profile readings (#569).
     monitors: monitor_status::State,
     checker: Option<egui::TextureHandle>,
+    /// Adaptive aesthetics: what the surfaces and the UI font currently follow (`adaptive`).
+    pub(crate) adaptive: adaptive::State,
     drag: Option<canvas::Drag>,
     /// A Move-tool press landed on a locked layer: the first pointer move shows Photoshop's
     /// message (`move_lock`), a plain click shows nothing.
@@ -839,6 +842,7 @@ impl BrahmaApp {
             info_samplers: None,
             monitors: Default::default(),
             checker: None,
+            adaptive: Default::default(),
             drag: None,
             move_blocked: false,
             tool_override: None,
@@ -1793,6 +1797,7 @@ impl eframe::App for BrahmaApp {
         } else {
             self.fonts_ready = true;
         }
+        adaptive::sync(self, ctx);
         self.frame += 1;
         let now = ctx.input(|i| i.time);
         let dt = (now - self.last_frame_time) as f32;

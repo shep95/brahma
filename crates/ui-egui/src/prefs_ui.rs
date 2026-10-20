@@ -1053,6 +1053,7 @@ fn humanize(key: &str) -> String {
         "appearanceMode" => return "Appearance Mode".into(),
         "exrAcesCg" => return "Open color-less EXR as ACEScg".into(),
         "darkTheme" => return "Dark Theme".into(),
+        "adaptiveAesthetics" => return "Adaptive Aesthetics (surfaces and UI font follow the open image)".into(),
         "aiProvider" => return "AI provider".into(),
         "aiModel" => return "Model (blank = provider default)".into(),
         "anthropicApiKey" => return "Anthropic API key".into(),
