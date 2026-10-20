@@ -3852,3 +3852,10 @@ navigator	Zoom	Zvětšení
 	Images	Obrázky
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Obrazový model, kterým asistent generuje obrázky (prázdné = obvyklý model poskytovatele).
 	Image model (blank = provider default)	Obrazový model (prázdné = výchozí poskytovatele)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Vypne a zapne look pro porovnání
+	Look removed	Look odstraněn
+	A look is a group of adjustment layers: nothing is baked in.	Look je skupina vrstev úprav: nic není vypáleno do obrazu.
+	Looks	Looky

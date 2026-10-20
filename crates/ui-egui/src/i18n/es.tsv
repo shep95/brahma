@@ -4205,3 +4205,10 @@ navigator	Zoom	Zoom
 	Images	Imágenes
 	The image model the assistant generates pictures with (blank = the provider's usual one).	El modelo de imagen con el que el asistente genera imágenes (vacío = el habitual del proveedor).
 	Image model (blank = provider default)	Modelo de imagen (vacío = predeterminado del proveedor)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Apaga y enciende el look para comparar
+	Look removed	Look eliminado
+	A look is a group of adjustment layers: nothing is baked in.	Un look es un grupo de capas de ajuste: nada queda fijado en la imagen.
+	Looks	Looks

@@ -3841,3 +3841,12 @@ curves	Smooth	Wygładź
 	Images	Obrazy
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Model obrazu, którym asystent generuje obrazy (puste = zwykły model dostawcy).
 	Image model (blank = provider default)	Model obrazu (puste = domyślny dostawcy)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Before	Przed
+	After	Po
+	Switch the look off and on to compare	Wyłącza i włącza look do porównania
+	Look removed	Look usunięty
+	A look is a group of adjustment layers: nothing is baked in.	Look to grupa warstw dopasowania: nic nie jest wypalane w obrazie.
+	Looks	Looki

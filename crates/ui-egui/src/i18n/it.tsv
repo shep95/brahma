@@ -4364,3 +4364,10 @@ shape	Appearance	Aspetto
 	Images	Immagini
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Il modello di immagini con cui l'assistente genera le immagini (vuoto = quello abituale del fornitore).
 	Image model (blank = provider default)	Modello di immagini (vuoto = predefinito del fornitore)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Spegne e accende il look per confrontare
+	Look removed	Look rimosso
+	A look is a group of adjustment layers: nothing is baked in.	Un look è un gruppo di livelli di regolazione: niente viene impresso.
+	Looks	Look

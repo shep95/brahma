@@ -3730,3 +3730,12 @@ curves	Smooth	Làm mượt
 	Images	Hình ảnh
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Mô hình ảnh mà trợ lý dùng để tạo hình (để trống = mô hình thường dùng của nhà cung cấp).
 	Image model (blank = provider default)	Mô hình ảnh (để trống = mặc định của nhà cung cấp)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Before	Trước
+	After	Sau
+	Switch the look off and on to compare	Tắt và bật look để so sánh
+	Look removed	Đã gỡ look
+	A look is a group of adjustment layers: nothing is baked in.	Look là một nhóm lớp điều chỉnh: không có gì bị nướng vào ảnh.
+	Looks	Look

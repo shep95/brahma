@@ -4003,3 +4003,10 @@ curves	Smooth	Vloeiend maken
 	Images	Afbeeldingen
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Het beeldmodel waarmee de assistent afbeeldingen maakt (leeg = het gebruikelijke van de aanbieder).
 	Image model (blank = provider default)	Beeldmodel (leeg = standaard van de aanbieder)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Zet de look uit en aan om te vergelijken
+	Look removed	Look verwijderd
+	A look is a group of adjustment layers: nothing is baked in.	Een look is een groep aanpassingslagen: er wordt niets ingebakken.
+	Looks	Looks

@@ -3973,3 +3973,10 @@ cameraData	Lens	Lens
 	Images	Görseller
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Asistanın görsel oluştururken kullandığı görsel modeli (boş = sağlayıcının olağan modeli).
 	Image model (blank = provider default)	Görsel modeli (boş = sağlayıcı varsayılanı)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Karşılaştırmak için look'u kapatıp açar
+	Look removed	Look kaldırıldı
+	A look is a group of adjustment layers: nothing is baked in.	Look, ayar katmanlarından oluşan bir gruptur: hiçbir şey görüntüye işlenmez.
+	Looks	Look'lar

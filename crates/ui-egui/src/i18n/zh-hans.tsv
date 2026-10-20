@@ -2859,3 +2859,12 @@ curves	Smooth	平滑
 	Images	图片
 	The image model the assistant generates pictures with (blank = the provider's usual one).	助手生成图片所用的图像模型(留空 = 提供商的常用模型)。
 	Image model (blank = provider default)	图像模型(留空 = 提供商默认)
+
+# Aesthetic advisor: one-click looks
+	look:	风格:
+	Before	之前
+	After	之后
+	Switch the look off and on to compare	关闭再开启风格以便比较
+	Look removed	已移除风格
+	A look is a group of adjustment layers: nothing is baked in.	风格是一组调整图层:不会烘焙进图像。
+	Looks	风格

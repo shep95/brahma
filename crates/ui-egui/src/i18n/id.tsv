@@ -3234,3 +3234,12 @@ curves	Smooth	Haluskan
 	Images	Gambar
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Model gambar yang dipakai asisten untuk membuat gambar (kosong = model biasa penyedia).
 	Image model (blank = provider default)	Model gambar (kosong = bawaan penyedia)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Before	Sebelum
+	After	Sesudah
+	Switch the look off and on to compare	Matikan dan nyalakan look untuk membandingkan
+	Look removed	Look dihapus
+	A look is a group of adjustment layers: nothing is baked in.	Look adalah grup layer penyesuaian: tidak ada yang dipermanenkan.
+	Looks	Look

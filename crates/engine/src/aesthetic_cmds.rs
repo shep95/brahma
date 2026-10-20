@@ -108,12 +108,149 @@ fn search(_s: &mut Session, p: &Value) -> Result<Value> {
     Ok(json!({"query": query, "entries": hits}))
 }
 
+/// The name of the layer group a look lives in.
+pub fn look_group_name(id: &str) -> String {
+    format!("look: {id}")
+}
+
+/// Every look group in the document (top level), as `(group id, look id, visible)`.
+pub fn applied_looks(doc: &brahma_doc::Document) -> Vec<(brahma_doc::LayerId, String, bool)> {
+    doc.layers
+        .iter()
+        .filter(|l| l.is_group())
+        .filter_map(|l| l.name.strip_prefix("look: ").map(|id| (l.id, id.to_string(), l.visible)))
+        .collect()
+}
+
+/// `aesthetic.look`: apply a look from the catalogue as one group of adjustment layers at the
+/// top of the stack, one history step. A look already applied is replaced (its group is
+/// rebuilt), so clicking twice does not stack it. Returns the group.
+fn apply_look(s: &mut Session, p: &Value) -> Result<Value> {
+    let id = p.get("look").and_then(Value::as_str).ok_or_else(|| bad("aesthetic.look", "`look` (a look id, see aesthetic.looks) is required"))?;
+    let look = brahma_aesthetic::look(id).ok_or_else(|| {
+        bad("aesthetic.look", format!("unknown look `{id}`: {}", brahma_aesthetic::looks().iter().map(|l| l.id).collect::<Vec<_>>().join(", ")))
+    })?;
+    let mode = s.active().ok_or(EngineError::NoDocument)?.doc.mode;
+    let mut layers = Vec::with_capacity(look.steps.len());
+    for step in &look.steps {
+        let adj = crate::adjust_params::from_params(step.kind, &step.params, None, mode)?;
+        let name = adj.label().to_string();
+        layers.push(brahma_doc::Layer::new(name, brahma_doc::LayerContent::Adjustment(adj)));
+    }
+    let group_name = look_group_name(look.id);
+    let label = format!("Look: {}", look.title);
+    let gid = s.edit(&label, |doc, active| {
+        let old: Vec<brahma_doc::LayerId> = doc.layers.iter().filter(|l| l.is_group() && l.name == group_name).map(|l| l.id).collect();
+        for id in old {
+            doc.remove(id);
+        }
+        let top = doc.layers.last().map(|l| l.id);
+        let gid = doc.insert_above(top, brahma_doc::Layer::group(group_name.clone(), layers));
+        *active = Some(gid);
+        Ok(gid)
+    })?;
+    crate::layer_multi_cmds::reselect(s, vec![gid], Some(gid));
+    Ok(json!({"layer": gid.0, "look": look.id, "title": look.title, "steps": look.steps.len()}))
+}
+
+/// `aesthetic.looks`: the catalogue, each with its fit for the active document (when one is
+/// open), and the looks already applied to it.
+fn list_looks(s: &mut Session, _p: &Value) -> Result<Value> {
+    let catalogue = serde_json::to_value(brahma_aesthetic::looks()).map_err(|e| bad("aesthetic.looks", e.to_string()))?;
+    let (suggested, applied) = match s.active() {
+        Some(d) => {
+            let applied: Vec<Value> = applied_looks(&d.doc).into_iter().map(|(gid, id, visible)| json!({"layer": gid.0, "look": id, "visible": visible})).collect();
+            let suggested = analysis_of_active(s).ok().map(|a| brahma_aesthetic::look_suggestions(&a)).unwrap_or_default();
+            (serde_json::to_value(suggested).unwrap_or(Value::Null), Value::Array(applied))
+        }
+        None => (Value::Null, json!([])),
+    };
+    Ok(json!({"looks": catalogue, "suggested": suggested, "applied": applied}))
+}
+
+/// The group of the look `p["look"]` (or the newest applied look without one).
+fn look_group(s: &Session, p: &Value, cmd: &str) -> Result<brahma_doc::LayerId> {
+    let d = s.active().ok_or(EngineError::NoDocument)?;
+    let applied = applied_looks(&d.doc);
+    match p.get("look").and_then(Value::as_str) {
+        Some(id) => applied.iter().find(|(_, l, _)| l == id.trim()).map(|(g, _, _)| *g).ok_or_else(|| bad(cmd, format!("the look `{id}` is not applied"))),
+        None => applied.last().map(|(g, _, _)| *g).ok_or_else(|| bad(cmd, "no look is applied")),
+    }
+}
+
+/// `aesthetic.toggleLook`: hide or show a look's group (the before/after switch).
+fn toggle_look(s: &mut Session, p: &Value) -> Result<Value> {
+    let gid = look_group(s, p, "aesthetic.toggleLook")?;
+    let want = p.get("visible").and_then(Value::as_bool);
+    let visible = s.edit("Toggle Look", |doc, _| {
+        let l = doc.layer_mut(gid).ok_or(EngineError::NoLayer(gid))?;
+        l.visible = want.unwrap_or(!l.visible);
+        Ok(l.visible)
+    })?;
+    Ok(json!({"layer": gid.0, "visible": visible}))
+}
+
+/// `aesthetic.removeLook`: delete a look's group.
+fn remove_look(s: &mut Session, p: &Value) -> Result<Value> {
+    let gid = look_group(s, p, "aesthetic.removeLook")?;
+    s.edit("Remove Look", |doc, active| {
+        doc.remove(gid).ok_or(EngineError::NoLayer(gid))?;
+        if *active == Some(gid) {
+            *active = doc.layers.last().map(|l| l.id);
+        }
+        Ok(())
+    })?;
+    let active = s.active().and_then(|d| d.doc.layers.last().map(|l| l.id));
+    crate::layer_multi_cmds::reselect(s, active.into_iter().collect(), active);
+    Ok(json!({"layer": gid.0}))
+}
+
 fn has_doc(s: &Session) -> std::result::Result<(), String> {
     s.active().map(|_| ()).ok_or_else(|| "no document open".into())
 }
 
 pub fn specs() -> Vec<CommandSpec> {
     vec![
+        CommandSpec {
+            id: "aesthetic.looks",
+            label: "Looks",
+            menu: &[],
+            shortcut: None,
+            params: r##"{} → {looks:[{id, title, register, why, steps}], suggested:[{id, title, fit, why}] (for the active document), applied:[{layer, look, visible}]}"##,
+            enabled: always,
+            run: list_looks,
+            journal: false,
+        },
+        CommandSpec {
+            id: "aesthetic.look",
+            label: "Apply Look",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"look": id (see aesthetic.looks)} → {layer (the group), look, title, steps}; one group of adjustment layers named "look: <id>" at the top of the stack, replacing the same look if already applied"##,
+            enabled: has_doc,
+            run: apply_look,
+            journal: true,
+        },
+        CommandSpec {
+            id: "aesthetic.toggleLook",
+            label: "Toggle Look (Before/After)",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"look?": id (default: the newest applied look), "visible?": bool (default: flip)} → {layer, visible}"##,
+            enabled: has_doc,
+            run: toggle_look,
+            journal: true,
+        },
+        CommandSpec {
+            id: "aesthetic.removeLook",
+            label: "Remove Look",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"look?": id (default: the newest applied look)} → {layer}"##,
+            enabled: has_doc,
+            run: remove_look,
+            journal: true,
+        },
         CommandSpec {
             id: "aesthetic.recommend",
             label: "Aesthetic Recommendations",
@@ -197,6 +334,56 @@ mod tests {
         s.execute("file.close", json!({"force": true})).unwrap();
         let r = s.execute("aesthetic.recommend", json!({"fromDocument": true})).unwrap();
         assert_eq!(r["request"]["register"], "calm");
+    }
+
+    #[test]
+    fn looks_apply_as_one_group_toggle_and_remove() {
+        let mut s = Session::new();
+        assert!(s.execute("aesthetic.look", json!({"look": "warm"})).is_err(), "no document");
+        let v = s.execute("aesthetic.looks", json!({})).unwrap();
+        assert!(v["looks"].as_array().unwrap().len() >= 6);
+        assert!(v["suggested"].is_null() && v["applied"].as_array().unwrap().is_empty());
+        s.execute("file.new", json!({"width": 32, "height": 32, "background": "#8a6a3a"})).unwrap();
+        assert!(s.execute("aesthetic.look", json!({})).is_err());
+        assert!(s.execute("aesthetic.look", json!({"look": "nope"})).is_err());
+        // Every look applies on an RGB document, as one history step.
+        for l in brahma_aesthetic::looks() {
+            let before = s.active().unwrap().history.past_len();
+            let v = s.execute("aesthetic.look", json!({"look": l.id})).unwrap();
+            assert_eq!(v["steps"].as_u64(), Some(l.steps.len() as u64), "{}", l.id);
+            let after = s.active().unwrap().history.past_len();
+            assert_eq!(after, before + 1, "{}: one history step", l.id);
+            assert_eq!(s.active().unwrap().history.undo_label(), Some(format!("Look: {}", l.title).as_str()));
+        }
+        let v = s.execute("aesthetic.looks", json!({})).unwrap();
+        let applied = v["applied"].as_array().unwrap();
+        assert_eq!(applied.len(), brahma_aesthetic::looks().len(), "{v}");
+        assert!(!v["suggested"].as_array().unwrap().is_empty());
+        // Applying a look again replaces it rather than stacking.
+        let n = s.active().unwrap().doc.layers.len();
+        let g = s.execute("aesthetic.look", json!({"look": "warm"})).unwrap();
+        assert_eq!(s.active().unwrap().doc.layers.len(), n);
+        let group = s.active().unwrap().doc.layer(brahma_doc::LayerId(g["layer"].as_u64().unwrap())).unwrap().clone();
+        assert_eq!(group.name, "look: warm");
+        assert_eq!(group.children().map(<[brahma_doc::Layer]>::len), Some(3));
+        // Before/after: the newest look (warm, just re-applied at the top) hides and shows.
+        let t = s.execute("aesthetic.toggleLook", json!({})).unwrap();
+        assert_eq!((t["layer"].as_u64(), t["visible"].as_bool()), (g["layer"].as_u64(), Some(false)));
+        let t = s.execute("aesthetic.toggleLook", json!({"look": "warm", "visible": true})).unwrap();
+        assert_eq!(t["visible"], true);
+        assert!(s.execute("aesthetic.toggleLook", json!({"look": "nope"})).is_err());
+        // Remove by name, then everything else by default order; a bad id is an error.
+        s.execute("aesthetic.removeLook", json!({"look": "mono"})).unwrap();
+        assert!(s.execute("aesthetic.removeLook", json!({"look": "mono"})).is_err());
+        while !s.execute("aesthetic.looks", json!({})).unwrap()["applied"].as_array().unwrap().is_empty() {
+            s.execute("aesthetic.removeLook", json!({})).unwrap();
+        }
+        assert!(s.execute("aesthetic.removeLook", json!({})).is_err());
+        assert_eq!(s.active().unwrap().doc.layers.len(), 1);
+        // Undo brings a look back whole.
+        s.execute("aesthetic.look", json!({"look": "calm"})).unwrap();
+        s.execute("edit.undo", json!({})).unwrap();
+        assert_eq!(s.active().unwrap().doc.layers.len(), 1);
     }
 
     #[test]

@@ -3919,3 +3919,12 @@ curves	Smooth	スムーズ
 	Images	画像
 	The image model the assistant generates pictures with (blank = the provider's usual one).	アシスタントが画像生成に使う画像モデル(空欄 = プロバイダーの標準)。
 	Image model (blank = provider default)	画像モデル(空欄 = プロバイダーの既定)
+
+# Aesthetic advisor: one-click looks
+	look:	ルック:
+	Before	適用前
+	After	適用後
+	Switch the look off and on to compare	ルックのオン/オフを切り替えて比較
+	Look removed	ルックを削除しました
+	A look is a group of adjustment layers: nothing is baked in.	ルックは調整レイヤーのグループです。画像には焼き込まれません。
+	Looks	ルック

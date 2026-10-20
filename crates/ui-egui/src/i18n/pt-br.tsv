@@ -4033,3 +4033,10 @@ layerLabel	No Color	Sem cor
 	Images	Imagens
 	The image model the assistant generates pictures with (blank = the provider's usual one).	O modelo de imagem com que o assistente gera imagens (vazio = o habitual do provedor).
 	Image model (blank = provider default)	Modelo de imagem (vazio = padrão do provedor)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Desliga e liga o look para comparar
+	Look removed	Look removido
+	A look is a group of adjustment layers: nothing is baked in.	Um look é um grupo de camadas de ajuste: nada fica gravado na imagem.
+	Looks	Looks

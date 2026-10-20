@@ -3246,3 +3246,12 @@ curves	Smooth	Glätten
 	Images	Bilder
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Das Bildmodell, mit dem der Assistent Bilder erzeugt (leer = das übliche des Anbieters).
 	Image model (blank = provider default)	Bildmodell (leer = Standard des Anbieters)
+
+# Aesthetic advisor: one-click looks
+	look:	Look:
+	Before	Vorher
+	After	Nachher
+	Switch the look off and on to compare	Schaltet den Look zum Vergleich aus und ein
+	Look removed	Look entfernt
+	A look is a group of adjustment layers: nothing is baked in.	Ein Look ist eine Gruppe aus Einstellungsebenen: nichts wird eingebrannt.
+	Looks	Looks

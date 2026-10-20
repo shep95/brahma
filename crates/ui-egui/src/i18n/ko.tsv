@@ -3422,3 +3422,12 @@ curves	Smooth	매끄럽게
 	Images	이미지
 	The image model the assistant generates pictures with (blank = the provider's usual one).	어시스턴트가 이미지를 생성할 때 쓰는 이미지 모델 (비워 두면 제공자의 기본 모델).
 	Image model (blank = provider default)	이미지 모델 (비워 두면 제공자 기본값)
+
+# Aesthetic advisor: one-click looks
+	look:	룩:
+	Before	이전
+	After	이후
+	Switch the look off and on to compare	룩을 껐다 켜서 비교
+	Look removed	룩을 제거했습니다
+	A look is a group of adjustment layers: nothing is baked in.	룩은 조정 레이어 그룹입니다. 이미지에 굽혀지지 않습니다.
+	Looks	룩

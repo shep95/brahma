@@ -4162,3 +4162,10 @@ cameraRaw	Yellow	Sárga
 	Images	Képek
 	The image model the assistant generates pictures with (blank = the provider's usual one).	A képmodell, amellyel az asszisztens képeket készít (üres = a szolgáltató szokásos modellje).
 	Image model (blank = provider default)	Képmodell (üres = a szolgáltató alapértelmezése)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Ki- és bekapcsolja a lookot az összehasonlításhoz
+	Look removed	Look eltávolítva
+	A look is a group of adjustment layers: nothing is baked in.	A look korrekciós rétegek csoportja: semmi sem ég bele a képbe.
+	Looks	Lookok

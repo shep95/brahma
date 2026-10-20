@@ -3212,3 +3212,12 @@ curves	Smooth	Сгладить
 	Images	Изображения
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Модель изображений, которой ассистент создаёт картинки (пусто = обычная у провайдера).
 	Image model (blank = provider default)	Модель изображений (пусто = по умолчанию у провайдера)
+
+# Aesthetic advisor: one-click looks
+	look:	лук:
+	Before	До
+	After	После
+	Switch the look off and on to compare	Выключает и включает лук для сравнения
+	Look removed	Лук удалён
+	A look is a group of adjustment layers: nothing is baked in.	Лук — это группа корректирующих слоёв: ничего не впекается в изображение.
+	Looks	Луки

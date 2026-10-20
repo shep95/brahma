@@ -3943,3 +3943,10 @@ curves	Smooth	Εξομάλυνση
 	Images	Εικόνες
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Το μοντέλο εικόνας με το οποίο ο βοηθός δημιουργεί εικόνες (κενό = το συνηθισμένο του παρόχου).
 	Image model (blank = provider default)	Μοντέλο εικόνας (κενό = προεπιλογή παρόχου)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Απενεργοποιεί και ενεργοποιεί το look για σύγκριση
+	Look removed	Το look αφαιρέθηκε
+	A look is a group of adjustment layers: nothing is baked in.	Ένα look είναι μια ομάδα επιπέδων ρύθμισης: τίποτα δεν ενσωματώνεται μόνιμα.
+	Looks	Looks

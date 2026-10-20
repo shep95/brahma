@@ -4316,3 +4316,10 @@ shape	Appearance	Izgled
 	Images	Slike
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Model slika kojim asistent generiše slike (prazno = uobičajeni model provajdera).
 	Image model (blank = provider default)	Model slika (prazno = podrazumevano provajdera)
+
+# Aesthetic advisor: one-click looks
+	look:	look:
+	Switch the look off and on to compare	Isključuje i uključuje look radi poređenja
+	Look removed	Look uklonjen
+	A look is a group of adjustment layers: nothing is baked in.	Look je grupa slojeva za podešavanje: ništa se ne upisuje trajno.
+	Looks	Lookovi

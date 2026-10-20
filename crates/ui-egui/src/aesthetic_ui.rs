@@ -29,6 +29,10 @@ pub struct AestheticUi {
     pub result: Option<Value>,
     #[serde(skip)]
     pub analysis: Option<Value>,
+    /// The `aesthetic.looks` result for the open picture: the catalogue ranked by fit and the
+    /// looks already applied (read with the analysis).
+    #[serde(skip)]
+    pub looks: Option<Value>,
     #[serde(skip)]
     pub error: Option<String>,
     /// The document and revision the analysis was read from: the window re-reads the picture
@@ -48,6 +52,7 @@ impl Default for AestheticUi {
             from_foreground: true,
             result: None,
             analysis: None,
+            looks: None,
             error: None,
             read_key: None,
         }
@@ -84,6 +89,7 @@ fn run(app: &mut BrahmaApp, from_document: bool) {
                 return;
             }
         }
+        app.ui.aesthetic.looks = app.run("aesthetic.looks", json!({})).ok();
     }
     let p = request(app, from_document);
     match app.run("aesthetic.recommend", p) {
@@ -112,6 +118,8 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
     let mut close = false;
     let mut action: Option<&'static str> = None;
     let mut apply: Option<usize> = None;
+    // A look command to run: (command id, params).
+    let mut look_cmd: Option<(&'static str, Value)> = None;
     let mut pick: Option<[f32; 3]> = None;
     let mut state = app.ui.aesthetic.clone();
     let width = 360.0;
@@ -172,6 +180,41 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
                 });
                 ui.label(RichText::new(e["why"].as_str().unwrap_or("")).color(t.text_dim).size(11.0));
                 ui.add_space(2.0);
+            }
+            // One-click looks: a group of adjustment layers each, ranked by how well they fit
+            // the picture; the applied ones can be switched off for a before/after or removed.
+            if let Some(l) = &state.looks {
+                widgets::hairline(ui);
+                widgets::section_label(ui, "Looks");
+                let applied: Vec<&Value> = l["applied"].as_array().into_iter().flatten().collect();
+                for a in &applied {
+                    let id = a["look"].as_str().unwrap_or("");
+                    let visible = a["visible"].as_bool().unwrap_or(true);
+                    ui.horizontal(|ui| {
+                        ui.label(RichText::new(format!("{} {id}", tl!("look:"))).color(t.text).font(crate::theme::medium(12.0)));
+                        let label = if visible { tl!("Before") } else { tl!("After") };
+                        if widgets::secondary_button(ui, label, 0.0).on_hover_text(tl!("Switch the look off and on to compare")).clicked() {
+                            look_cmd = Some(("aesthetic.toggleLook", json!({"look": id})));
+                        }
+                        if widgets::secondary_button(ui, tl!("Remove"), 0.0).clicked() {
+                            look_cmd = Some(("aesthetic.removeLook", json!({"look": id})));
+                        }
+                    });
+                }
+                ui.horizontal_wrapped(|ui| {
+                    for look in l["suggested"].as_array().into_iter().flatten() {
+                        let id = look["id"].as_str().unwrap_or("");
+                        if applied.iter().any(|a| a["look"] == id) {
+                            continue;
+                        }
+                        let fit = look["fit"].as_f64().unwrap_or(0.0);
+                        let title = look["title"].as_str().unwrap_or(id);
+                        if widgets::secondary_button(ui, title, 0.0).on_hover_text(format!("{} · fit {:.0} %", look["why"].as_str().unwrap_or(""), fit * 100.0)).clicked() {
+                            look_cmd = Some(("aesthetic.look", json!({"look": id})));
+                        }
+                    }
+                });
+                ui.label(RichText::new(tl!("A look is a group of adjustment layers: nothing is baked in.")).color(t.text_faint).size(10.5));
             }
         }
         let Some(r) = &state.result else { return };
@@ -298,6 +341,27 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
             app.ui.aesthetic.read_key = None;
         }
     }
+    if let Some((id, params)) = look_cmd {
+        match app.run(id, params.clone()) {
+            Ok(_) => {
+                app.ui.status = match id {
+                    "aesthetic.look" => format!("{}: {}", tl!("Applied"), params["look"].as_str().unwrap_or("")),
+                    "aesthetic.removeLook" => tl!("Look removed").to_string(),
+                    _ => String::new(),
+                };
+                app.ui.status_error = false;
+            }
+            Err(err) => {
+                app.ui.status = err;
+                app.ui.status_error = true;
+            }
+        }
+        // Re-read the looks' state (applied, visible) without re-analysing the picture.
+        app.ui.aesthetic.looks = app.run("aesthetic.looks", json!({})).ok();
+        if let Some(d) = app.session.active() {
+            app.ui.aesthetic.read_key = Some((d.doc.id, d.revision));
+        }
+    }
     if let Some(rgb) = pick
         && let Err(e) = app.run("tools.setColors", json!({"foreground": [rgb[0], rgb[1], rgb[2], 1.0]}))
     {
@@ -369,6 +433,41 @@ mod tests {
         assert_eq!(h.state().session.active().unwrap().doc.layers.len(), layers_before + 1, "an adjustment layer was added");
         assert!(h.state().ui.status.starts_with("Applied"), "{}", h.state().ui.status);
         assert!(h.state().ui.aesthetic.read_key.is_some(), "read again after the edit");
+    }
+
+    /// The looks row: one click applies a look as a group, Before hides it, After shows it,
+    /// Remove deletes it, and the row reflects each step.
+    #[test]
+    fn looks_apply_with_one_click_and_compare_before_and_after() {
+        let mut h = harness();
+        h.state_mut().run("file.new", json!({"width": 48, "height": 48, "background": "#8a6a3a"})).unwrap();
+        h.state_mut().ui.aesthetic.open = true;
+        h.run_steps(3);
+        let looks = h.state().ui.aesthetic.looks.clone().expect("looks read with the analysis");
+        assert!(looks["applied"].as_array().unwrap().is_empty());
+        let first = looks["suggested"][0]["title"].as_str().unwrap().to_string();
+        assert!(h.query_by_label("Looks").is_some());
+        h.get_by_label(&first).click();
+        h.run_steps(3);
+        {
+            let app = h.state();
+            let doc = &app.session.active().unwrap().doc;
+            assert_eq!(doc.layers.len(), 2, "a group of adjustment layers on top");
+            assert!(doc.layers.last().unwrap().name.starts_with("look: "), "{}", doc.layers.last().unwrap().name);
+            assert!(app.ui.status.starts_with("Applied"), "{}", app.ui.status);
+            assert_eq!(app.ui.aesthetic.looks.as_ref().unwrap()["applied"].as_array().map(Vec::len), Some(1));
+        }
+        h.get_by_label("Before").click();
+        h.run_steps(3);
+        assert!(!h.state().session.active().unwrap().doc.layers.last().unwrap().visible, "hidden for the before view");
+        h.get_by_label("After").click();
+        h.run_steps(3);
+        assert!(h.state().session.active().unwrap().doc.layers.last().unwrap().visible);
+        h.get_by_label("Remove").click();
+        h.run_steps(3);
+        assert_eq!(h.state().session.active().unwrap().doc.layers.len(), 1);
+        assert_eq!(h.state().ui.status, "Look removed");
+        assert!(h.query_by_label("Before").is_none());
     }
 
     #[test]

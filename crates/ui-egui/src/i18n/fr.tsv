@@ -3247,3 +3247,12 @@ curves	Smooth	Lisser
 	Images	Images
 	The image model the assistant generates pictures with (blank = the provider's usual one).	Le modèle d'image avec lequel l'assistant génère des images (vide = celui habituel du fournisseur).
 	Image model (blank = provider default)	Modèle d'image (vide = valeur par défaut du fournisseur)
+
+# Aesthetic advisor: one-click looks
+	look:	look :
+	Before	Avant
+	After	Après
+	Switch the look off and on to compare	Désactive et réactive le look pour comparer
+	Look removed	Look supprimé
+	A look is a group of adjustment layers: nothing is baked in.	Un look est un groupe de calques de réglage : rien n'est figé.
+	Looks	Looks
