@@ -1204,3 +1204,39 @@ fn a_short_column_scrolls_instead_of_squeezing_groups_under_their_headers() {
     let layers = rect_of(&h, Group::Layers);
     assert!(layers.bottom() > 300.0, "the column overflows and scrolls: {layers:?}");
 }
+
+/// A rail click slides a group between its open height and its tab strip over the entrance
+/// time (the motion grammar), while a collapse from code (a workspace load, a command) lands
+/// at once; either way the column keeps adding up.
+#[test]
+fn a_rail_click_slides_a_group_shut_and_a_programmatic_collapse_snaps() {
+    let app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+    let mut h = harness(app, vec2(1200.0, 900.0), ThemeKind::Pro);
+    // The harness draws the dock alone (no preferences sync), so turn the animations on as
+    // the app does.
+    h.ctx.all_styles_mut(|s| s.animation_time = egui::Style::default().animation_time);
+    h.run_steps(3);
+    let open = rect_of(&h, Group::Color).height();
+    rail_click(h.state_mut(), Group::Color, true);
+    h.run_steps(2);
+    let mid = rect_of(&h, Group::Color).height();
+    assert!(mid < open && mid > 28.0, "sliding shut: {mid} between {open} and 28");
+    let layers_mid = rect_of(&h, Group::Layers);
+    h.run_steps(40);
+    assert!((rect_of(&h, Group::Color).height() - 28.0).abs() < 0.5, "settled on the strip");
+    assert!(rect_of(&h, Group::Layers).top() < layers_mid.top(), "the filler takes the room as it slides");
+    // From code: no slide.
+    h.state_mut().ui.dock.set_collapsed(Group::Color, false);
+    h.run_steps(2);
+    assert!((rect_of(&h, Group::Color).height() - open).abs() < 0.5, "snapped open: {}", rect_of(&h, Group::Color).height());
+    // A click again slides it open.
+    rail_click(h.state_mut(), Group::Color, true);
+    h.run_steps(40);
+    h.state_mut().ui.dock.set_collapsed(Group::Color, false);
+    rail_click(h.state_mut(), Group::Color, true);
+    h.run_steps(40);
+    rail_click(h.state_mut(), Group::Color, true);
+    h.run_steps(2);
+    let mid = rect_of(&h, Group::Color).height();
+    assert!(mid > 28.0 && mid < open, "sliding open: {mid}");
+}

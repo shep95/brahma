@@ -38,7 +38,7 @@ so also its default). every push goes there.
 | 13 | vercel layout: one static site, no services, no bindings | done, confirmed by the user |
 | 14 | web ui bugs: sidebar clicks, panel scrolling, slow open, responsiveness | in progress (see below) |
 | 15 | aesthetic recommender trained on the research file | done: crate `brahma-aesthetic` (l2), commands `aesthetic.recommend/analyze/search`, window › aesthetic advisor |
-| 16 | motion system (springs) matching the aesthetic | module `ui-egui/src/motion.rs` done, used by the compact drawer; apply to panel collapse, dialogs, hover |
+| 16 | motion system (springs) matching the aesthetic | done: `ui-egui/src/motion.rs` drives the compact drawer, dock groups sliding shut/open on rail or header clicks (programmatic changes snap), dialogs fading in, button hover easing. open: list staggers, hover on icon buttons |
 | 17 | quality and speed: startup, file open, frame pacing | measured (startup 1.2 s, 12 mp jpeg 1.7 s on the ui thread); worker decode still open |
 | 18 | installable + offline web app (manifest, service worker, document.title) | done (precache on install; offline reload verified) |
 | 19 | this file | ongoing |

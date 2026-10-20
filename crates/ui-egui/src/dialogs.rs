@@ -117,6 +117,8 @@ fn show_modal<T>(
     contents: impl FnOnce(&mut egui::Ui) -> T,
 ) -> egui::ModalResponse<T> {
     modal.show(ctx, |ui| {
+        // A dialog fades in over the entrance time (the motion grammar's "arrive, don't pop").
+        ui.set_opacity(crate::motion::enter_progress(ctx, id.with("enter")));
         // Disable the entire older modal, including its resize grip, not just its body.
         if !interactive {
             ui.disable();

@@ -57,6 +57,24 @@ pub fn open_progress(ctx: &egui::Context, id: egui::Id, open: bool) -> f32 {
     ctx.animate_bool_with_time_and_easing(id, open, time(ctx, secs), easing)
 }
 
+/// A one-way entrance for `id` (a dialog appearing): 0 on the first frame it is drawn, easing
+/// out to 1 over [`ENTER`]. Use it as an opacity. 1 at once with animations off.
+pub fn enter_progress(ctx: &egui::Context, id: egui::Id) -> f32 {
+    ctx.animate_bool_with_time_and_easing(id, true, time(ctx, ENTER), ease_out)
+}
+
+/// A hover or other small state as a smooth 0..1 for `id` (over [`QUICK`]), to lerp a fill or
+/// a stroke colour instead of flipping it.
+pub fn state(ctx: &egui::Context, id: egui::Id, on: bool) -> f32 {
+    ctx.animate_bool_with_time_and_easing(id, on, time(ctx, QUICK), ease_out)
+}
+
+/// A size moving to `target` (a dock group collapsing or expanding): follows over [`ENTER`]
+/// with the spring's deceleration. `target` at once with animations off.
+pub fn size(ctx: &egui::Context, id: egui::Id, target: f32) -> f32 {
+    ctx.animate_value_with_time(id, target, time(ctx, ENTER))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -72,6 +90,20 @@ mod tests {
         assert!((spring(0.999) - 1.0).abs() < 0.002, "settled by the end: {}", spring(0.999));
         // Fast out of the gate: past the half-way point in the first fifth of the time.
         assert!(spring(0.2) > 0.5, "{}", spring(0.2));
+    }
+
+    #[test]
+    fn with_animations_off_every_helper_snaps_to_its_target() {
+        let ctx = egui::Context::default();
+        ctx.all_styles_mut(|s| s.animation_time = 0.0);
+        let mut out = ctx.run_ui(Default::default(), |ui| {
+            let ctx = ui.ctx();
+            assert_eq!(enter_progress(ctx, egui::Id::new("e")), 1.0);
+            assert_eq!(state(ctx, egui::Id::new("s"), true), 1.0);
+            assert_eq!(state(ctx, egui::Id::new("s2"), false), 0.0);
+            assert_eq!(size(ctx, egui::Id::new("z"), 120.0), 120.0);
+        });
+        out.textures_delta.clear();
     }
 
     #[test]

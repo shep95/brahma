@@ -187,6 +187,11 @@ pub struct DockLayout {
     /// follow it in their default order. Anything unreadable falls back to the defaults.
     #[serde(rename = "tabOrder", alias = "tab_order", deserialize_with = "lenient_tab_order")]
     pub tab_order: BTreeMap<Group, Vec<String>>,
+    /// Groups whose next collapse or expansion was a gesture (a rail or header click), so the
+    /// dock slides it; a change from anywhere else (a workspace load, a command, a test) lands
+    /// at once. View state only: never saved.
+    #[serde(skip)]
+    pub animate: Vec<Group>,
 }
 
 /// Read `tabOrder` keeping what makes sense: unknown groups, non-list values and non-string names
@@ -297,6 +302,15 @@ impl DockLayout {
 
     pub fn is_collapsed(&self, g: Group) -> bool {
         self.collapsed.contains(&g)
+    }
+
+    /// [`Self::set_collapsed`] for a gesture: the group slides between its strip and its open
+    /// height (see `animated_heights`).
+    pub fn set_collapsed_animated(&mut self, g: Group, on: bool) {
+        if self.is_collapsed(g) != on && !self.animate.contains(&g) {
+            self.animate.push(g);
+        }
+        self.set_collapsed(g, on);
     }
 
     pub fn set_collapsed(&mut self, g: Group, on: bool) {
@@ -421,7 +435,7 @@ pub fn rail_click(app: &mut BrahmaApp, g: Group, docked: bool) {
         *g.shown_mut(&mut app.ui.panels) = false;
     } else {
         let collapse = !app.ui.dock.is_collapsed(g);
-        app.ui.dock.set_collapsed(g, collapse);
+        app.ui.dock.set_collapsed_animated(g, collapse);
     }
 }
 
@@ -517,6 +531,65 @@ pub fn show(app: &mut BrahmaApp, ui: &mut egui::Ui, shown: &[Group], body: impl 
     }
 }
 
+/// The layout's heights, with a group that a gesture just collapsed or expanded sliding
+/// between its tab strip and its open height instead of snapping (the motion grammar's "show
+/// the state change"); the last group (the filler) absorbs the difference so the column still
+/// adds up to `avail`. Nothing else animates: a resize, a first layout, a workspace load or a
+/// programmatic change lands at once, and so does everything with animations off.
+fn animated_heights(ctx: &egui::Context, dock: &mut DockLayout, target: Vec<(Group, f32)>, avail: f32, strip: f32) -> Vec<(Group, f32)> {
+    let n = target.len();
+    if n < 2 {
+        return target;
+    }
+    let gaps = GAP * n.saturating_sub(1) as f32;
+    let mut out: Vec<(Group, f32)> = Vec::with_capacity(n);
+    let mut used = 0.0;
+    for (i, (g, h)) in target.iter().copied().enumerate() {
+        if i + 1 == n {
+            out.push((g, (avail - used - gaps).max(h.min(avail))));
+            continue;
+        }
+        let collapsed = dock.is_collapsed(g);
+        let open_id = egui::Id::new(("dock-open", g.key()));
+        let height_id = egui::Id::new(("dock-open-height", g.key()));
+        let prev_id = egui::Id::new(("dock-prev-collapsed", g.key()));
+        let slide_id = egui::Id::new(("dock-slide", g.key()));
+        // A change of state since last frame: slide only when a gesture asked for it.
+        let prev: Option<bool> = ctx.data(|d| d.get_temp(prev_id));
+        if prev != Some(collapsed) {
+            let slide = dock.animate.contains(&g);
+            dock.animate.retain(|x| *x != g);
+            ctx.data_mut(|d| {
+                d.insert_temp(prev_id, collapsed);
+                d.insert_temp(slide_id, slide);
+            });
+        }
+        let slide: bool = ctx.data(|d| d.get_temp(slide_id)).unwrap_or(false);
+        // The open height is remembered while the group is open, so a collapse knows where it
+        // starts from.
+        let open_h = if collapsed { ctx.data(|d| d.get_temp::<f32>(height_id)).unwrap_or(h) } else { h };
+        if !collapsed {
+            ctx.data_mut(|d| d.insert_temp(height_id, h));
+        }
+        let p = crate::motion::open_progress(ctx, open_id, !collapsed);
+        // Exactly the layout's height when settled; between the strip and the open height
+        // while sliding (collapsing: p runs 1 → 0; expanding: 0 → 1).
+        let h = if !slide {
+            h
+        } else if collapsed && p > 0.0 {
+            h + (open_h - h).max(0.0) * p
+        } else if !collapsed && p < 1.0 {
+            let from = strip.min(h);
+            from + (h - from) * p.max(0.0)
+        } else {
+            h
+        };
+        used += h;
+        out.push((g, h));
+    }
+    out
+}
+
 fn show_in(app: &mut BrahmaApp, ui: &mut egui::Ui, order: &[Group], area: Rect, strip: f32, mut body: impl FnMut(&mut BrahmaApp, &mut egui::Ui, Group, usize)) {
     let t = Tokens::get(ui.ctx());
     let auto_collapse = app.session.prefs().workspace.auto_collapse_icon_panels;
@@ -528,7 +601,8 @@ fn show_in(app: &mut BrahmaApp, ui: &mut egui::Ui, order: &[Group], area: Rect, 
         });
     }
     let order: Vec<Group> = order.to_vec();
-    let heights = app.ui.dock.heights_for(&order, area.height(), strip);
+    let target = app.ui.dock.heights_for(&order, area.height(), strip);
+    let heights = animated_heights(ui.ctx(), &mut app.ui.dock, target, area.height(), strip);
     let locked = app.session.prefs().workspace_locked;
     let rects = rects_after_layout(&heights, area);
     let mut actions: Vec<Action> = Vec::new();
@@ -725,7 +799,7 @@ fn show_in(app: &mut BrahmaApp, ui: &mut egui::Ui, order: &[Group], area: Rect, 
         match a {
             Action::ToggleCollapse(g) => {
                 let on = !app.ui.dock.is_collapsed(g);
-                app.ui.dock.set_collapsed(g, on);
+                app.ui.dock.set_collapsed_animated(g, on);
             }
             Action::Close(g) => *g.shown_mut(&mut app.ui.panels) = false,
             Action::CloseTab(g, tab) => {
