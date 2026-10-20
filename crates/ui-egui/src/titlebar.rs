@@ -709,7 +709,7 @@ mod tests {
     fn empty_bar_space_drags_and_double_click_maximizes() {
         let mut w = Win::new(1440.0);
         w.frame(vec![]);
-        let empty = pos2(980.0, 16.0);
+        let empty = pos2(800.0, 16.0);
         assert!(w.bar_widgets().iter().all(|r| !r.contains(empty)), "the probe point must be empty bar space");
         let cmds = w.gesture(&[empty, empty + vec2(12.0, 4.0), empty + vec2(30.0, 8.0)]);
         assert_eq!(cmds.iter().filter(|c| matches!(c, ViewportCommand::StartDrag)).count(), 1, "{cmds:?}");
@@ -733,7 +733,7 @@ mod tests {
         let mut w = Win::new(1440.0);
         w.frame(vec![]);
         w.frame_with_modal(vec![], true);
-        let empty = pos2(980.0, 16.0);
+        let empty = pos2(800.0, 16.0);
         let drag_area = w.ctx.data(|d| d.get_temp::<Rect>(modal_drag_area_id()));
         assert!(drag_area.is_some_and(|r| r.contains(empty)), "the test point must be in the current title-bar gap: {drag_area:?}");
         assert!(w.bar_widgets().iter().all(|r| !r.contains(empty)), "the probe point must be empty bar space");
@@ -747,7 +747,7 @@ mod tests {
         w.frame(vec![]);
         w.frame_with_modal(vec![], true);
         let area = w.ctx.data(|d| d.get_temp::<Rect>(modal_drag_area_id())).unwrap_or(Rect::NOTHING);
-        assert!(area.contains(pos2(980.0, 16.0)), "the probe point must be in the gap: {area:?}");
+        assert!(area.contains(pos2(800.0, 16.0)), "the probe point must be in the gap: {area:?}");
         w.ctx.data_mut(|d| d.insert_temp(Id::new("pc-dialog-rects"), vec![area]));
         let cmds = w.gesture_with_modal(&[area.center(), area.center() + vec2(12.0, 4.0)], true);
         assert!(!cmds.iter().any(|c| matches!(c, ViewportCommand::StartDrag)), "{cmds:?}");

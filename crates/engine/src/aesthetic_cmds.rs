@@ -92,6 +92,8 @@ fn analyze(s: &mut Session, _p: &Value) -> Result<Value> {
     if let Some(o) = v.as_object_mut() {
         o.insert("dominantHex".into(), json!(a.dominant.hex()));
         o.insert("register".into(), json!(a.register.name()));
+        // Edits the picture itself would benefit from, each a runnable command.
+        o.insert("edits".into(), serde_json::to_value(brahma_aesthetic::edit_suggestions(&a)).unwrap_or(Value::Null));
     }
     Ok(v)
 }
@@ -182,6 +184,17 @@ mod tests {
         assert!(v["meanLightness"].as_f64().unwrap() > 0.95, "{v}");
         assert_eq!(v["register"], "calm");
         assert!(v["dominantHex"].as_str().unwrap().starts_with('#'));
+        // Every suggested edit is a real command that runs on the document.
+        s.execute("file.new", json!({"width": 48, "height": 48, "background": "#262628"})).unwrap();
+        let v = s.execute("aesthetic.analyze", json!({})).unwrap();
+        let edits = v["edits"].as_array().unwrap();
+        assert!(!edits.is_empty(), "{v}");
+        for e in edits {
+            let id = e["command"].as_str().unwrap();
+            assert!(crate::commands::find(id).is_some(), "{id}");
+            s.execute(id, e["params"].clone()).unwrap_or_else(|err| panic!("{id} {}: {err}", e["params"]));
+        }
+        s.execute("file.close", json!({"force": true})).unwrap();
         let r = s.execute("aesthetic.recommend", json!({"fromDocument": true})).unwrap();
         assert_eq!(r["request"]["register"], "calm");
     }

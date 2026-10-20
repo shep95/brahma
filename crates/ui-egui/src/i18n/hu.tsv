@@ -4150,3 +4150,6 @@ cameraRaw	Yellow	Sárga
 	Preset provider id (see the assistant's provider list)	Előre beállított szolgáltató azonosítója (lásd az asszisztens szolgáltatólistáját)
 	Preset provider API key	Előre beállított szolgáltató API-kulcsa
 	Adaptive Aesthetics (surfaces and UI font follow the open image)	Alkalmazkodó esztétika (felületek és felületi betűtípus a megnyitott képet követik)
+	Edits for this photo	Szerkesztések ehhez a fotóhoz
+	Applied	Alkalmazva
+	Balanced as it is: nothing the measurements would change.	Így kiegyensúlyozott: a mérések semmin nem változtatnának.

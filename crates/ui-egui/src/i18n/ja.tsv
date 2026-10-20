@@ -3907,3 +3907,6 @@ curves	Smooth	スムーズ
 	Preset provider id (see the assistant's provider list)	プリセットプロバイダーのID（アシスタントのプロバイダー一覧を参照）
 	Preset provider API key	プリセットプロバイダーのAPIキー
 	Adaptive Aesthetics (surfaces and UI font follow the open image)	適応するデザイン（画面の面とUIフォントが開いている画像に合わせて変わる）
+	Edits for this photo	この写真への編集
+	Applied	適用しました
+	Balanced as it is: nothing the measurements would change.	このままでバランスが取れています。測定値が変えるものはありません。

@@ -2094,6 +2094,7 @@ fn tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
     let mut tab_action = None;
     let mut tab_move = None;
     let mut tear_off = None;
+    let mut rename_cmd: Option<(&'static str, serde_json::Value)> = None;
     let (mut focus_open, mut cancel_open) = (None, None);
     let focused_open = app.jobs.focus.is_some();
     // Layers dragged over a tab show its document (`layer_transfer`).
@@ -2178,9 +2179,19 @@ fn tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
             }
             crate::icons::paint(ui, xr, "x", 11.0, if xresp.hovered() { t.text } else { t.text_faint });
             let resp = if cut { resp.on_hover_text(name) } else { resp };
+            let doc_id = st.doc.id;
+            if resp.double_clicked() && !xresp.hovered() {
+                let plain = st.doc.name.clone();
+                crate::tab_rename::start(ui.ctx(), doc_id, &plain);
+                activate = Some(i);
+            }
+            let name_rect = Rect::from_min_max(egui::pos2(r.left() + 6.0, r.top() + 2.0), egui::pos2(xr.left() - 4.0, r.bottom() - 2.0));
+            if let Some((cmd, params)) = crate::tab_rename::field(ui, doc_id, i, name_rect, font.clone()) {
+                rename_cmd = Some((cmd, params));
+            }
             if tab_close_clicked(&resp, &xresp) {
                 close = Some(i);
-            } else if resp.clicked() {
+            } else if resp.clicked() && !resp.double_clicked() {
                 activate = Some(i);
             }
             match tab_drag(ui, &resp, i, r, row, &placed, &t) {
@@ -2252,6 +2263,12 @@ fn tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
     float_torn_off(app, ui.ctx(), tear_off);
     if let Some((id, params)) = tab_action
         && let Err(e) = crate::menus::invoke(app, ui.ctx(), id, params)
+    {
+        app.ui.status = e;
+        app.ui.status_error = true;
+    }
+    if let Some((id, params)) = rename_cmd
+        && let Err(e) = app.run(id, params)
     {
         app.ui.status = e;
         app.ui.status_error = true;
@@ -2441,6 +2458,7 @@ fn pro_tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
     let mut tab_action = None;
     let mut tab_move = None;
     let mut tear_off = None;
+    let mut rename_cmd: Option<(&'static str, serde_json::Value)> = None;
     let tab_count = app.session.documents().len();
     let dragging = crate::layer_transfer::pointer_if_armed(app, ui.ctx());
     let mut drag_over = None;
@@ -2496,9 +2514,23 @@ fn pro_tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
         ui.painter().galley_with_override_text_color(at, g, if sel { t.text } else { t.text_faint });
         let cut = natural.get(i).copied().unwrap_or(0.0) > r.width() + 0.5;
         let resp = if cut { resp.on_hover_text(title.as_str()) } else { resp };
+        // A double-click on the name turns it into a field (document.rename).
+        let doc_id = app.session.documents().get(i).map(|d| d.doc.id);
+        if let Some(doc_id) = doc_id {
+            if resp.double_clicked() && !xresp.hovered() {
+                let name = app.session.documents().get(i).map(|d| d.doc.name.clone()).unwrap_or_default();
+                crate::tab_rename::start(ui.ctx(), doc_id, &name);
+                activate = Some(i);
+            }
+            let name_rect =
+                Rect::from_min_max(egui::pos2(at.x - 4.0, r.top() + 2.0), egui::pos2(if mac { r.right() - 6.0 } else { xr.left() - 4.0 }, r.bottom() - 2.0));
+            if let Some((cmd, params)) = crate::tab_rename::field(ui, doc_id, i, name_rect, font.clone()) {
+                rename_cmd = Some((cmd, params));
+            }
+        }
         if tab_close_clicked(&resp, &xresp) {
             close = Some(i);
-        } else if resp.clicked() {
+        } else if resp.clicked() && !resp.double_clicked() {
             activate = Some(i);
         }
         match tab_drag(ui, &resp, i, r, strip, &placed, &t) {
@@ -2564,6 +2596,12 @@ fn pro_tabs(app: &mut BrahmaApp, ui: &mut egui::Ui) -> TabStrip {
     float_torn_off(app, ui.ctx(), tear_off);
     if let Some((id, params)) = tab_action
         && let Err(e) = crate::menus::invoke(app, ui.ctx(), id, params)
+    {
+        app.ui.status = e;
+        app.ui.status_error = true;
+    }
+    if let Some((id, params)) = rename_cmd
+        && let Err(e) = app.run(id, params)
     {
         app.ui.status = e;
         app.ui.status_error = true;

@@ -37,6 +37,7 @@ mod crop_fill;
 pub mod cutout_cmds;
 pub mod display_color;
 pub mod distort_cmds;
+pub mod document_cmds;
 pub mod document_preset_cmds;
 pub mod edit_cmds;
 pub mod edit_menu_cmds;
@@ -497,6 +498,10 @@ impl Session {
     }
     pub fn active_mut(&mut self) -> Option<&mut DocState> {
         self.active.and_then(|i| self.docs.get_mut(i))
+    }
+    /// The document at `index`, mutably (for commands that take a `document` parameter).
+    pub fn document_mut(&mut self, index: usize) -> Option<&mut DocState> {
+        self.docs.get_mut(index)
     }
     pub fn set_active(&mut self, index: usize) -> bool {
         if index < self.docs.len() {

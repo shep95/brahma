@@ -122,11 +122,11 @@ fn arrow_keys_step_through_the_menu_bar_in_screen_order() {
         let mut h = harness();
         h.get_by_label("File").click();
         h.run_steps(4);
-        assert!(h.query_by_label_contains("Undo").is_none(), "File is open, not Edit");
+        assert!(h.query_by_label_contains("Toggle Last State").is_none(), "File is open, not Edit");
         // Edit is File's neighbour on screen: to its right, or to its left in a right-to-left UI.
         h.key_press(towards_edit);
         h.run_steps(4);
-        assert!(h.query_by_label_contains("Undo").is_some(), "{dir:?}: {towards_edit:?} opens Edit");
+        assert!(h.query_by_label_contains("Toggle Last State").is_some(), "{dir:?}: {towards_edit:?} opens Edit");
     }
 }
 
@@ -138,6 +138,6 @@ fn menus_open_under_the_title_s_reading_start_edge() {
     let edit = h.get_by_label("Edit").rect();
     h.get_by_label("Edit").click();
     h.run_steps(4);
-    let undo = h.get_by_label_contains("Undo").rect();
+    let undo = h.get_by_label_contains("Toggle Last State").rect();
     assert!(undo.right() <= edit.right() + 1.0 && undo.right() > edit.right() - 40.0, "the menu hangs left from Edit's right edge: {undo:?} {edit:?}");
 }

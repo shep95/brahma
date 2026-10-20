@@ -4304,3 +4304,6 @@ shape	Appearance	Izgled
 	Preset provider id (see the assistant's provider list)	ID унапред подешеног провајдера (види листу провајдера асистента)
 	Preset provider API key	API кључ унапред подешеног провајдера
 	Adaptive Aesthetics (surfaces and UI font follow the open image)	Прилагодљива естетика (површине и фонт интерфејса прате отворену слику)
+	Edits for this photo	Измене за ову фотографију
+	Applied	Примењено
+	Balanced as it is: nothing the measurements would change.	Уравнотежено такво какво је: мерења не би ништа променила.

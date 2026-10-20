@@ -31,6 +31,10 @@ pub struct AestheticUi {
     pub analysis: Option<Value>,
     #[serde(skip)]
     pub error: Option<String>,
+    /// The document and revision the analysis was read from: the window re-reads the picture
+    /// when it opens on a different one.
+    #[serde(skip)]
+    pub read_key: Option<(brahma_doc::DocId, u64)>,
 }
 
 impl Default for AestheticUi {
@@ -45,6 +49,7 @@ impl Default for AestheticUi {
             result: None,
             analysis: None,
             error: None,
+            read_key: None,
         }
     }
 }
@@ -94,9 +99,19 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
     if !app.ui.aesthetic.open {
         return;
     }
+    // The open picture is read on its own the first time the window sees it (and again
+    // when a different document is in front), so the advice is always about this photo.
+    let key = app.session.active().map(|d| (d.doc.id, d.revision));
+    if let Some(k) = key
+        && app.ui.aesthetic.read_key.is_none_or(|r| r.0 != k.0)
+    {
+        app.ui.aesthetic.read_key = Some(k);
+        run(app, true);
+    }
     let t = Tokens::get(ctx);
     let mut close = false;
     let mut action: Option<&'static str> = None;
+    let mut apply: Option<usize> = None;
     let mut pick: Option<[f32; 3]> = None;
     let mut state = app.ui.aesthetic.clone();
     let width = 360.0;
@@ -136,6 +151,27 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
             );
             for n in a["notes"].as_array().into_iter().flatten().filter_map(Value::as_str) {
                 ui.label(RichText::new(n).color(t.text_dim).size(11.5));
+            }
+            // Concrete edits for this picture, each one click away (an adjustment layer or a
+            // filter), with the measurement and the principle behind it.
+            let edits: Vec<&Value> = a["edits"].as_array().into_iter().flatten().collect();
+            widgets::hairline(ui);
+            widgets::section_label(ui, "Edits for this photo");
+            if edits.is_empty() {
+                ui.label(RichText::new(tl!("Balanced as it is: nothing the measurements would change.")).color(t.text_dim).size(11.5));
+            }
+            for (i, e) in edits.iter().enumerate() {
+                ui.horizontal(|ui| {
+                    if widgets::secondary_button(ui, tl!("Apply"), 0.0)
+                        .on_hover_text(format!("{} {}", e["command"].as_str().unwrap_or(""), e["params"]))
+                        .clicked()
+                    {
+                        apply = Some(i);
+                    }
+                    ui.label(RichText::new(e["title"].as_str().unwrap_or("")).color(t.text).font(crate::theme::medium(12.0)));
+                });
+                ui.label(RichText::new(e["why"].as_str().unwrap_or("")).color(t.text_dim).size(11.0));
+                ui.add_space(2.0);
             }
         }
         let Some(r) = &state.result else { return };
@@ -246,6 +282,22 @@ pub fn window(app: &mut BrahmaApp, ctx: &egui::Context) {
         Some("document") => run(app, true),
         _ => {}
     }
+    if let Some(i) = apply {
+        let edit = app.ui.aesthetic.analysis.as_ref().and_then(|a| a["edits"].get(i)).cloned();
+        if let Some(e) = edit
+            && let Some(id) = e["command"].as_str()
+        {
+            match app.run(id, e["params"].clone()) {
+                Ok(_) => {
+                    app.ui.status = format!("{}: {}", tl!("Applied"), e["title"].as_str().unwrap_or(id));
+                    app.ui.status_error = false;
+                }
+                Err(err) => app.ui.status = err,
+            }
+            // The picture changed: read it again so the list reflects the new state.
+            app.ui.aesthetic.read_key = None;
+        }
+    }
     if let Some(rgb) = pick
         && let Err(e) = app.run("tools.setColors", json!({"foreground": [rgb[0], rgb[1], rgb[2], 1.0]}))
     {
@@ -297,6 +349,26 @@ mod tests {
         crate::menus::invoke(h.state_mut(), &ctx, "window.toggle.aestheticAdvisor", json!({})).unwrap();
         h.run_steps(2);
         assert!(!h.state().ui.aesthetic.open);
+    }
+
+    /// Opening the window on a document reads it by itself, lists the edits the picture would
+    /// benefit from, and Apply runs one (an adjustment layer appears); the list then re-reads.
+    #[test]
+    fn the_window_reads_the_open_photo_itself_and_applies_an_edit() {
+        let mut h = harness();
+        h.state_mut().run("file.new", json!({"width": 48, "height": 48, "background": "#262628"})).unwrap();
+        h.state_mut().ui.aesthetic.open = true;
+        h.run_steps(3);
+        let a = h.state().ui.aesthetic.analysis.clone().expect("read on open");
+        let edits = a["edits"].as_array().cloned().unwrap_or_default();
+        assert!(!edits.is_empty(), "a dark flat grey picture has edits: {a}");
+        assert!(h.query_by_label("Edits for this photo").is_some());
+        let layers_before = h.state().session.active().unwrap().doc.layers.len();
+        h.get_all_by_label("Apply").next().expect("an apply button").click();
+        h.run_steps(3);
+        assert_eq!(h.state().session.active().unwrap().doc.layers.len(), layers_before + 1, "an adjustment layer was added");
+        assert!(h.state().ui.status.starts_with("Applied"), "{}", h.state().ui.status);
+        assert!(h.state().ui.aesthetic.read_key.is_some(), "read again after the edit");
     }
 
     #[test]

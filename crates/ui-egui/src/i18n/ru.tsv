@@ -3200,3 +3200,6 @@ curves	Smooth	Сгладить
 	Preset provider id (see the assistant's provider list)	Идентификатор предустановленного провайдера (см. список провайдеров ассистента)
 	Preset provider API key	Ключ API предустановленного провайдера
 	Adaptive Aesthetics (surfaces and UI font follow the open image)	Адаптивная эстетика (поверхности и шрифт интерфейса следуют открытому изображению)
+	Edits for this photo	Правки для этого фото
+	Applied	Применено
+	Balanced as it is: nothing the measurements would change.	Сбалансировано как есть: измерения ничего бы не изменили.

@@ -2832,3 +2832,6 @@ curves	Smooth	平滑
 	Preset provider id (see the assistant's provider list)	預設供應商 ID（見助理的供應商列表）
 	Preset provider API key	預設供應商 API 金鑰
 	Adaptive Aesthetics (surfaces and UI font follow the open image)	自適應美學（介面表面與 UI 字型跟隨開啟的圖片）
+	Edits for this photo	這張照片的編輯建議
+	Applied	已套用
+	Balanced as it is: nothing the measurements would change.	現在已經平衡：測量結果不會改變任何東西。

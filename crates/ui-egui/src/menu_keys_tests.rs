@@ -202,7 +202,7 @@ fn the_shortcuts_wait_while_the_keyboard_is_on_the_bar() {
     key(&mut h, egui::Key::E);
     h.run_steps(2);
     assert_eq!(h.state().ui.tool, tool, "E did not pick the Eraser");
-    assert!(is_open(&h.ctx) && h.query_by_label_contains("Undo").is_some(), "E opened Edit");
+    assert!(is_open(&h.ctx) && h.query_by_label_contains("Toggle Last State").is_some(), "E opened Edit");
     key(&mut h, egui::Key::Escape);
     h.run_steps(2);
     assert!(!is_open(&h.ctx));

@@ -648,19 +648,42 @@ pub fn title_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                     // (Preferences), then search (Edit › Search), and narrows the switcher
                     // (Window › Workspace) before anything runs over.
                     let room = ui.available_width();
-                    let icons_shown: u8 = if room >= WORKSPACE_MIN + 2.0 * ICON_SLOT {
-                        2
-                    } else if room >= WORKSPACE_MIN + ICON_SLOT {
-                        1
-                    } else {
-                        0
-                    };
+                    // Seven icon slots: the undo group (undo, redo, revert) and the two
+                    // helpers (aesthetic advisor, assistant) come first, then search, then
+                    // the theme toggle; a narrow bar drops from the end.
+                    let icons_shown: u8 = (((room - WORKSPACE_MIN) / ICON_SLOT).floor().max(0.0) as u8).min(7);
                     let ws_width = (room - f32::from(icons_shown) * ICON_SLOT - 6.0).clamp(WORKSPACE_MIN, 130.0);
                     if room >= WORKSPACE_MIN && widgets::dropdown(ui, "workspace", &mut ws, &opts, ws_width) {
                         app.ui.workspace = ws;
                         crate::menus::apply_workspace(app);
                     }
-                    if icons_shown >= 1
+                    let mut run: Option<&'static str> = None;
+                    // Undo, redo and revert: the way back is always one click away.
+                    let undo_group: [(&str, &str, &str); 3] =
+                        [("undo-2", "Undo", "edit.undo"), ("redo-2", "Redo", "edit.redo"), ("rotate-cw", "Revert", "file.revert")];
+                    for (k, (icon, label, id)) in undo_group.iter().enumerate() {
+                        if icons_shown > k as u8 {
+                            let enabled = crate::menus::is_enabled(app, id);
+                            ui.add_enabled_ui(enabled, |ui| {
+                                if icons::button(ui, icon, 28.0, false, &crate::shortcuts::tip_label(app, label, id)).clicked() {
+                                    run = Some(id);
+                                }
+                            });
+                        }
+                    }
+                    if icons_shown >= 4 && icons::button(ui, "palette", 28.0, app.ui.aesthetic.open, tl!("Aesthetic Advisor")).clicked() {
+                        app.ui.aesthetic.open = !app.ui.aesthetic.open;
+                    }
+                    if icons_shown >= 5 && icons::button(ui, "sparkles", 28.0, app.ui.assistant.open, tl!("Assistant")).clicked() {
+                        app.ui.assistant.open = !app.ui.assistant.open;
+                    }
+                    if let Some(id) = run
+                        && let Err(e) = crate::menus::invoke(app, ui.ctx(), id, serde_json::json!({}))
+                    {
+                        app.ui.status = e;
+                        app.ui.status_error = true;
+                    }
+                    if icons_shown >= 6
                         && icons::button(ui, "search", 28.0, app.ui.palette_open, &crate::shortcuts::tip_label(app, "Search commands", "edit.search")).clicked()
                     {
                         app.ui.palette_open = !app.ui.palette_open;
@@ -671,7 +694,7 @@ pub fn title_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                         brahma_engine::prefs::AppearanceMode::Light => ("sun", tl!("Light")),
                     };
                     let appearance_tip = format!("{}: {}", tl!("Appearance Mode"), appearance_label);
-                    if icons_shown >= 2 {
+                    if icons_shown >= 7 {
                         let button = icons::button(ui, theme_icon, 28.0, false, &appearance_tip);
                         if button.clicked() {
                             crate::prefs_ui::cycle_appearance(app, ui.ctx());
@@ -755,6 +778,7 @@ fn title_x(center: f32, left: f32, right: f32, width: f32) -> Option<f32> {
 #[cfg(test)]
 mod title_tests {
     use super::{system_title_bar, title_x, window_title};
+    use serde_json::json;
 
     #[test]
     fn title_never_overlaps_menus_or_controls() {
@@ -776,6 +800,42 @@ mod title_tests {
         // The preference that makes the shell launch without its own title bar.
         app.session.edit_prefs(|p| p.interface.system_title_bar = !custom_titlebar);
         app
+    }
+
+    /// The top bar's buttons: undo and redo follow the history, the advisor and the assistant
+    /// toggle their panels, and a narrow bar drops them from the end.
+    #[test]
+    fn top_bar_buttons_undo_and_toggle_the_advisor_and_assistant() {
+        use egui_kittest::{
+            Harness,
+            kittest::{NodeT, Queryable},
+        };
+        let mut app = crate::BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+        app.run("file.new", json!({"width": 16, "height": 16})).unwrap();
+        let mut h = Harness::builder().with_size(egui::vec2(1440.0, 900.0)).build_eframe(move |cc| {
+            crate::BrahmaApp::setup_context(&cc.egui_ctx, Default::default());
+            app
+        });
+        h.run_steps(3);
+        assert!(h.get_by_label_contains("Undo").accesskit_node().is_disabled(), "nothing to undo yet");
+        h.state_mut().run("layer.new.layer", json!({})).unwrap();
+        h.run_steps(2);
+        let layers = h.state().session.active().unwrap().doc.layers.len();
+        h.get_by_label_contains("Undo").click();
+        h.run_steps(2);
+        assert_eq!(h.state().session.active().unwrap().doc.layers.len(), layers - 1);
+        h.get_by_label_contains("Redo").click();
+        h.run_steps(2);
+        assert_eq!(h.state().session.active().unwrap().doc.layers.len(), layers);
+        assert!(h.get_by_label_contains("Revert").accesskit_node().is_disabled(), "never saved: nothing to revert to");
+        assert!(!h.state().ui.aesthetic.open);
+        h.get_all_by_label("Aesthetic Advisor").next().unwrap().click();
+        h.run_steps(2);
+        assert!(h.state().ui.aesthetic.open);
+        assert!(!h.state().ui.assistant.open);
+        h.get_all_by_label("Assistant").next().unwrap().click();
+        h.run_steps(2);
+        assert!(h.state().ui.assistant.open);
     }
 
     #[test]

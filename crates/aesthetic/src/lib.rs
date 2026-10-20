@@ -23,11 +23,13 @@
 
 pub mod analyze;
 pub mod corpus;
+pub mod edits;
 pub mod oklch;
 pub mod rules;
 
 pub use analyze::{Analysis, analyze};
 pub use corpus::{Entry, search};
+pub use edits::{EditSuggestion, edit_suggestions};
 pub use oklch::{Oklch, parse_hex};
 pub use rules::{Density, Layout, Motion, Palette, Register, Request, Surface, Swatch, Typography};
 
