@@ -27,6 +27,9 @@
       padding: 0 16px; text-align: center; color: #b2aea4; font: 14px system-ui, sans-serif; pointer-events: none; }
     #brahma_loading p { margin: 0 0 8px; max-width: 420px; line-height: 1.5; }
     #brahma_loading a { color: #c9a85a; pointer-events: auto; }
+    #brahma_bar { width: 220px; height: 3px; margin: 6px 0 10px; border-radius: 2px; background: #2a2823; overflow: hidden; }
+    #brahma_bar_fill { width: 0; height: 100%; border-radius: 2px; background: #c9a85a; transition: width 120ms ease-out; }
+    #brahma_progress { color: #7e7a70; font-size: 12px; font-variant-numeric: tabular-nums; }
     /* The app removes this element once it runs. If the WebAssembly never downloads or doesn't match
        this page, no Rust runs to say so, so the page itself shows what to do after a while. */
     #brahma_stalled { color: #7e7a70; visibility: hidden; animation: brahma-stalled 0s 20s forwards; }
@@ -36,13 +39,48 @@
 <body>
   <canvas id="brahma_canvas"></canvas>
   <script>
+    // The download is the wait: show how far the WebAssembly is (the loader's fetch is wrapped
+    // so the count comes from the real stream; the bytes still go to the streaming compiler).
+    (function () {
+      var nativeFetch = window.fetch;
+      var mb = function (n) { return (n / 1048576).toFixed(1); };
+      window.fetch = function (input, init) {
+        var url = typeof input === 'string' ? input : (input && input.url) || '';
+        var p = nativeFetch.apply(this, arguments);
+        if (!/_bg\.wasm($|\?)/.test(url)) return p;
+        return p.then(function (res) {
+          var text = document.getElementById('brahma_progress');
+          var bar = document.getElementById('brahma_bar_fill');
+          if (!res.ok || !res.body || !text) return res;
+          var total = +res.headers.get('content-length') || 0;
+          var got = 0;
+          var reader = res.body.getReader();
+          var stream = new ReadableStream({
+            pull: function (c) {
+              return reader.read().then(function (r) {
+                if (r.done) { text.textContent = 'starting…'; if (bar) bar.style.width = '100%'; c.close(); return; }
+                got += r.value.length;
+                // A compressed transfer reports its compressed length: never claim more than all of it.
+                var share = total ? Math.min(got / total, 1) : 0;
+                text.textContent = total ? mb(got) + ' of ' + mb(total) + ' MB' : mb(got) + ' MB';
+                if (bar) bar.style.width = (share * 100).toFixed(0) + '%';
+                c.enqueue(r.value);
+              });
+            }
+          });
+          return new Response(stream, { status: res.status, statusText: res.statusText, headers: res.headers });
+        });
+      };
+    })();
     // Offline support and "install app": the service worker caches this page and its wasm.
     if ('serviceWorker' in navigator) {
       addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
     }
   </script>
   <div id="brahma_loading">
-    <p>Loading brahma&hellip;</p>
+    <p>loading brahma</p>
+    <div id="brahma_bar"><div id="brahma_bar_fill"></div></div>
+    <p id="brahma_progress">&nbsp;</p>
     <p id="brahma_stalled">This is taking longer than usual. If brahma doesn't start, its files may have failed to
       download or come from a different version of this page. <a href="">Reload</a> to try again; the browser
       console lists what failed.</p>

@@ -36,7 +36,7 @@ so also its default). every push goes there.
 | 11 | visual review | done |
 | 12 | security audit + weekly workflow | done (`.github/workflows/security.yml`) |
 | 13 | vercel layout: one static site, no services, no bindings | done, confirmed by the user |
-| 14 | web ui bugs: sidebar clicks, panel scrolling, slow open, responsiveness | in progress (see below) |
+| 14 | web ui bugs: sidebar clicks, panel scrolling, slow open, responsiveness | done: compact drawer, scrolling columns, image paste on the web (window-level paste listener + `clipboard_get_image`), download progress on the loading screen. open: worker decode on open (1.7 s for 12 mp on the ui thread); the wasm is 26.6 mb (thin lto on vercel; fat lto would be smaller but needs more build ram) |
 | 15 | aesthetic recommender trained on the research file | done: crate `brahma-aesthetic` (l2), commands `aesthetic.recommend/analyze/search`, window › aesthetic advisor |
 | 16 | motion system (springs) matching the aesthetic | done: `ui-egui/src/motion.rs` drives the compact drawer, dock groups sliding shut/open on rail or header clicks (programmatic changes snap), dialogs fading in, button hover easing. open: list staggers, hover on icon buttons |
 | 17 | quality and speed: startup, file open, frame pacing | measured (startup 1.2 s, 12 mp jpeg 1.7 s on the ui thread); worker decode still open |

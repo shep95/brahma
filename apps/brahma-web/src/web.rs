@@ -82,7 +82,10 @@ pub fn start() {
                     }
                     let unsaved = Arc::new(AtomicBool::new(false));
                     guard_unload(unsaved.clone());
-                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, database, presets }))
+                    let pasted: Pasted = Arc::default();
+                    listen_paste(pasted.clone(), cc.egui_ctx.clone());
+                    app.services.clipboard_get_image = Some(clipboard_image_service(pasted.clone()));
+                    Ok(Box::new(WebShell { app, inbox, title: String::new(), unsaved, pasted, database, presets }))
                 }),
             )
             .await;
@@ -128,6 +131,83 @@ fn listen_pen(target: &web_sys::HtmlCanvasElement, feed: brahma_ui_egui::stylus:
 /// Closing or reloading the tab while a document has unsaved changes asks first, as closing the
 /// desktop window does: the browser shows its own "Leave site?" prompt (#1380). `unsaved` is
 /// refreshed every frame by [`WebShell`].
+/// An image pasted from the OS clipboard: its bytes as the browser handed them over, the
+/// decoded RGBA8 copy once `Edit › Paste` asked for it, and whether the paste is still to be
+/// applied. Browsers deliver pasted images only through the `paste` DOM event, asynchronously,
+/// so the shell keeps the latest one here for `Services::clipboard_get_image`.
+#[derive(Default)]
+struct PastedImage {
+    bytes: Vec<u8>,
+    decoded: Option<(u32, u32, Vec<u8>)>,
+    pending: bool,
+}
+
+type Pasted = Arc<Mutex<PastedImage>>;
+
+/// Catches images pasted with ⌘V / Ctrl+V (a screenshot, a picture copied from another app or
+/// page). eframe's own paste handler takes the text and stops the event at the canvas, so this
+/// one listens on the window in the capture phase, before it.
+fn listen_paste(pasted: Pasted, ctx: egui::Context) {
+    use wasm_bindgen::closure::Closure;
+    let Some(window) = web_sys::window() else { return };
+    let cb = Closure::<dyn FnMut(web_sys::ClipboardEvent)>::new(move |e: web_sys::ClipboardEvent| {
+        let Some(data) = e.clipboard_data() else { return };
+        let items = data.items();
+        let mut file: Option<web_sys::File> = None;
+        for i in 0..items.length() {
+            if let Some(item) = items.get(i)
+                && item.kind() == "file"
+                && item.type_().starts_with("image/")
+                && let Ok(Some(f)) = item.get_as_file()
+            {
+                file = Some(f);
+                break;
+            }
+        }
+        let Some(file) = file else { return };
+        let pasted = pasted.clone();
+        let ctx = ctx.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let name = file.name();
+            let Ok(buf) = wasm_bindgen_futures::JsFuture::from(file.array_buffer()).await else {
+                log::error!("couldn't read the pasted image {name}");
+                return;
+            };
+            let bytes = js_sys::Uint8Array::new(&buf).to_vec();
+            if bytes.is_empty() {
+                return;
+            }
+            let mut p = pasted.lock().unwrap_or_else(|e| e.into_inner());
+            p.bytes = bytes;
+            p.decoded = None;
+            p.pending = true;
+            drop(p);
+            ctx.request_repaint();
+        });
+    });
+    if window.add_event_listener_with_callback_and_bool("paste", cb.as_ref().unchecked_ref(), true).is_ok() {
+        cb.forget();
+    }
+}
+
+/// `Services::clipboard_get_image` for the browser: the last pasted image as RGBA8, decoded
+/// once (a bad file decodes to nothing and pastes nothing).
+fn clipboard_image_service(pasted: Pasted) -> brahma_ui_egui::ClipboardGetFn {
+    Box::new(move || {
+        let mut p = pasted.lock().unwrap_or_else(|e| e.into_inner());
+        if p.bytes.is_empty() {
+            return None;
+        }
+        if p.decoded.is_none() {
+            let img = brahma_codecs::decode(&p.bytes).ok()?;
+            let rgba = img.convert(ChannelLayout::Rgba, brahma_codecs::SampleType::U8);
+            let (w, h) = rgba.dimensions();
+            p.decoded = Some((w, h, rgba.data().to_vec()));
+        }
+        p.decoded.clone()
+    })
+}
+
 fn guard_unload(unsaved: Arc<AtomicBool>) {
     use wasm_bindgen::closure::Closure;
     let Some(window) = web_sys::window() else { return };
@@ -238,11 +318,33 @@ struct WebShell {
     title: String,
     /// Read by the `beforeunload` listener ([`guard_unload`]).
     unsaved: Arc<AtomicBool>,
+    /// The last image pasted from the OS clipboard (see [`listen_paste`]).
+    pasted: Pasted,
     database: Option<web_sys::IdbDatabase>,
     presets: crate::preset_bridge::Bridge,
 }
 
 impl WebShell {
+    /// A freshly pasted image goes into the open document as a layer (Edit › Paste), or opens
+    /// as a new document when none is open, the moment its bytes arrive.
+    fn apply_paste(&mut self) {
+        let fresh = {
+            let mut p = self.pasted.lock().unwrap_or_else(|e| e.into_inner());
+            std::mem::take(&mut p.pending)
+        };
+        if !fresh {
+            return;
+        }
+        if self.app.session.active().is_some() {
+            if let Err(e) = self.app.run("edit.paste", serde_json::json!({})) {
+                log::error!("paste: {e}");
+            }
+        } else {
+            let bytes = self.pasted.lock().unwrap_or_else(|e| e.into_inner()).bytes.clone();
+            self.inbox.lock().unwrap_or_else(|e| e.into_inner()).push(("pasted image".into(), bytes));
+        }
+    }
+
     /// Keep the browser tab (and the installed app's window) titled after the active file.
     fn sync_title(&mut self) {
         let want = brahma_ui_egui::panels::window_title(&self.app);
@@ -290,6 +392,7 @@ impl eframe::App for WebShell {
                 }
             });
         }
+        self.apply_paste();
         self.app.logic(ctx, frame);
         self.save_presets(ctx);
         self.sync_title();
