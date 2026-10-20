@@ -276,6 +276,62 @@ pub fn pointer_down(app: &mut BrahmaApp, x: f64, y: f64, mods: egui::Modifiers) 
     false
 }
 
+/// How close (in screen pixels) a click must land to the work path to start type on it.
+const PATH_HIT_PX: f64 = 6.0;
+
+/// The nearest point of the document's work path to document point `(x, y)`: (distance,
+/// subpath index, arc length along that subpath), sampling every Bézier segment finely enough
+/// for a click. `None` without a usable work path.
+pub(crate) fn nearest_on_work_path(doc: &brahma_doc::Document, x: f64, y: f64) -> Option<(f64, usize, f64)> {
+    let path = doc.work_path.as_ref()?;
+    let mut best: Option<(f64, usize, f64)> = None;
+    for (si, sub) in path.subpaths.iter().enumerate().take(4096) {
+        if sub.knots.len() < 2 {
+            continue;
+        }
+        let mut acc = 0.0f64;
+        for seg in sub.segments().iter().take(100_000) {
+            let p = seg.map(|q| (q.x, q.y));
+            if p.iter().any(|q| !q.0.is_finite() || !q.1.is_finite()) {
+                return None;
+            }
+            let poly = (p[1].0 - p[0].0).hypot(p[1].1 - p[0].1) + (p[2].0 - p[1].0).hypot(p[2].1 - p[1].1) + (p[3].0 - p[2].0).hypot(p[3].1 - p[2].1);
+            let n = ((poly / 2.0).ceil() as usize).clamp(4, 128);
+            let mut prev = p[0];
+            for i in 1..=n {
+                let t = i as f64 / n as f64;
+                let u = 1.0 - t;
+                let (a, b, c, d) = (u * u * u, 3.0 * u * u * t, 3.0 * u * t * t, t * t * t);
+                let q = (a * p[0].0 + b * p[1].0 + c * p[2].0 + d * p[3].0, a * p[0].1 + b * p[1].1 + c * p[2].1 + d * p[3].1);
+                // Project onto the piece prev→q.
+                let (dx, dy) = (q.0 - prev.0, q.1 - prev.1);
+                let len2 = dx * dx + dy * dy;
+                let r = if len2 > 1e-12 { (((x - prev.0) * dx + (y - prev.1) * dy) / len2).clamp(0.0, 1.0) } else { 0.0 };
+                let (px, py) = (prev.0 + dx * r, prev.1 + dy * r);
+                let dist = (x - px).hypot(y - py);
+                let along = acc + len2.sqrt() * r;
+                if best.is_none_or(|b| dist < b.0) {
+                    best = Some((dist, si, along));
+                }
+                acc += len2.sqrt();
+                prev = q;
+            }
+        }
+    }
+    best
+}
+
+/// A click on the work path with the Type tool starts type on that path (Photoshop: the
+/// cursor shows a path beam over a path and the type follows it from the click). `None`
+/// when the click is not on the path; else the subpath and the arc length where the type
+/// starts, in document pixels.
+fn path_under(app: &BrahmaApp, x: f64, y: f64) -> Option<(usize, f64)> {
+    let d = app.session.active()?;
+    let tolerance = PATH_HIT_PX / f64::from(app.point_zoom().max(0.01));
+    let (dist, sub, along) = nearest_on_work_path(&d.doc, x, y)?;
+    (dist <= tolerance).then_some((sub, along))
+}
+
 pub fn pointer_move(app: &mut BrahmaApp, x: f64, y: f64) {
     let Some(ed) = app.ui.text_edit.clone() else { return };
     if let Some(i) = ed.resize {
@@ -313,6 +369,8 @@ pub fn pointer_up(app: &mut BrahmaApp, start: [f64; 2], end: [f64; 2]) {
         "align": o.type_align,
         "color": hex(app.session.tools.foreground),
     });
+    // A click (not a drag) on the work path: point type that follows the path from there.
+    let on_path = if w < min && h < min && !mask { path_under(app, start[0], start[1]) } else { None };
     if w >= min && h >= min {
         p["box"] = json!([start[0].min(end[0]).round(), start[1].min(end[1]).round(), w.round(), h.round()]);
     } else {
@@ -324,6 +382,12 @@ pub fn pointer_up(app: &mut BrahmaApp, start: [f64; 2], end: [f64; 2]) {
     if let Ok(v) = app.run("type.create", p)
         && let Some(id) = v.get("layer").and_then(serde_json::Value::as_u64)
     {
+        if let Some((subpath, along)) = on_path
+            && let Err(e) = app.run("type.attachToPath", json!({"layer": id, "subpath": subpath, "start": along.round(), "coalesce": key}))
+        {
+            app.ui.status = e;
+            app.ui.status_error = true;
+        }
         if o.type_aa != "sharp" {
             let _ = app.run("type.edit", json!({"layer": id, "antialias": o.type_aa, "coalesce": key}));
         }
@@ -2541,6 +2605,37 @@ mod tests {
         let doc = &app.session.active().unwrap().doc;
         assert_eq!(doc.layers.last().unwrap().name, "Héllo world");
         assert!(app.ui.text_edit.is_none());
+    }
+
+    /// A click on the work path starts type on that path from the click; a click away from it
+    /// is ordinary point type.
+    #[test]
+    fn a_click_on_the_work_path_starts_type_on_the_path() {
+        let mut app = app();
+        app.run("path.set", json!({"name": "work", "path": {"subpaths": [{"closed": false, "knots": [[20, 150], [380, 150]]}]}})).unwrap();
+        let doc = app.session.active().unwrap().doc.clone();
+        let (dist, sub, along) = nearest_on_work_path(&doc, 120.0, 153.0).unwrap();
+        assert!((dist - 3.0).abs() < 0.01 && sub == 0 && (along - 100.0).abs() < 0.5, "{dist} {sub} {along}");
+        assert!(nearest_on_work_path(&doc, 120.0, 20.0).unwrap().0 > 100.0);
+        // Click 2 px off the line: on the path.
+        assert!(!pointer_down(&mut app, 120.0, 152.0, egui::Modifiers::NONE));
+        pointer_up(&mut app, [120.0, 152.0], [120.0, 152.0]);
+        let ed = app.ui.text_edit.clone().unwrap();
+        let layer = app.session.active().unwrap().doc.layer(LayerId(ed.layer)).unwrap().clone();
+        let brahma_doc::LayerContent::Text(t) = &layer.content else { panic!("a type layer") };
+        match &t.shape {
+            brahma_doc::text::TextShape::Path { start, .. } => assert!((start - 100.0).abs() < 1.0, "starts at the click: {start}"),
+            other => panic!("not on the path: {other:?}"),
+        }
+        assert!(!app.ui.status_error, "{}", app.ui.status);
+        commit(&mut app);
+        // Far from the path: plain point type.
+        assert!(!pointer_down(&mut app, 120.0, 40.0, egui::Modifiers::NONE));
+        pointer_up(&mut app, [120.0, 40.0], [120.0, 40.0]);
+        let ed = app.ui.text_edit.clone().unwrap();
+        let layer = app.session.active().unwrap().doc.layer(LayerId(ed.layer)).unwrap().clone();
+        let brahma_doc::LayerContent::Text(t) = &layer.content else { panic!("a type layer") };
+        assert_eq!(t.shape, brahma_doc::text::TextShape::Point);
     }
 
     /// Preferences ▸ Units & Rulers ▸ Type switches the display unit of type metrics: points by
