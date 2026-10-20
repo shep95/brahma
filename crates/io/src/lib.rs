@@ -40,6 +40,7 @@ pub mod blocks;
 pub mod camera_raw_xmp;
 mod channel_map;
 pub mod comps_map;
+pub mod decoded;
 pub mod effects_map;
 pub mod exr_parts;
 mod flat;
@@ -315,7 +316,7 @@ fn import_stages(name: &str, bytes: &[u8], ctl: &brahma_raster::Interrupt, max_g
 /// Extension names can be wrong (for example, an image downloaded as WebP and renamed `.svg`).
 /// Valid plain SVG is recognized by its XML content; an otherwise unknown `.svg` is passed to the
 /// SVG parser for a useful malformed-file error, and `.svgz` disambiguates gzip streams.
-fn is_svg_input(name: &str, bytes: &[u8]) -> bool {
+pub(crate) fn is_svg_input(name: &str, bytes: &[u8]) -> bool {
     // Keep the SVG extension as a fallback for malformed files so the SVG parser can return an
     // actionable SVG error. A recognized raster signature still wins over a misleading `.svg`
     // suffix (for example, a WebP downloaded as Firefox_logo.svg).

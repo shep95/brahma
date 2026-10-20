@@ -883,3 +883,50 @@ fn opening_type_in_a_missing_font_warns() {
     // The importer's own warning for the same font isn't doubled.
     assert_eq!(app.open_bytes("warned.psd", b"x").unwrap(), vec![warning]);
 }
+
+/// A photo decodes off the UI thread when the shell offers a decoder: the open returns at once
+/// with no document, the document arrives when the envelope does, and a decoder that fails
+/// hands the file to the inline importer instead of losing it.
+#[test]
+fn a_photo_decodes_through_the_async_decoder_and_falls_back_inline() {
+    use std::sync::{Arc, Mutex};
+    let png = {
+        let img = brahma_codecs::Image::from_u8(6, 5, brahma_codecs::ChannelLayout::Rgb, vec![120; 6 * 5 * 3]).unwrap();
+        brahma_codecs::encode(&img, brahma_codecs::Format::Png, &brahma_codecs::EncodeOptions::default()).unwrap()
+    };
+    // The decoder keeps the reply until the test releases it, so the asynchrony is real.
+    type Held = Arc<Mutex<Vec<(String, Arc<Vec<u8>>, crate::DecodeReply)>>>;
+    let held: Held = Arc::default();
+    let h2 = held.clone();
+    let services = Services {
+        import: Some(Box::new(|name: &str, bytes: &[u8], depth: usize| {
+            brahma_io::import_with_svg_group_depth(name, bytes, depth).map(|r| (r.document, r.warnings)).map_err(|e| e.to_string())
+        })),
+        decode_async: Some(Box::new(move |name, bytes, reply| h2.lock().unwrap().push((name, bytes, reply)))),
+        ..Default::default()
+    };
+    let mut app = BrahmaApp::new(brahma_engine::Session::new(), services);
+    let ctx = egui::Context::default();
+    assert_eq!(app.open_bytes("shot.png", &png).unwrap(), Vec::<String>::new());
+    assert!(app.session.active().is_none(), "nothing opens until the worker answers");
+    assert!(app.ui.status.contains("shot.png"), "{}", app.ui.status);
+    // The worker's half, run here, answers.
+    let (name, bytes, reply) = held.lock().unwrap().pop().expect("the decoder was asked");
+    assert_eq!(name, "shot.png");
+    reply(brahma_io::decoded::decode_for_worker(&name, &bytes).map_err(|e| e.to_string()));
+    app.poll_decodes(&ctx);
+    let d = app.session.active().expect("the document arrived");
+    assert_eq!((d.doc.size.width, d.doc.size.height, d.doc.name.as_str()), (6, 5, "shot.png"));
+    // A failing decoder: the inline importer opens the file instead.
+    app.open_bytes("again.png", &png).unwrap();
+    let (_, _, reply) = held.lock().unwrap().pop().unwrap();
+    reply(Err("worker crashed".into()));
+    app.poll_decodes(&ctx);
+    assert_eq!(app.session.documents().len(), 2, "the fallback opened it");
+    assert!(!app.ui.status_error, "{}", app.ui.status);
+    // Formats the worker doesn't take (a PSD-less, non-photo file) never go to it.
+    let svg = b"<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'/>";
+    app.open_bytes("v.svg", svg).unwrap();
+    assert!(held.lock().unwrap().is_empty(), "svg decodes inline");
+    assert_eq!(app.session.documents().len(), 3);
+}

@@ -22,6 +22,14 @@ pub fn import_flat(name: &str, bytes: &[u8]) -> Result<ImportResult, IoError> {
         return import_tiff_page(name, bytes, None);
     }
     let img = codecs::decode_as(format.ok_or(codecs::CodecError::UnknownFormat)?, bytes)?;
+    import_decoded_flat(name, bytes, &img)
+}
+
+/// [`import_flat`] after the decode: the document for `img`, decoded from `bytes` (which still
+/// decide the palette, the file encoding and the format-specific tagging). The web build runs
+/// the decode in a worker and this half on the main thread (`crate::decoded`).
+pub(crate) fn import_decoded_flat(name: &str, bytes: &[u8], img: &Image) -> Result<ImportResult, IoError> {
+    let format = codecs::detect(bytes);
     // A palette BMP or PNG opens in Indexed Color mode with its colour table, as in Photoshop
     // (#3802, #4804).
     let palette = match format {
@@ -29,7 +37,7 @@ pub fn import_flat(name: &str, bytes: &[u8]) -> Result<ImportResult, IoError> {
         Some(Format::Png) => codecs::png_palette(bytes).ok().flatten().map(|p| (p.colors, p.transparent)),
         _ => None,
     };
-    let mut r = image_to_document(name, &img)?;
+    let mut r = image_to_document(name, img)?;
     if let Some((colors, transparent)) = palette.filter(|(c, _)| !c.is_empty())
         && r.document.mode == ColorMode::Rgb
     {

@@ -1,5 +1,8 @@
 //! The browser shell: web `Services`, drag-and-drop, and the eframe web runner.
 
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
@@ -10,6 +13,7 @@ use brahma_ui_egui::served_fonts;
 use brahma_ui_egui::theme::ThemeKind;
 use brahma_ui_egui::{BrahmaApp, FileDialogAnswer, FileDialogRequest, Services};
 use wasm_bindgen::JsCast as _;
+use wasm_bindgen::JsValue;
 
 type Inbox = Arc<Mutex<Vec<(String, Vec<u8>)>>>;
 
@@ -308,6 +312,87 @@ async fn fetch_post(req: &brahma_engine::ai_chat::HttpRequest) -> Result<(u16, S
     Ok((status, text.as_string().unwrap_or_default()))
 }
 
+/// Replies waiting on the decode worker, by request id.
+type DecodeReplies = Rc<RefCell<HashMap<u32, brahma_ui_egui::DecodeReply>>>;
+
+thread_local! {
+    static DECODER: RefCell<Option<(web_sys::Worker, DecodeReplies, u32)>> = const { RefCell::new(None) };
+}
+
+/// The generated module's JS and wasm URLs, from the preload links trunk writes into the page.
+fn module_urls() -> Option<(String, String)> {
+    let document = web_sys::window()?.document()?;
+    let js = document.query_selector("link[rel=modulepreload]").ok().flatten()?.get_attribute("href")?;
+    let wasm = document.query_selector("link[rel=preload][href$='.wasm']").ok().flatten()?.get_attribute("href")?;
+    let base = web_sys::Url::new_with_base(&js, &document.base_uri().ok().flatten()?).ok()?;
+    let wasm = web_sys::Url::new_with_base(&wasm, &document.base_uri().ok().flatten()?).ok()?;
+    Some((base.href(), wasm.href()))
+}
+
+/// Start the decode worker (once) and hand it `bytes`; the reply arrives on the page thread.
+/// When no worker can be had (an old browser, a blocked script) the reply says so and the
+/// page decodes the file inline instead.
+fn decode_in_worker(name: String, bytes: Arc<Vec<u8>>, reply: brahma_ui_egui::DecodeReply) {
+    use wasm_bindgen::closure::Closure;
+    let outcome: Result<(), (String, brahma_ui_egui::DecodeReply)> = DECODER.with(|d| {
+        let mut d = d.borrow_mut();
+        if d.is_none() {
+            let opts = web_sys::WorkerOptions::new();
+            opts.set_type(web_sys::WorkerType::Module);
+            let Ok(worker) = web_sys::Worker::new_with_options("decode-worker.js", &opts) else {
+                return Err(("no decode worker".to_string(), reply));
+            };
+            let replies: DecodeReplies = Rc::default();
+            let waiting = replies.clone();
+            let on_message = Closure::<dyn FnMut(web_sys::MessageEvent)>::new(move |e: web_sys::MessageEvent| {
+                let data = e.data();
+                let id = js_sys::Reflect::get(&data, &"id".into()).ok().and_then(|v| v.as_f64()).map(|v| v as u32);
+                let Some(id) = id else { return };
+                let Some(reply) = waiting.borrow_mut().remove(&id) else { return };
+                let out = js_sys::Reflect::get(&data, &"out".into()).ok().filter(|v| !v.is_undefined() && !v.is_null());
+                match out {
+                    Some(v) => reply(Ok(js_sys::Uint8Array::new(&v).to_vec())),
+                    None => {
+                        let err =
+                            js_sys::Reflect::get(&data, &"error".into()).ok().and_then(|v| v.as_string()).unwrap_or_else(|| "the decode worker failed".into());
+                        reply(Err(err));
+                    }
+                }
+            });
+            worker.set_onmessage(Some(on_message.as_ref().unchecked_ref()));
+            on_message.forget();
+            *d = Some((worker, replies, 0));
+        }
+        let Some((worker, replies, next)) = d.as_mut() else {
+            return Err(("no decode worker".to_string(), reply));
+        };
+        let Some((js, wasm)) = module_urls() else {
+            return Err(("the page's module links are missing".to_string(), reply));
+        };
+        *next = next.wrapping_add(1);
+        let id = *next;
+        let msg = js_sys::Object::new();
+        let _ = js_sys::Reflect::set(&msg, &"id".into(), &JsValue::from_f64(f64::from(id)));
+        let _ = js_sys::Reflect::set(&msg, &"name".into(), &JsValue::from_str(&name));
+        let _ = js_sys::Reflect::set(&msg, &"js".into(), &JsValue::from_str(&js));
+        let _ = js_sys::Reflect::set(&msg, &"wasm".into(), &JsValue::from_str(&wasm));
+        // The bytes are copied into the worker (a transfer would take them from the page, which
+        // still needs them for the main-thread half of the import).
+        let array = js_sys::Uint8Array::from(bytes.as_slice());
+        let _ = js_sys::Reflect::set(&msg, &"bytes".into(), &array.buffer());
+        replies.borrow_mut().insert(id, reply);
+        if worker.post_message(&msg).is_err()
+            && let Some(reply) = replies.borrow_mut().remove(&id)
+        {
+            return Err(("could not reach the decode worker".to_string(), reply));
+        }
+        Ok(())
+    });
+    if let Err((why, reply)) = outcome {
+        reply(Err(why));
+    }
+}
+
 /// Wraps the app to read dropped files asynchronously (browsers can't read them synchronously,
 /// so the app's own drop path can't handle them) and feed them through the inbox.
 struct WebShell {
@@ -478,6 +563,7 @@ fn services(inbox: Inbox) -> Services {
             brahma_codecs::encode(&img, brahma_codecs::Format::Png, &EncodeOptions::default()).map_err(|e| e.to_string())
         })),
         inbox: Some(inbox),
+        decode_async: Some(Box::new(decode_in_worker)),
         fetch_url: Some(Box::new(|url, integrity, reply| {
             wasm_bindgen_futures::spawn_local(async move {
                 reply(fetch_bytes(&url, integrity.as_deref()).await);

@@ -392,6 +392,12 @@ pub type HttpFn = Box<dyn Fn(brahma_engine::ai_chat::HttpRequest, HttpReply)>;
 /// an optional Subresource Integrity value, and the reply with the bytes or why not.
 pub type FetchReply = Box<dyn FnOnce(Result<Vec<u8>, String>) + Send>;
 pub type FetchFn = Box<dyn Fn(String, Option<String>, FetchReply)>;
+/// Decode a photo off the UI thread (the web build's worker): the file's name and bytes go
+/// out, `brahma_io::decoded`'s envelope (or why not) comes back whenever it is ready.
+pub type DecodeReply = Box<dyn FnOnce(Result<Vec<u8>, String>) + Send>;
+pub type DecodeFn = Box<dyn Fn(String, std::sync::Arc<Vec<u8>>, DecodeReply)>;
+/// A file waiting on the async decoder: name, path, its bytes, and where the envelope arrives.
+type PendingDecode = (String, Option<String>, std::sync::Arc<Vec<u8>>, std::sync::mpsc::Receiver<Result<Vec<u8>, String>>);
 /// Put an RGBA8 image (width, height, pixels) on the OS clipboard.
 pub type ClipboardSetFn = Box<dyn FnMut(u32, u32, &[u8]) -> Result<(), String>>;
 /// Read an RGBA8 image from the OS clipboard.
@@ -482,6 +488,8 @@ pub struct Services {
     pub http: Option<HttpFn>,
     /// Fetches a served font file on demand (`None`: only the bundled and system fonts).
     pub fetch_url: Option<FetchFn>,
+    /// Decodes photo formats off the UI thread (`None`: every open decodes inline).
+    pub decode_async: Option<DecodeFn>,
     /// Open a URL in the system browser (native). Falls back to `ctx.open_url` (web) when unset.
     pub open_url: Option<OpenUrlFn>,
     /// Preferences ▸ General ▸ Beep When Done: the platform's default beep, played when a
@@ -576,6 +584,9 @@ pub struct BrahmaApp {
     checker: Option<egui::TextureHandle>,
     /// Adaptive aesthetics: what the surfaces and the UI font currently follow (`adaptive`).
     pub(crate) adaptive: adaptive::State,
+    /// Files decoding off the UI thread (`Services::decode_async`): name, path, the bytes (the
+    /// main-thread half of the import still needs them) and where the envelope arrives.
+    pending_decodes: Vec<PendingDecode>,
     drag: Option<canvas::Drag>,
     /// A Move-tool press landed on a locked layer: the first pointer move shows Photoshop's
     /// message (`move_lock`), a plain click shows nothing.
@@ -844,6 +855,7 @@ impl BrahmaApp {
             monitors: Default::default(),
             checker: None,
             adaptive: Default::default(),
+            pending_decodes: Vec::new(),
             drag: None,
             move_blocked: false,
             tool_override: None,
@@ -1311,9 +1323,73 @@ impl BrahmaApp {
             jobs_ui::start_open(self, name, path.map(str::to_string), jobs_ui::bytes(bytes))?;
             return Ok(Vec::new());
         }
+        // A photo decodes off the UI thread where the shell offers it (the web build's worker):
+        // the window keeps drawing and the document arrives through `poll_decodes`.
+        if let Some(decode) = self.services.decode_async.as_ref()
+            && brahma_io::decoded::worker_eligible(name, bytes)
+        {
+            let (tx, rx) = std::sync::mpsc::channel();
+            let shared = std::sync::Arc::new(bytes.to_vec());
+            decode(
+                name.to_string(),
+                shared.clone(),
+                Box::new(move |outcome| {
+                    let _ = tx.send(outcome);
+                }),
+            );
+            self.pending_decodes.push((name.to_string(), path.map(str::to_string), shared, rx));
+            self.ui.status = crate::i18n::fmt(tl!("Opening {name}…"), &[("name", name)]);
+            self.ui.status_error = false;
+            return Ok(Vec::new());
+        }
+        self.open_bytes_inline(name, bytes, path)
+    }
+
+    /// Decode on this thread and open.
+    fn open_bytes_inline(&mut self, name: &str, bytes: &[u8], path: Option<&str>) -> Result<Vec<String>, String> {
         let import = self.services.import.as_ref().ok_or("no importer configured")?;
         let max_svg_group_depth = self.session.prefs().file_handling.rasterize_svg_groups_deeper_than as usize;
         let (doc, warnings) = import(name, bytes, max_svg_group_depth)?;
+        self.open_imported(name, path, bytes, doc, warnings)
+    }
+
+    /// Decoded photos that came back from the worker: finish their import on this thread.
+    pub(crate) fn poll_decodes(&mut self, ctx: &egui::Context) {
+        if self.pending_decodes.is_empty() {
+            return;
+        }
+        let mut done = Vec::new();
+        for (i, (_, _, _, rx)) in self.pending_decodes.iter().enumerate() {
+            match rx.try_recv() {
+                Ok(outcome) => done.push((i, outcome)),
+                Err(std::sync::mpsc::TryRecvError::Empty) => {}
+                Err(std::sync::mpsc::TryRecvError::Disconnected) => done.push((i, Err("the decoder went away".into()))),
+            }
+        }
+        for (i, outcome) in done.into_iter().rev() {
+            let (name, path, bytes, _) = self.pending_decodes.remove(i);
+            let result = outcome
+                .and_then(|env| brahma_io::decoded::unpack(&env).map_err(|e| e.to_string()))
+                .and_then(|(img, warnings)| brahma_io::decoded::import_decoded(&name, &bytes, &img, &warnings).map_err(|e| e.to_string()));
+            let result = match result {
+                Ok(r) => self.open_imported(&name, path.as_deref(), &bytes, r.document, r.warnings),
+                Err(e) => {
+                    // The worker could not do it (missing, blocked, out of memory): the inline
+                    // path decides whether the file itself is at fault.
+                    log::warn!("decode worker: {e}; decoding {name} inline");
+                    self.open_bytes_inline(&name, &bytes, path.as_deref())
+                }
+            };
+            if let Err(e) = result {
+                self.open_failed(&name, &e);
+            }
+        }
+        ctx.request_repaint();
+    }
+
+    /// The tail of every open: colour policies, the missing-font and raw checks, and the
+    /// document's arrival (or its wait behind an earlier prompt).
+    fn open_imported(&mut self, name: &str, path: Option<&str>, bytes: &[u8], doc: Document, warnings: Vec<String>) -> Result<Vec<String>, String> {
         // Edit › Color Settings policies apply on open; Ask When Opening holds the file back
         // until its prompt is answered, and later files wait behind it (`open_prompt`).
         // Missing fonts are read from the document itself: it may not be open yet (#4559).
@@ -1792,6 +1868,7 @@ impl eframe::App for BrahmaApp {
         // cursor block needs it before the frame renders. `None` (Wayland/web) keeps `false`.
         self.caps_lock = self.services.caps_lock.as_mut().is_some_and(|f| f());
         served_fonts::serve(self, ctx);
+        self.poll_decodes(ctx);
         if !self.styled {
             Self::setup_context(ctx, self.ui.theme);
             self.styled = true;

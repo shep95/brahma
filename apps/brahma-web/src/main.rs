@@ -27,9 +27,22 @@ mod web;
 
 #[cfg(target_arch = "wasm32")]
 fn main() {
+    // The same module also runs inside the decode worker (decode-worker.js), where there is
+    // no window and nothing to start: it only answers `worker_decode`.
+    if web_sys::window().is_none() {
+        return;
+    }
     // brahma's house style: every interface string in lower case (see `i18n::lower`).
     brahma_ui_egui::i18n::set_lowercase(true);
     web::start();
+}
+
+/// The decode worker's one job: `bytes` (a photo named `name`) as `brahma_io::decoded`'s
+/// envelope, for the page to turn into a document.
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn worker_decode(name: &str, bytes: &[u8]) -> Result<Vec<u8>, wasm_bindgen::JsValue> {
+    brahma_io::decoded::decode_for_worker(name, bytes).map_err(|e| wasm_bindgen::JsValue::from_str(&e.to_string()))
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -48,6 +61,9 @@ mod tests {
         let (_, hint) = html.split_once("<p id=\"brahma_stalled\">").expect("stalled-startup hint in the loading element");
         assert!(hint.contains("failed to") && hint.contains("<a href=\"\">Reload</a>"), "{hint}");
         assert!(html.contains("animation: brahma-stalled"), "the hint appears after a delay");
-        assert!(!html.contains("<script"), "trunk injects the generated loader; the page has no script of its own");
+        // The page's own scripts: the service-worker registration and the download progress.
+        // trunk injects the generated loader itself.
+        assert_eq!(html.matches("<script").count(), 1, "one inline script block of the page's own");
+        assert!(html.contains("serviceWorker") && html.contains("brahma_progress"));
     }
 }
