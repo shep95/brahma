@@ -4171,3 +4171,19 @@ cameraRaw	Yellow	Sárga
 	Looks	Lookok
 	Remove Object	Objektum eltávolítása
 	Menu	Menü
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Bővítménygaléria
+	Gallery…	Galéria…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Elszigetelt WebAssembly-szűrők: egy fájl fut minden platformon és a böngészőben.
+	Samples	Minták
+	Installed	Telepítve
+	Install	Telepítés
+	source	forrás
+	From the web	A webről
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Bármely .wasm, amely követi a bővítmény-ABI-t; futtatás előtt ellenőrizzük, és csak a saját pixeleihez fér hozzá.
+	Write your own	Írd meg a sajátod
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Másolj le egy mintamappát, szerkeszd a manifestet és a pc_filtert, futtasd az examples/plugins/build-all.sh-t, majd telepítsd a .wasm-ot itt vagy a Szűrő › Bővítmények › Bővítmény telepítése… alatt. Az ABI a docs/plugins.md-ben van.
+	The address must start with https://	A címnek https://-sel kell kezdődnie
+	This build has no network access for plug-ins.	Ennek a buildnek nincs hálózati hozzáférése a bővítményekhez.
+	Fetching…	Letöltés…

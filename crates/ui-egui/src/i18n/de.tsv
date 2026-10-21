@@ -3257,3 +3257,19 @@ curves	Smooth	Glätten
 	Looks	Looks
 	Remove Object	Objekt entfernen
 	Menu	Menü
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Plug-in-Galerie
+	Gallery…	Galerie…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Isolierte WebAssembly-Filter: eine Datei läuft auf jeder Plattform und im Browser.
+	Samples	Beispiele
+	Installed	Installiert
+	Install	Installieren
+	source	Quelle
+	From the web	Aus dem Web
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Jede .wasm-Datei, die der Plug-in-ABI folgt; sie wird vor dem Start geprüft und erreicht nichts außer ihren Pixeln.
+	Write your own	Eigenes schreiben
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Einen Beispielordner kopieren, Manifest und pc_filter anpassen, examples/plugins/build-all.sh ausführen, dann die .wasm hier oder über Filter › Plug-ins › Plug-in installieren… installieren. Die ABI steht in docs/plugins.md.
+	The address must start with https://	Die Adresse muss mit https:// beginnen
+	This build has no network access for plug-ins.	Dieser Build hat keinen Netzwerkzugriff für Plug-ins.
+	Fetching…	Wird geladen…

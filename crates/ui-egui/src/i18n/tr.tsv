@@ -3982,3 +3982,19 @@ cameraData	Lens	Lens
 	Looks	Look'lar
 	Remove Object	Nesneyi Kaldır
 	Menu	Menü
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Eklenti Galerisi
+	Gallery…	Galeri…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Yalıtılmış WebAssembly filtreleri: tek dosya her platformda ve tarayıcıda çalışır.
+	Samples	Örnekler
+	Installed	Yüklü
+	Install	Yükle
+	source	kaynak
+	From the web	Webden
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Eklenti ABI'sine uyan herhangi bir .wasm; çalışmadan önce denetlenir ve kendi pikselleri dışında hiçbir şeye dokunamaz.
+	Write your own	Kendinizinkini yazın
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Bir örnek klasörünü kopyalayın, manifest ile pc_filter'ı düzenleyin, examples/plugins/build-all.sh'ı çalıştırın, sonra .wasm'ı buradan ya da Filtre › Eklentiler › Eklenti Yükle… ile yükleyin. ABI docs/plugins.md içinde.
+	The address must start with https://	Adres https:// ile başlamalı
+	This build has no network access for plug-ins.	Bu derlemede eklentiler için ağ erişimi yok.
+	Fetching…	Alınıyor…

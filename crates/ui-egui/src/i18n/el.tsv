@@ -3952,3 +3952,19 @@ curves	Smooth	Εξομάλυνση
 	Looks	Looks
 	Remove Object	Αφαίρεση αντικειμένου
 	Menu	Μενού
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Συλλογή προσθέτων
+	Gallery…	Συλλογή…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Απομονωμένα φίλτρα WebAssembly: ένα αρχείο τρέχει σε κάθε πλατφόρμα και στον browser.
+	Samples	Δείγματα
+	Installed	Εγκατεστημένο
+	Install	Εγκατάσταση
+	source	πηγή
+	From the web	Από τον ιστό
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Οποιοδήποτε .wasm που ακολουθεί το ABI των προσθέτων· ελέγχεται πριν τρέξει και δεν αγγίζει τίποτα εκτός από τα pixel του.
+	Write your own	Γράψτε το δικό σας
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Αντιγράψτε έναν φάκελο δείγματος, επεξεργαστείτε το manifest και το pc_filter, τρέξτε το examples/plugins/build-all.sh και εγκαταστήστε το .wasm εδώ ή από Φίλτρο › Πρόσθετα › Εγκατάσταση προσθέτου…. Το ABI είναι στο docs/plugins.md.
+	The address must start with https://	Η διεύθυνση πρέπει να αρχίζει με https://
+	This build has no network access for plug-ins.	Αυτή η έκδοση δεν έχει πρόσβαση δικτύου για πρόσθετα.
+	Fetching…	Λήψη…

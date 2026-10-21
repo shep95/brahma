@@ -1188,6 +1188,9 @@ pub struct UiState {
     /// Window › Aesthetic Advisor (see `aesthetic_ui`).
     #[serde(default)]
     pub aesthetic: crate::aesthetic_ui::AestheticUi,
+    /// Filter › Plug-ins › Gallery… (see `plugin_gallery`).
+    #[serde(default)]
+    pub plugin_gallery: crate::plugin_gallery::PluginGalleryUi,
     /// Window › Assistant (see `assistant_ui`).
     #[serde(default)]
     pub assistant: crate::assistant_ui::AssistantUi,
@@ -1339,6 +1342,7 @@ impl Default for UiState {
             type_panels: Default::default(),
             analysis: Default::default(),
             aesthetic: Default::default(),
+            plugin_gallery: Default::default(),
             assistant: Default::default(),
             timeline: Default::default(),
             slices: Default::default(),

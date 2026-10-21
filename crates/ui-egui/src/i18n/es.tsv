@@ -4214,3 +4214,19 @@ navigator	Zoom	Zoom
 	Looks	Looks
 	Remove Object	Eliminar objeto
 	Menu	Menú
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Galería de plug-ins
+	Gallery…	Galería…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Filtros WebAssembly aislados: un archivo funciona en todas las plataformas y en el navegador.
+	Samples	Ejemplos
+	Installed	Instalado
+	Install	Instalar
+	source	fuente
+	From the web	Desde la web
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Cualquier .wasm que siga la ABI de plug-ins; se comprueba antes de ejecutarse y no puede tocar nada salvo sus píxeles.
+	Write your own	Escribe el tuyo
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Copia una carpeta de ejemplo, edita el manifiesto y pc_filter, ejecuta examples/plugins/build-all.sh y luego instala el .wasm aquí o desde Filtro › Plug-ins › Instalar plug-in…. La ABI está en docs/plugins.md.
+	The address must start with https://	La dirección debe empezar por https://
+	This build has no network access for plug-ins.	Esta compilación no tiene acceso a la red para plug-ins.
+	Fetching…	Descargando…

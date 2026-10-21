@@ -2855,3 +2855,19 @@ curves	Smooth	平滑
 	Looks	風格
 	Remove Object	移除物件
 	Menu	選單
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	外掛程式庫
+	Gallery…	外掛程式庫…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	沙箱化的 WebAssembly 濾鏡:一個檔案可在所有平台和瀏覽器中執行。
+	Samples	範例
+	Installed	已安裝
+	Install	安裝
+	source	原始碼
+	From the web	來自網路
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	任何遵循外掛 ABI 的 .wasm;執行前會被檢查,且只能觸及自己的像素。
+	Write your own	自己撰寫
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	複製一個範例資料夾,編輯清單和 pc_filter,執行 examples/plugins/build-all.sh,然後在此處或透過「濾鏡 › 外掛程式 › 安裝外掛程式…」安裝 .wasm。ABI 見 docs/plugins.md。
+	The address must start with https://	網址必須以 https:// 開頭
+	This build has no network access for plug-ins.	此版本沒有外掛程式所需的網路存取。
+	Fetching…	正在取得…

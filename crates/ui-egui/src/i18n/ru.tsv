@@ -3223,3 +3223,19 @@ curves	Smooth	Сгладить
 	Looks	Луки
 	Remove Object	Удалить объект
 	Menu	Меню
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Галерея плагинов
+	Gallery…	Галерея…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Изолированные фильтры WebAssembly: один файл работает на любой платформе и в браузере.
+	Samples	Примеры
+	Installed	Установлено
+	Install	Установить
+	source	исходник
+	From the web	Из интернета
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Любой .wasm по ABI плагинов; проверяется перед запуском и не трогает ничего, кроме своих пикселей.
+	Write your own	Напишите свой
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Скопируйте папку примера, измените манифест и pc_filter, запустите examples/plugins/build-all.sh и установите .wasm здесь или через Фильтр › Плагины › Установить плагин…. ABI описан в docs/plugins.md.
+	The address must start with https://	Адрес должен начинаться с https://
+	This build has no network access for plug-ins.	В этой сборке нет сетевого доступа для плагинов.
+	Fetching…	Загрузка…

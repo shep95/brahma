@@ -3861,3 +3861,19 @@ navigator	Zoom	Zvětšení
 	Looks	Looky
 	Remove Object	Odstranit objekt
 	Menu	Nabídka
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Galerie zásuvných modulů
+	Gallery…	Galerie…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Izolované filtry WebAssembly: jeden soubor běží na každé platformě i v prohlížeči.
+	Samples	Ukázky
+	Installed	Nainstalováno
+	Install	Nainstalovat
+	source	zdroj
+	From the web	Z webu
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Jakýkoli .wasm, který dodržuje ABI zásuvných modulů; před spuštěním se ověří a nemá přístup k ničemu kromě svých pixelů.
+	Write your own	Napište si vlastní
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Zkopírujte složku ukázky, upravte manifest a pc_filter, spusťte examples/plugins/build-all.sh a .wasm nainstalujte zde nebo přes Filtr › Zásuvné moduly › Nainstalovat zásuvný modul…. ABI je v docs/plugins.md.
+	The address must start with https://	Adresa musí začínat https://
+	This build has no network access for plug-ins.	Toto sestavení nemá síťový přístup pro zásuvné moduly.
+	Fetching…	Stahuje se…

@@ -18,7 +18,11 @@ this page is the contract for plug-in authors and the reference for the host
 | `plugin.reload` | `{"path": "folder"}` (default: the preference folder) | loads every `*.wasm` in a folder; a bad module is reported and skipped. |
 
 in the app, installed filters appear under **filter › plug-ins** (with a generated dialog and live
-preview when they have parameters), next to **install plug-in…**.
+preview when they have parameters), next to **install plug-in…** and **gallery…**. the gallery
+(`crates/ui-egui/src/plugin_gallery.rs`) lists the sample plug-ins bundled with the app
+(`assets/plugins/*.wasm`, built from `examples/plugins/*-rs` by `examples/plugins/build-all.sh`),
+installs any of them with one click on every platform, and installs a `.wasm` from an `https://`
+address through the same fetch path the fonts use.
 
 **preference folder.** edit › preferences › plug-ins › *use additional plug-ins folder* plus
 *additional plug-ins folder*: when both are set, every `*.wasm` in that folder (not recursive) is
@@ -147,7 +151,9 @@ position-dependent filters (gradients, vignettes) are seamless across bands.
 ## writing a plug-in in rust
 
 [`examples/plugins/invert-rs`](../examples/plugins/invert-rs) is a complete `no_std` plug-in
-(no allocator, under 1 kib built). build it with:
+(no allocator, under 1 kib built); `posterize-rs` adds a parameter read from the host's JSON
+without an allocator, and `vignette-rs` uses `_image` so a position-dependent filter stays
+seamless across bands. build one with:
 
 ```sh
 rustup target add wasm32-unknown-unknown

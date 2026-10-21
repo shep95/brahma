@@ -3433,3 +3433,19 @@ curves	Smooth	매끄럽게
 	Looks	룩
 	Remove Object	개체 제거
 	Menu	메뉴
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	플러그인 갤러리
+	Gallery…	갤러리…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	샌드박스 WebAssembly 필터: 파일 하나가 모든 플랫폼과 브라우저에서 실행됩니다.
+	Samples	샘플
+	Installed	설치됨
+	Install	설치
+	source	소스
+	From the web	웹에서
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	플러그인 ABI를 따르는 모든 .wasm. 실행 전에 검사되며 자기 픽셀 외에는 아무것도 건드릴 수 없습니다.
+	Write your own	직접 만들기
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	샘플 폴더를 복사해 매니페스트와 pc_filter를 고치고 examples/plugins/build-all.sh를 실행한 뒤, .wasm을 여기서 또는 필터 › 플러그인 › 플러그인 설치…로 설치하세요. ABI는 docs/plugins.md에 있습니다.
+	The address must start with https://	주소는 https://로 시작해야 합니다
+	This build has no network access for plug-ins.	이 빌드에는 플러그인용 네트워크 접근이 없습니다.
+	Fetching…	가져오는 중…

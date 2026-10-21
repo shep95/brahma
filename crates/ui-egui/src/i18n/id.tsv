@@ -3245,3 +3245,19 @@ curves	Smooth	Haluskan
 	Looks	Look
 	Remove Object	Hapus Objek
 	Menu	Menu
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Galeri Plug-in
+	Gallery…	Galeri…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Filter WebAssembly terisolasi: satu berkas berjalan di semua platform dan di peramban.
+	Samples	Contoh
+	Installed	Terpasang
+	Install	Pasang
+	source	sumber
+	From the web	Dari web
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Berkas .wasm apa pun yang mengikuti ABI plug-in; diperiksa sebelum dijalankan dan hanya bisa menyentuh pikselnya sendiri.
+	Write your own	Tulis sendiri
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Salin folder contoh, ubah manifest dan pc_filter, jalankan examples/plugins/build-all.sh, lalu pasang .wasm di sini atau lewat Filter › Plug-in › Pasang Plug-in…. ABI ada di docs/plugins.md.
+	The address must start with https://	Alamat harus diawali https://
+	This build has no network access for plug-ins.	Build ini tidak punya akses jaringan untuk plug-in.
+	Fetching…	Mengambil…

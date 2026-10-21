@@ -21,6 +21,7 @@ pub mod adjust_editors;
 pub mod adjust_preview;
 pub mod adjust_ui;
 pub mod aesthetic_ui;
+pub mod plugin_gallery;
 mod alt_grab;
 pub mod analysis_ui;
 pub mod anchor_tools;
@@ -2068,6 +2069,7 @@ impl eframe::App for BrahmaApp {
         type_panels_ui::windows(self, &ctx);
         analysis_ui::windows(self, &ctx);
         aesthetic_ui::window(self, &ctx);
+        plugin_gallery::window(self, &ctx);
         timeline_ui::windows(self, &ctx);
         workspace_ui::windows(self, &ctx);
         palette::show(self, &ctx);

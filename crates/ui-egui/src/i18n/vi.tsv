@@ -3741,3 +3741,19 @@ curves	Smooth	Làm mượt
 	Looks	Look
 	Remove Object	Xóa đối tượng
 	Menu	Menu
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Thư viện plug-in
+	Gallery…	Thư viện…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Bộ lọc WebAssembly được cách ly: một tệp chạy trên mọi nền tảng và trong trình duyệt.
+	Samples	Mẫu
+	Installed	Đã cài
+	Install	Cài đặt
+	source	nguồn
+	From the web	Từ web
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Bất kỳ .wasm nào theo ABI plug-in; được kiểm tra trước khi chạy và không chạm vào gì ngoài pixel của nó.
+	Write your own	Tự viết
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Sao chép một thư mục mẫu, sửa manifest và pc_filter, chạy examples/plugins/build-all.sh, rồi cài .wasm ở đây hoặc qua Bộ lọc › Plug-in › Cài plug-in…. ABI nằm trong docs/plugins.md.
+	The address must start with https://	Địa chỉ phải bắt đầu bằng https://
+	This build has no network access for plug-ins.	Bản dựng này không có quyền truy cập mạng cho plug-in.
+	Fetching…	Đang tải…

@@ -4012,3 +4012,19 @@ curves	Smooth	Vloeiend maken
 	Looks	Looks
 	Remove Object	Object verwijderen
 	Menu	Menu
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Plug-in-galerij
+	Gallery…	Galerij…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Afgeschermde WebAssembly-filters: één bestand werkt op elk platform en in de browser.
+	Samples	Voorbeelden
+	Installed	Geïnstalleerd
+	Install	Installeren
+	source	bron
+	From the web	Van het web
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Elke .wasm die de plug-in-ABI volgt; hij wordt gecontroleerd voor hij draait en kan niets anders aanraken dan zijn pixels.
+	Write your own	Schrijf je eigen
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Kopieer een voorbeeldmap, bewerk het manifest en pc_filter, voer examples/plugins/build-all.sh uit en installeer de .wasm hier of via Filter › Plug-ins › Plug-in installeren…. De ABI staat in docs/plugins.md.
+	The address must start with https://	Het adres moet met https:// beginnen
+	This build has no network access for plug-ins.	Deze build heeft geen netwerktoegang voor plug-ins.
+	Fetching…	Ophalen…

@@ -3930,3 +3930,19 @@ curves	Smooth	スムーズ
 	Looks	ルック
 	Remove Object	オブジェクトを削除
 	Menu	メニュー
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	プラグインギャラリー
+	Gallery…	ギャラリー…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	サンドボックス化された WebAssembly フィルター。1 つのファイルがすべてのプラットフォームとブラウザーで動きます。
+	Samples	サンプル
+	Installed	インストール済み
+	Install	インストール
+	source	ソース
+	From the web	ウェブから
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	プラグイン ABI に従う .wasm なら何でも。実行前に検証され、自分のピクセル以外には触れません。
+	Write your own	自分で書く
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	サンプルのフォルダーをコピーし、マニフェストと pc_filter を編集して examples/plugins/build-all.sh を実行し、.wasm をここか「フィルター › プラグイン › プラグインをインストール…」からインストールします。ABI は docs/plugins.md にあります。
+	The address must start with https://	アドレスは https:// で始まる必要があります
+	This build has no network access for plug-ins.	このビルドにはプラグイン用のネットワークアクセスがありません。
+	Fetching…	取得中…

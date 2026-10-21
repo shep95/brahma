@@ -4325,3 +4325,19 @@ shape	Appearance	Izgled
 	Looks	Lookovi
 	Remove Object	Ukloni objekat
 	Menu	Meni
+
+# Filter › Plug-ins › Gallery
+	Plug-in Gallery	Galerija dodataka
+	Gallery…	Galerija…
+	Sandboxed WebAssembly filters: one file runs on every platform and in the browser.	Izolovani WebAssembly filteri: jedan fajl radi na svakoj platformi i u pregledaču.
+	Samples	Primeri
+	Installed	Instalirano
+	Install	Instaliraj
+	source	izvor
+	From the web	Sa veba
+	Any .wasm that follows the plug-in ABI; it is checked before it runs and can touch nothing but its pixels.	Bilo koji .wasm koji prati ABI dodataka; proverava se pre pokretanja i ne dira ništa osim svojih piksela.
+	Write your own	Napišite svoj
+	Copy a sample folder, edit the manifest and pc_filter, run examples/plugins/build-all.sh, then install the .wasm here or from Filter › Plug-ins › Install Plug-in…. The ABI is in docs/plugins.md.	Kopirajte folder primera, izmenite manifest i pc_filter, pokrenite examples/plugins/build-all.sh, pa instalirajte .wasm ovde ili preko Filter › Dodaci › Instaliraj dodatak…. ABI je u docs/plugins.md.
+	The address must start with https://	Adresa mora počinjati sa https://
+	This build has no network access for plug-ins.	Ova verzija nema mrežni pristup za dodatke.
+	Fetching…	Preuzimanje…
