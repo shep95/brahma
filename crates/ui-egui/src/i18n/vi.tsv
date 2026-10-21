@@ -3757,3 +3757,11 @@ curves	Smooth	Làm mượt
 	The address must start with https://	Địa chỉ phải bắt đầu bằng https://
 	This build has no network access for plug-ins.	Bản dựng này không có quyền truy cập mạng cho plug-in.
 	Fetching…	Đang tải…
+
+# Window › Performance
+	frames per second	khung hình mỗi giây
+	worst UI frame, ms (50 = full)	khung hình UI chậm nhất, ms (50 = đầy)
+	canvas composite, ms (200 = full)	ghép canvas, ms (200 = đầy)
+	Slow commands	Lệnh chậm
+	None yet: every command finished within a frame.	Chưa có: mọi lệnh đều xong trong một khung hình.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Lưu nhật ký dạng JSON để đính kèm báo cáo lỗi; nó ở lại thiết bị này cho đến khi bạn chia sẻ.

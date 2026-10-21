@@ -4230,3 +4230,11 @@ navigator	Zoom	Zoom
 	The address must start with https://	La dirección debe empezar por https://
 	This build has no network access for plug-ins.	Esta compilación no tiene acceso a la red para plug-ins.
 	Fetching…	Descargando…
+
+# Window › Performance
+	frames per second	fotogramas por segundo
+	worst UI frame, ms (50 = full)	peor fotograma de la interfaz, ms (50 = lleno)
+	canvas composite, ms (200 = full)	composición del lienzo, ms (200 = lleno)
+	Slow commands	Comandos lentos
+	None yet: every command finished within a frame.	Ninguno aún: todos los comandos terminaron dentro de un fotograma.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Guarda el registro como JSON para adjuntarlo a un informe de error; se queda en este dispositivo hasta que lo compartas.

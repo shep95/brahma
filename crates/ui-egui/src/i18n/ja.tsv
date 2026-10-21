@@ -3946,3 +3946,11 @@ curves	Smooth	スムーズ
 	The address must start with https://	アドレスは https:// で始まる必要があります
 	This build has no network access for plug-ins.	このビルドにはプラグイン用のネットワークアクセスがありません。
 	Fetching…	取得中…
+
+# Window › Performance
+	frames per second	フレーム/秒
+	worst UI frame, ms (50 = full)	最悪の UI フレーム、ms(50 = 最大)
+	canvas composite, ms (200 = full)	キャンバス合成、ms(200 = 最大)
+	Slow commands	遅いコマンド
+	None yet: every command finished within a frame.	まだありません。すべてのコマンドが 1 フレーム内に終わりました。
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	ログを JSON で保存してバグ報告に添付できます。共有するまでこのデバイスに残ります。

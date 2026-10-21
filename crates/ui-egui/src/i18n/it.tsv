@@ -4389,3 +4389,11 @@ shape	Appearance	Aspetto
 	The address must start with https://	L'indirizzo deve iniziare con https://
 	This build has no network access for plug-ins.	Questa build non ha accesso alla rete per i plug-in.
 	Fetching…	Scaricamento…
+
+# Window › Performance
+	frames per second	fotogrammi al secondo
+	worst UI frame, ms (50 = full)	peggior fotogramma UI, ms (50 = pieno)
+	canvas composite, ms (200 = full)	composizione tela, ms (200 = pieno)
+	Slow commands	Comandi lenti
+	None yet: every command finished within a frame.	Nessuno finora: ogni comando è finito entro un fotogramma.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Salva il registro in JSON da allegare a una segnalazione; resta su questo dispositivo finché non lo condividi.

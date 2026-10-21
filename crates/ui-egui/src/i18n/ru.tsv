@@ -3239,3 +3239,11 @@ curves	Smooth	Сгладить
 	The address must start with https://	Адрес должен начинаться с https://
 	This build has no network access for plug-ins.	В этой сборке нет сетевого доступа для плагинов.
 	Fetching…	Загрузка…
+
+# Window › Performance
+	frames per second	кадров в секунду
+	worst UI frame, ms (50 = full)	худший кадр интерфейса, мс (50 = максимум)
+	canvas composite, ms (200 = full)	композит холста, мс (200 = максимум)
+	Slow commands	Медленные команды
+	None yet: every command finished within a frame.	Пока нет: каждая команда уложилась в кадр.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Сохраняет журнал в JSON для отчёта об ошибке; он остаётся на этом устройстве, пока вы его не отправите.

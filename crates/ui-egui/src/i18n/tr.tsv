@@ -3998,3 +3998,11 @@ cameraData	Lens	Lens
 	The address must start with https://	Adres https:// ile başlamalı
 	This build has no network access for plug-ins.	Bu derlemede eklentiler için ağ erişimi yok.
 	Fetching…	Alınıyor…
+
+# Window › Performance
+	frames per second	saniyedeki kare
+	worst UI frame, ms (50 = full)	en kötü arayüz karesi, ms (50 = dolu)
+	canvas composite, ms (200 = full)	tuval birleştirme, ms (200 = dolu)
+	Slow commands	Yavaş komutlar
+	None yet: every command finished within a frame.	Henüz yok: her komut bir kare içinde bitti.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Günlüğü hata raporuna eklemek için JSON olarak kaydeder; paylaşana dek bu cihazda kalır.

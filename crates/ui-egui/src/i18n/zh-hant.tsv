@@ -2871,3 +2871,11 @@ curves	Smooth	平滑
 	The address must start with https://	網址必須以 https:// 開頭
 	This build has no network access for plug-ins.	此版本沒有外掛程式所需的網路存取。
 	Fetching…	正在取得…
+
+# Window › Performance
+	frames per second	每秒影格數
+	worst UI frame, ms (50 = full)	最慢的介面影格,毫秒(50 = 滿)
+	canvas composite, ms (200 = full)	畫布合成,毫秒(200 = 滿)
+	Slow commands	慢指令
+	None yet: every command finished within a frame.	暫無:每條指令都在一個影格內完成。
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	將記錄儲存為 JSON 以附在錯誤回報中;在你分享之前它只留在此裝置上。

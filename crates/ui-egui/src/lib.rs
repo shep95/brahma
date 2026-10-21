@@ -21,6 +21,7 @@ pub mod adjust_editors;
 pub mod adjust_preview;
 pub mod adjust_ui;
 pub mod aesthetic_ui;
+pub mod perf_log;
 pub mod plugin_gallery;
 mod alt_grab;
 pub mod analysis_ui;
@@ -1191,6 +1192,7 @@ impl BrahmaApp {
         }
         self.perf.last_command = id.to_string();
         self.perf.command_ms = gpu_canvas::now_ms() - t0;
+        perf_log::command(self, id, self.perf.command_ms);
         match &r {
             Ok(_) => {
                 self.sync_views();
@@ -1883,6 +1885,7 @@ impl eframe::App for BrahmaApp {
         self.caps_lock = self.services.caps_lock.as_mut().is_some_and(|f| f());
         served_fonts::serve(self, ctx);
         self.poll_decodes(ctx);
+        perf_log::tick(self);
         if !self.styled {
             Self::setup_context(ctx, self.ui.theme);
             self.styled = true;
@@ -2070,6 +2073,7 @@ impl eframe::App for BrahmaApp {
         analysis_ui::windows(self, &ctx);
         aesthetic_ui::window(self, &ctx);
         plugin_gallery::window(self, &ctx);
+        perf_log::window(self, &ctx);
         timeline_ui::windows(self, &ctx);
         workspace_ui::windows(self, &ctx);
         palette::show(self, &ctx);

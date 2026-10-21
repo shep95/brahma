@@ -4341,3 +4341,11 @@ shape	Appearance	Izgled
 	The address must start with https://	Adresa mora počinjati sa https://
 	This build has no network access for plug-ins.	Ova verzija nema mrežni pristup za dodatke.
 	Fetching…	Preuzimanje…
+
+# Window › Performance
+	frames per second	sličica u sekundi
+	worst UI frame, ms (50 = full)	najgora UI sličica, ms (50 = puno)
+	canvas composite, ms (200 = full)	kompozit platna, ms (200 = puno)
+	Slow commands	Spore komande
+	None yet: every command finished within a frame.	Još nema: svaka komanda je završila u okviru jedne sličice.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Čuva dnevnik kao JSON za prijavu greške; ostaje na ovom uređaju dok ga ne podelite.

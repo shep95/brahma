@@ -4187,3 +4187,11 @@ cameraRaw	Yellow	Sárga
 	The address must start with https://	A címnek https://-sel kell kezdődnie
 	This build has no network access for plug-ins.	Ennek a buildnek nincs hálózati hozzáférése a bővítményekhez.
 	Fetching…	Letöltés…
+
+# Window › Performance
+	frames per second	képkocka másodpercenként
+	worst UI frame, ms (50 = full)	legrosszabb UI-képkocka, ms (50 = teljes)
+	canvas composite, ms (200 = full)	vászon-kompozit, ms (200 = teljes)
+	Slow commands	Lassú parancsok
+	None yet: every command finished within a frame.	Még nincs: minden parancs egy képkockán belül végzett.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	JSON-ként menti a naplót hibajelentéshez; ezen az eszközön marad, amíg meg nem osztod.

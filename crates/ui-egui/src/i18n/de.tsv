@@ -3273,3 +3273,11 @@ curves	Smooth	Glätten
 	The address must start with https://	Die Adresse muss mit https:// beginnen
 	This build has no network access for plug-ins.	Dieser Build hat keinen Netzwerkzugriff für Plug-ins.
 	Fetching…	Wird geladen…
+
+# Window › Performance
+	frames per second	Bilder pro Sekunde
+	worst UI frame, ms (50 = full)	schlechtestes UI-Bild, ms (50 = voll)
+	canvas composite, ms (200 = full)	Leinwand-Komposit, ms (200 = voll)
+	Slow commands	Langsame Befehle
+	None yet: every command finished within a frame.	Noch keine: jeder Befehl war innerhalb eines Bildes fertig.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Speichert das Protokoll als JSON für einen Fehlerbericht; es bleibt auf diesem Gerät, bis Sie es weitergeben.

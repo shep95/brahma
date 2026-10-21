@@ -4058,3 +4058,11 @@ layerLabel	No Color	Sem cor
 	The address must start with https://	O endereço deve começar com https://
 	This build has no network access for plug-ins.	Esta compilação não tem acesso à rede para plug-ins.
 	Fetching…	Baixando…
+
+# Window › Performance
+	frames per second	quadros por segundo
+	worst UI frame, ms (50 = full)	pior quadro da interface, ms (50 = cheio)
+	canvas composite, ms (200 = full)	composição da tela, ms (200 = cheio)
+	Slow commands	Comandos lentos
+	None yet: every command finished within a frame.	Nenhum ainda: todo comando terminou dentro de um quadro.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Salva o registro como JSON para anexar a um relatório de erro; fica neste dispositivo até você compartilhá-lo.

@@ -73,6 +73,7 @@ pub const UI_COMMANDS: &[(&str, &str, &[&str], Option<&str>)] = &[
     ("window.toggle.brushes", "Brushes", &["Window"], None),
     ("window.toggle.aestheticAdvisor", "Aesthetic Advisor", &["Window"], None),
     ("window.toggle.pluginGallery", "Gallery…", &["Filter", "Plug-ins"], None),
+    ("window.toggle.performance", "Performance", &["Window"], None),
     ("window.toggle.assistant", "Assistant", &["Window"], None),
     ("window.toggle.navigator", "Navigator", &["Window"], None),
     ("window.toggle.toolbar", "Tools", &["Window"], None),
@@ -702,6 +703,7 @@ pub(crate) fn invoke_unguarded(app: &mut BrahmaApp, ctx: &egui::Context, id: &st
                 "aestheticAdvisor" => &mut app.ui.aesthetic.open,
                 "assistant" => &mut app.ui.assistant.open,
                 "pluginGallery" => &mut app.ui.plugin_gallery.open,
+                "performance" => &mut app.ui.perf_log.open,
                 _ => return Err(format!("unknown panel in {t}")),
             };
             *slot = !*slot;
@@ -914,6 +916,7 @@ fn checked(app: &BrahmaApp, id: &str) -> Option<bool> {
         "window.toggle.aestheticAdvisor" => app.ui.aesthetic.open,
         "window.toggle.assistant" => app.ui.assistant.open,
         "window.toggle.pluginGallery" => app.ui.plugin_gallery.open,
+        "window.toggle.performance" => app.ui.perf_log.open,
         _ => return None,
     })
 }

@@ -3968,3 +3968,11 @@ curves	Smooth	Εξομάλυνση
 	The address must start with https://	Η διεύθυνση πρέπει να αρχίζει με https://
 	This build has no network access for plug-ins.	Αυτή η έκδοση δεν έχει πρόσβαση δικτύου για πρόσθετα.
 	Fetching…	Λήψη…
+
+# Window › Performance
+	frames per second	καρέ ανά δευτερόλεπτο
+	worst UI frame, ms (50 = full)	χειρότερο καρέ UI, ms (50 = πλήρες)
+	canvas composite, ms (200 = full)	σύνθεση καμβά, ms (200 = πλήρες)
+	Slow commands	Αργές εντολές
+	None yet: every command finished within a frame.	Καμία ακόμη: κάθε εντολή ολοκληρώθηκε μέσα σε ένα καρέ.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Αποθηκεύει το αρχείο καταγραφής ως JSON για αναφορά σφάλματος· μένει σε αυτή τη συσκευή μέχρι να το μοιραστείτε.

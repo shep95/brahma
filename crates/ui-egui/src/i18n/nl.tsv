@@ -4028,3 +4028,11 @@ curves	Smooth	Vloeiend maken
 	The address must start with https://	Het adres moet met https:// beginnen
 	This build has no network access for plug-ins.	Deze build heeft geen netwerktoegang voor plug-ins.
 	Fetching…	Ophalen…
+
+# Window › Performance
+	frames per second	beelden per seconde
+	worst UI frame, ms (50 = full)	slechtste UI-beeld, ms (50 = vol)
+	canvas composite, ms (200 = full)	canvascompositie, ms (200 = vol)
+	Slow commands	Trage opdrachten
+	None yet: every command finished within a frame.	Nog geen: elke opdracht was binnen één beeld klaar.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Bewaart het logboek als JSON voor een foutrapport; het blijft op dit apparaat tot je het deelt.

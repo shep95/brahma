@@ -3274,3 +3274,11 @@ curves	Smooth	Lisser
 	The address must start with https://	L'adresse doit commencer par https://
 	This build has no network access for plug-ins.	Cette version n'a pas d'accès réseau pour les plug-ins.
 	Fetching…	Téléchargement…
+
+# Window › Performance
+	frames per second	images par seconde
+	worst UI frame, ms (50 = full)	pire image de l'interface, ms (50 = plein)
+	canvas composite, ms (200 = full)	composition du canevas, ms (200 = plein)
+	Slow commands	Commandes lentes
+	None yet: every command finished within a frame.	Aucune pour l'instant : chaque commande a fini en une image.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Enregistre le journal en JSON pour un rapport de bogue ; il reste sur cet appareil tant que vous ne le partagez pas.

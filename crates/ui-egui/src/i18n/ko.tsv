@@ -3449,3 +3449,11 @@ curves	Smooth	매끄럽게
 	The address must start with https://	주소는 https://로 시작해야 합니다
 	This build has no network access for plug-ins.	이 빌드에는 플러그인용 네트워크 접근이 없습니다.
 	Fetching…	가져오는 중…
+
+# Window › Performance
+	frames per second	초당 프레임
+	worst UI frame, ms (50 = full)	가장 느린 UI 프레임, ms (50 = 최대)
+	canvas composite, ms (200 = full)	캔버스 합성, ms (200 = 최대)
+	Slow commands	느린 명령
+	None yet: every command finished within a frame.	아직 없음: 모든 명령이 한 프레임 안에 끝났습니다.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	로그를 JSON으로 저장해 버그 보고에 첨부하세요. 공유하기 전까지 이 기기에만 남습니다.

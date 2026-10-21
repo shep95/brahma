@@ -3868,3 +3868,11 @@ curves	Smooth	Wygładź
 	The address must start with https://	Adres musi zaczynać się od https://
 	This build has no network access for plug-ins.	Ta kompilacja nie ma dostępu do sieci dla wtyczek.
 	Fetching…	Pobieranie…
+
+# Window › Performance
+	frames per second	klatek na sekundę
+	worst UI frame, ms (50 = full)	najgorsza klatka UI, ms (50 = pełna)
+	canvas composite, ms (200 = full)	kompozycja płótna, ms (200 = pełna)
+	Slow commands	Wolne polecenia
+	None yet: every command finished within a frame.	Jeszcze żadnych: każde polecenie skończyło się w jednej klatce.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Zapisuje dziennik jako JSON do zgłoszenia błędu; zostaje na tym urządzeniu, dopóki go nie udostępnisz.

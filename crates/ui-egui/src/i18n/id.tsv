@@ -3261,3 +3261,11 @@ curves	Smooth	Haluskan
 	The address must start with https://	Alamat harus diawali https://
 	This build has no network access for plug-ins.	Build ini tidak punya akses jaringan untuk plug-in.
 	Fetching…	Mengambil…
+
+# Window › Performance
+	frames per second	bingkai per detik
+	worst UI frame, ms (50 = full)	bingkai UI terburuk, md (50 = penuh)
+	canvas composite, ms (200 = full)	komposit kanvas, md (200 = penuh)
+	Slow commands	Perintah lambat
+	None yet: every command finished within a frame.	Belum ada: setiap perintah selesai dalam satu bingkai.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Menyimpan log sebagai JSON untuk dilampirkan pada laporan bug; tetap di perangkat ini sampai Anda membagikannya.

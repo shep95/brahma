@@ -3877,3 +3877,11 @@ navigator	Zoom	Zvětšení
 	The address must start with https://	Adresa musí začínat https://
 	This build has no network access for plug-ins.	Toto sestavení nemá síťový přístup pro zásuvné moduly.
 	Fetching…	Stahuje se…
+
+# Window › Performance
+	frames per second	snímků za sekundu
+	worst UI frame, ms (50 = full)	nejhorší snímek UI, ms (50 = plný)
+	canvas composite, ms (200 = full)	skládání plátna, ms (200 = plný)
+	Slow commands	Pomalé příkazy
+	None yet: every command finished within a frame.	Zatím žádné: každý příkaz skončil do jednoho snímku.
+	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Uloží záznam jako JSON k přiložení k hlášení chyby; zůstává na tomto zařízení, dokud ho nesdílíte.

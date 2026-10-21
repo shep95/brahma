@@ -1191,6 +1191,9 @@ pub struct UiState {
     /// Filter › Plug-ins › Gallery… (see `plugin_gallery`).
     #[serde(default)]
     pub plugin_gallery: crate::plugin_gallery::PluginGalleryUi,
+    /// Window › Performance (see `perf_log`).
+    #[serde(default)]
+    pub perf_log: crate::perf_log::PerfLogUi,
     /// Window › Assistant (see `assistant_ui`).
     #[serde(default)]
     pub assistant: crate::assistant_ui::AssistantUi,
@@ -1343,6 +1346,7 @@ impl Default for UiState {
             analysis: Default::default(),
             aesthetic: Default::default(),
             plugin_gallery: Default::default(),
+            perf_log: Default::default(),
             assistant: Default::default(),
             timeline: Default::default(),
             slices: Default::default(),
