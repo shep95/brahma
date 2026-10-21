@@ -40,6 +40,7 @@ pub static ICONS: &[(&str, &[u8])] = &[
     ("direct-select", include_bytes!("../../../assets/icons/direct-select.svg")),
     ("droplet", include_bytes!("../../../assets/icons/droplet.svg")),
     ("ellipsis", include_bytes!("../../../assets/icons/ellipsis.svg")),
+    ("menu", include_bytes!("../../../assets/icons/menu.svg")),
     ("eraser", include_bytes!("../../../assets/icons/eraser.svg")),
     // Derived from Lucide's eraser (ISC): with a sparkle (Magic Eraser) / a transparency grid (Background Eraser).
     ("eraser-background", include_bytes!("../../../assets/icons/eraser-background.svg")),

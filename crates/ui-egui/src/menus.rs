@@ -1195,7 +1195,63 @@ impl ItemCache {
 /// Draws the menu bar; returns the inner edge of the menu titles, facing the rest of the title bar
 /// (the right edge of the last title, or its left edge in a right-to-left UI, where File is at the
 /// right). The bar itself fills the row.
+/// The menu bar's full width as last laid out (ctx data), so a bar that would not fit folds
+/// into [`compact_menu_bar`] before it overflows.
+fn full_bar_width_id() -> egui::Id {
+    egui::Id::new("menu-bar-full-width")
+}
+
+/// Room the full bar needs beyond its titles before it is worth showing.
+const MENU_BAR_SLACK: f32 = 24.0;
+
+/// On a narrow window (a phone in portrait, a small split view) the titles don't fit in a row:
+/// one menu button opens them as submenus of a single menu instead.
+fn compact_menu_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) -> f32 {
+    let rtl = crate::direction::is_rtl();
+    let t = crate::theme::Tokens::get(ui.ctx());
+    let mut clicked: Option<String> = None;
+    let button = crate::icons::button(ui, "menu", if t.pro { 26.0 } else { 28.0 }, false, tl!("Menu"));
+    let bar = egui::containers::menu::MenuConfig::find(ui);
+    let config = egui::containers::menu::MenuConfig::new().close_behavior(bar.close_behavior).style(bar.style.clone());
+    let mut nav = crate::menu_nav::Nav::load(ui.ctx());
+    let app_ref: &BrahmaApp = app;
+    egui::Popup::menu(&button)
+        .align(crate::direction::below())
+        .style(config.style.clone())
+        .info(egui::UiStackInfo::new(egui::UiKind::Menu).with_tag_value(egui::containers::menu::MenuConfig::MENU_CONFIG_TAG, config))
+        .show(|ui| {
+            // The rows are depth 1 of a one-menu bar: every top menu is a submenu of it.
+            let items: Vec<MenuItem> = menu_items(app_ref)
+                .into_iter()
+                .filter(|it| !it.path.is_empty())
+                .map(|mut it| {
+                    it.path.insert(0, "Menu".into());
+                    it
+                })
+                .collect();
+            let all: Vec<&MenuItem> = items.iter().collect();
+            ui.set_min_width(220.0);
+            render_level(ui, &all, 1, &mut clicked, &mut nav);
+        });
+    nav.store(ui.ctx());
+    if let Some(id) = clicked {
+        let ctx = ui.ctx().clone();
+        let id = alt_click(id, ctx.input(|i| i.modifiers.alt));
+        if let Err(e) = invoke(app, &ctx, &id, json!({})) {
+            app.ui.status = e;
+            app.ui.status_error = true;
+        }
+    }
+    if rtl { button.rect.left() } else { button.rect.right() }
+}
+
 pub fn menu_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) -> f32 {
+    // Narrower than the titles need: the compact bar (see `compact_menu_bar`). The width is
+    // the last full layout's, so growing the window past it brings the titles back.
+    let full_width: Option<f32> = ui.ctx().data(|d| d.get_temp(full_bar_width_id()));
+    if full_width.is_some_and(|w| ui.available_width() < w + MENU_BAR_SLACK) {
+        return compact_menu_bar(app, ui);
+    }
     // Built only while a menu is open: every item's enabled/checked state scales with the
     // document (layer lookups), which cost milliseconds per frame on large layouts (#125). While
     // one stays open, the items are reused until what they depend on changes.
@@ -1310,6 +1366,11 @@ pub fn menu_bar(app: &mut BrahmaApp, ui: &mut egui::Ui) -> f32 {
     });
     keys.store(ui.ctx());
     nav.store(ui.ctx());
+    let start = if rtl { ui.max_rect().right() } else { ui.max_rect().left() };
+    let width = (edge - start).abs();
+    if width.is_finite() && width > 0.0 {
+        ui.ctx().data_mut(|d| d.insert_temp(full_bar_width_id(), width));
+    }
     // No menu open this frame: nothing is kept.
     app.menu_cache = built.into_inner();
     // The press-drag gesture ends with the button (its release was handled by the rows above).
@@ -1782,6 +1843,37 @@ mod tests {
                 assert!(harness.query_by_label_contains("Open…").is_some(), "{theme:?}: File menu did not open");
             }
         }
+    }
+
+    /// A bar narrower than its titles folds into one menu button whose menu holds the top
+    /// menus as submenus; widening the window brings the titles back.
+    #[test]
+    fn a_narrow_bar_folds_into_one_menu_button() {
+        use egui_kittest::{Harness, kittest::Queryable};
+        let app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+        let mut harness = Harness::builder().with_size(egui::vec2(1000.0, 200.0)).build_ui_state(
+            |ui, app| {
+                menu_bar(app, ui);
+            },
+            app,
+        );
+        BrahmaApp::setup_context(&harness.ctx, crate::theme::ThemeKind::Pro);
+        harness.run_steps(3);
+        assert!(harness.query_by_label("File").is_some() && harness.query_by_label("Menu").is_none(), "wide: the titles");
+        harness.set_size(egui::vec2(360.0, 200.0));
+        harness.run_steps(3);
+        assert!(harness.query_by_label("Menu").is_some(), "narrow: one button");
+        assert!(harness.query_by_label("Filter").is_none(), "the titles are gone");
+        harness.get_by_label("Menu").click();
+        harness.run_steps(3);
+        assert!(harness.query_by_label_contains("File").is_some(), "the top menus are the rows");
+        assert!(harness.query_by_label("Reset Tool").is_none(), "items without a menu stay out");
+        for top in TOP_MENUS {
+            assert!(harness.query_by_label_contains(top).is_some(), "{top} is a submenu row");
+        }
+        harness.set_size(egui::vec2(1000.0, 200.0));
+        harness.run_steps(3);
+        assert!(harness.query_by_label("Filter").is_some(), "wide again: the titles return");
     }
 
     #[test]

@@ -82,8 +82,9 @@ pub fn toolbar(app: &mut BrahmaApp, ui: &mut egui::Ui) {
     let t = Tokens::get(ui.ctx());
     let (w1, bx, m) = if t.pro { (40.0, 30.0, 5i8) } else { (50.0, 36.0, 7i8) };
     let sections = visible_sections(&app.session.prefs().toolbar.hidden);
-    // Two columns when the header chevron asks for them; a column that doesn't fit scrolls.
-    let double = app.ui.panels.toolbar_double;
+    // Two columns when the header chevron asks for them, or when one column could not show
+    // the tools without scrolling (a phone held sideways); a column that still doesn't fit scrolls.
+    let double = app.ui.panels.toolbar_double || ui.ctx().content_rect().height() < TOOLBAR_DOUBLE_BELOW;
     let w = if double { w1 + bx + 2.0 } else { w1 };
     crate::direction::start_panel("toolbar")
         .resizable(false)
@@ -759,6 +760,8 @@ pub fn sync_window_title(app: &mut BrahmaApp, ctx: &egui::Context) {
 const TITLE_GAP: f32 = 16.0;
 /// The workspace switcher's narrowest width, and one 28 pt title-bar icon with its spacing.
 const WORKSPACE_MIN: f32 = 90.0;
+/// Windows shorter than this show the toolbar in two columns on their own.
+const TOOLBAR_DOUBLE_BELOW: f32 = 620.0;
 const ICON_SLOT: f32 = 34.0;
 
 /// Left edge for a title `width` wide: centred on `center` when it fits in the free gap from
@@ -804,6 +807,39 @@ mod title_tests {
 
     /// The top bar's buttons: undo and redo follow the history, the advisor and the assistant
     /// toggle their panels, and a narrow bar drops them from the end.
+    /// A window too short for one column of tools (a phone held sideways) lays the toolbar out
+    /// in two columns by itself; a tall window keeps the single column.
+    #[test]
+    fn a_short_window_doubles_the_toolbar_columns() {
+        use crate::BrahmaApp;
+        use egui_kittest::kittest::Queryable;
+        let columns = |h: &egui_kittest::Harness<'_, BrahmaApp>| {
+            // Neighbouring slots: in two columns they share a row, so their left edges differ.
+            let mut xs: Vec<i32> = ["Move Tool", "Marquee Tool", "Lasso Tool", "Quick Selection Tool"]
+                .iter()
+                .filter_map(|l| h.query_all_by_label_contains(l).next().map(|n| n.rect().left().round() as i32))
+                .collect();
+            xs.sort_unstable();
+            xs.dedup();
+            xs.len()
+        };
+        let app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+        let mut h = egui_kittest::Harness::builder().with_size(egui::vec2(900.0, 390.0)).build_ui_state(
+            |ui, app: &mut BrahmaApp| {
+                crate::panels::toolbar(app, ui);
+                egui::CentralPanel::default().show(ui, |_| {});
+            },
+            app,
+        );
+        BrahmaApp::setup_context(&h.ctx, Default::default());
+        h.run_steps(3);
+        assert!(!h.state().ui.panels.toolbar_double, "the preference is untouched");
+        assert_eq!(columns(&h), 2, "short: two columns");
+        h.set_size(egui::vec2(900.0, 900.0));
+        h.run_steps(3);
+        assert_eq!(columns(&h), 1, "tall: one column");
+    }
+
     #[test]
     fn top_bar_buttons_undo_and_toggle_the_advisor_and_assistant() {
         use egui_kittest::{
