@@ -1187,6 +1187,7 @@ dependencies = [
 name = "brahma-web"
 version = "0.9.0"
 dependencies = [
+ "brahma-cms",
  "brahma-codecs",
  "brahma-doc",
  "brahma-engine",

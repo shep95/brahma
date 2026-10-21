@@ -93,6 +93,7 @@ pub fn start() {
                         log::info!("brahma-web: wgpu backend {:?}", rs.adapter.get_info().backend);
                         app.set_wgpu(rs);
                     }
+                    app.services.read_displays = Some(std::sync::Arc::new(browser_display));
                     let unsaved = Arc::new(AtomicBool::new(false));
                     guard_unload(unsaved.clone());
                     let pasted: Pasted = Arc::default();
@@ -139,6 +140,35 @@ fn listen_pen(target: &web_sys::HtmlCanvasElement, feed: brahma_ui_egui::stylus:
             cb.forget();
         }
     }
+}
+
+/// `Services::read_displays` for the browser (Edit › Color Settings › Monitor Profile = auto).
+/// The browser owns the display: whatever the screen's gamut, a canvas is shown as sRGB and
+/// the browser maps it to the monitor, so the "display" brahma sees is an sRGB one. Reporting
+/// it as such (with the real sRGB profile) keeps the canvas transform an identity for sRGB
+/// documents, colour-manages the others into sRGB, and lets Color Settings say so, instead of
+/// a fallback notice about a platform that "doesn't report display profiles". The name says
+/// whether the screen can show more than sRGB (`color-gamut: p3`), which only a native app
+/// could use.
+fn browser_display() -> Option<std::sync::mpsc::Receiver<brahma_ui_egui::monitor_status::Detection>> {
+    use brahma_engine::display_color::Display;
+    let (tx, rx) = std::sync::mpsc::channel();
+    let window = web_sys::window();
+    let wide = window.as_ref().and_then(|w| w.match_media("(color-gamut: p3)").ok().flatten()).is_some_and(|m| m.matches());
+    let size = |f: fn(&web_sys::Window) -> Result<wasm_bindgen::JsValue, wasm_bindgen::JsValue>| {
+        window.as_ref().and_then(|w| f(w).ok()).and_then(|v| v.as_f64()).filter(|v| v.is_finite() && *v > 0.0).unwrap_or(1.0)
+    };
+    let (w, h) = (size(web_sys::Window::inner_width), size(web_sys::Window::inner_height));
+    let name = if wide { "browser (wide-gamut screen, shown as sRGB)" } else { "browser (sRGB screen)" };
+    let display = Display {
+        id: 0,
+        name: name.into(),
+        frame: [0.0, 0.0, w, h],
+        profile_name: Some("sRGB (the browser maps the canvas to the screen)".into()),
+        icc: Some(brahma_cms::Builtin::Srgb.profile().to_bytes()),
+    };
+    let _ = tx.send(Ok(vec![display]));
+    Some(rx)
 }
 
 /// Closing or reloading the tab while a document has unsaved changes asks first, as closing the

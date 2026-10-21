@@ -455,3 +455,31 @@ fn parallel_plain_quantize_matches_the_scalar_rounding() {
         assert_eq!(*o, p.map(q), "{p:?}");
     }
 }
+
+/// The browser shell reports its one "display" as sRGB with the real profile bytes (the
+/// browser maps the canvas to the screen itself): Monitor Profile = auto then resolves to sRGB
+/// as a found profile, not a fallback, so no "display profile not used" notice is raised.
+#[test]
+fn an_srgb_display_with_profile_bytes_resolves_as_auto_not_fallback() {
+    use crate::display_color::{Display, MonitorDetection};
+    let mut s = Session::new();
+    let display = Display {
+        id: 0,
+        name: "browser (sRGB screen)".into(),
+        frame: [0.0, 0.0, 1280.0, 800.0],
+        profile_name: Some("sRGB (the browser maps the canvas to the screen)".into()),
+        icc: Some(Builtin::Srgb.profile().to_bytes()),
+    };
+    assert!(s.color.set_displays(Ok(vec![display])).is_none());
+    assert_eq!(s.color.monitor_detection, MonitorDetection::Found);
+    let st = s.color.monitor_status();
+    assert_eq!((st.source, st.reason.as_deref()), ("auto", None), "{st:?}");
+    assert!(st.profile.to_lowercase().contains("srgb"), "{}", st.profile);
+    assert_eq!(st.display.as_deref(), Some("browser (sRGB screen)"));
+    // A display without bytes is the fallback case the notice is for.
+    let bare = Display { id: 1, name: "bare".into(), frame: [0.0, 0.0, 10.0, 10.0], profile_name: None, icc: None };
+    assert!(s.color.set_displays(Ok(vec![bare])).is_none());
+    let st = s.color.monitor_status();
+    assert_eq!(st.source, "fallback");
+    assert!(st.reason.is_some());
+}
