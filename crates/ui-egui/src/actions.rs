@@ -31,6 +31,85 @@ pub struct ActionsUi {
     /// The action whose name is being edited in place (double-click on its name).
     #[serde(skip)]
     renaming: Option<RenameAction>,
+    /// The step being edited in the step editor (double-click on a step), see [`EditStep`].
+    #[serde(skip)]
+    pub editing_step: Option<EditStep>,
+}
+
+/// The step editor: a step's command id and its parameters as JSON text, applied through
+/// `actions.setStep` so the step keeps its place, check and dialog flag.
+#[derive(Clone, Debug, PartialEq)]
+pub struct EditStep {
+    pub action: usize,
+    pub step: usize,
+    pub id: String,
+    pub params: String,
+    pub error: Option<String>,
+}
+
+impl EditStep {
+    /// The editor for step `step` of action `action`, seeded with the recorded values.
+    pub fn open(app: &BrahmaApp, action: usize, step: usize) -> Option<Self> {
+        let (id, params) = app.session.actions.list.get(action)?.steps.get(step)?;
+        Some(Self { action, step, id: id.clone(), params: serde_json::to_string_pretty(params).unwrap_or_else(|_| "{}".into()), error: None })
+    }
+}
+
+/// Apply the step editor: parse the parameters and write the step back. `Ok(true)` closes
+/// the editor; a parse or command error stays in the editor's status line.
+pub fn apply_step_edit(app: &mut BrahmaApp) -> Result<bool, String> {
+    let Some(e) = app.ui.actions.editing_step.clone() else { return Ok(false) };
+    let text = if e.params.trim().is_empty() { "{}" } else { e.params.trim() };
+    let params: Value = match serde_json::from_str(text) {
+        Ok(v @ Value::Object(_)) => v,
+        Ok(_) => return Err(tl!("The parameters must be a JSON object, like {\"radius\": 4}.").to_string()),
+        Err(err) => return Err(format!("{}: {err}", tl!("Not valid JSON"))),
+    };
+    app.run("actions.setStep", json!({"action": e.action, "step": e.step, "id": e.id.trim(), "params": params}))?;
+    app.ui.actions.editing_step = None;
+    Ok(true)
+}
+
+/// The step editor window (Window › Actions, double-click a step).
+fn step_editor(app: &mut BrahmaApp, ctx: &egui::Context) {
+    let Some(mut e) = app.ui.actions.editing_step.clone() else { return };
+    let t = Tokens::get(ctx);
+    let mut apply = false;
+    let mut cancel = false;
+    let title = tl!("Edit Step");
+    egui::Window::new(title).id(egui::Id::new("actions-step-editor")).collapsible(false).resizable(true).default_width(420.0).show(ctx, |ui| {
+        ui.horizontal(|ui| {
+            ui.label(egui::RichText::new(tl!("Command")).color(t.text_dim));
+            crate::widgets::text_field(ui, egui::Id::new("actions-step-id"), &mut e.id, "layer.new.layer", 300.0, true);
+        });
+        if let Some(spec) = brahma_engine::commands::find(e.id.trim()) {
+            ui.label(egui::RichText::new(spec.params).color(t.text_faint).size(10.5));
+        } else {
+            ui.label(egui::RichText::new(tl!("Unknown command id")).color(t.danger).size(11.0));
+        }
+        ui.label(egui::RichText::new(tl!("Parameters (JSON)")).color(t.text_dim));
+        ui.add(egui::TextEdit::multiline(&mut e.params).id(egui::Id::new("actions-step-params")).code_editor().desired_rows(6).desired_width(f32::INFINITY));
+        if let Some(err) = &e.error {
+            ui.label(egui::RichText::new(err).color(t.danger).size(11.0));
+        }
+        ui.horizontal(|ui| {
+            if crate::widgets::primary_button(ui, tl!("Apply"), 0.0).clicked() {
+                apply = true;
+            }
+            if crate::widgets::secondary_button(ui, tl!("Cancel"), 0.0).clicked() {
+                cancel = true;
+            }
+        });
+    });
+    app.ui.actions.editing_step = Some(e);
+    if cancel {
+        app.ui.actions.editing_step = None;
+    } else if apply
+        && let Err(err) = apply_step_edit(app)
+        && let Some(e) = app.ui.actions.editing_step.as_mut()
+    {
+        e.error = Some(err);
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -895,6 +974,10 @@ pub fn panel(app: &mut BrahmaApp, ui: &mut egui::Ui) {
                         toggled = Some((i, step));
                     } else if dialog.clicked() {
                         dialog_toggled = Some((i, step));
+                    } else if response.double_clicked() && !button_mode {
+                        app.ui.actions.selected = Some(i);
+                        app.ui.actions.selected_step = Some(step);
+                        app.ui.actions.editing_step = EditStep::open(app, i, step);
                     } else if response.clicked() {
                         app.ui.actions.selected = Some(i);
                         app.ui.actions.selected_step = Some(step);
@@ -903,6 +986,7 @@ pub fn panel(app: &mut BrahmaApp, ui: &mut egui::Ui) {
             }
         }
     });
+    step_editor(app, ui.ctx());
     if let Some((action, step)) = toggled {
         let _ = app.run("actions.toggle", json!({"action": action, "step": step}));
     }
@@ -983,6 +1067,31 @@ pub fn panel(app: &mut BrahmaApp, ui: &mut egui::Ui) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The step editor rewrites a recorded step's parameters through actions.setStep; bad JSON
+    /// stays in the editor with a message instead of touching the action.
+    #[test]
+    fn the_step_editor_rewrites_a_step_and_refuses_bad_json() {
+        let mut app = BrahmaApp::new(brahma_engine::Session::new(), crate::Services::default());
+        app.run("actions.record", json!({"name": "E"})).unwrap();
+        app.run("file.new", json!({"width": 8, "height": 8})).unwrap();
+        app.run("layer.new.layer", json!({"name": "one"})).unwrap();
+        app.run("actions.stop", json!({})).unwrap();
+        let e = EditStep::open(&app, 0, 1).expect("the step exists");
+        assert_eq!(e.id, "layer.new.layer");
+        assert!(e.params.contains("\"one\""));
+        app.ui.actions.editing_step = Some(EditStep { params: "not json".into(), ..e.clone() });
+        let err = apply_step_edit(&mut app).unwrap_err();
+        assert!(err.contains("JSON"), "{err}");
+        assert!(app.ui.actions.editing_step.is_some(), "stays open on an error");
+        app.ui.actions.editing_step = Some(EditStep { params: "[1, 2]".into(), ..e.clone() });
+        assert!(apply_step_edit(&mut app).is_err(), "an array is not params");
+        app.ui.actions.editing_step = Some(EditStep { params: "{\"name\": \"two\"}".into(), ..e });
+        assert_eq!(apply_step_edit(&mut app), Ok(true));
+        assert!(app.ui.actions.editing_step.is_none(), "closed after applying");
+        assert_eq!(app.session.actions.list[0].steps[1].1["name"], "two");
+        assert!(EditStep::open(&app, 0, 9).is_none());
+    }
 
     #[test]
     fn selected_layer_name_is_visible_during_recording_and_after_stop() {

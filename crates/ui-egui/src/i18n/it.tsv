@@ -4397,3 +4397,10 @@ shape	Appearance	Aspetto
 	Slow commands	Comandi lenti
 	None yet: every command finished within a frame.	Nessuno finora: ogni comando è finito entro un fotogramma.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Salva il registro in JSON da allegare a una segnalazione; resta su questo dispositivo finché non lo condividi.
+
+# Actions panel: step editor
+	Edit Step	Modifica passaggio
+	Parameters (JSON)	Parametri (JSON)
+	Unknown command id	Id comando sconosciuto
+	Not valid JSON	JSON non valido
+	The parameters must be a JSON object, like {"radius": 4}.	I parametri devono essere un oggetto JSON, come {"radius": 4}.

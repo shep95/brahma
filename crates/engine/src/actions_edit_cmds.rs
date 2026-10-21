@@ -73,6 +73,48 @@ fn insert(s: &mut Session, p: &Value) -> Result<Value> {
     Ok(result)
 }
 
+/// `actions.setStep`: the Actions panel's step editor. Replaces one step's command and/or
+/// parameters in place (the step keeps its position, its check and its dialog flag), so a
+/// recorded value can be corrected without re-recording the action.
+fn set_step(s: &mut Session, p: &Value) -> Result<Value> {
+    let cmd = "actions.setStep";
+    not_playing(s, cmd)?;
+    let idx = resolve(&s.actions.list, p, cmd)?;
+    let Some(step) = index(p, "step", cmd)? else { return Err(bad(cmd, "needs `step`, the 0-based step index")) };
+    if s.actions.recording.is_some_and(|(_, i)| i == idx) {
+        flush_recording(s)?;
+    }
+    let len = s.actions.list[idx].steps.len();
+    if step >= len {
+        return Err(bad(cmd, format!("step {step} is out of range (the action has {len})")));
+    }
+    let id = match p.get("id") {
+        None | Some(Value::Null) => s.actions.list[idx].steps[step].0.clone(),
+        Some(Value::String(id)) if !id.trim().is_empty() => id.trim().to_string(),
+        Some(_) => return Err(bad(cmd, "`id` must be a command id")),
+    };
+    if !is_step_command(&id) {
+        return Err(bad(cmd, format!("unknown command `{id}`")));
+    }
+    let params = match p.get("params") {
+        None | Some(Value::Null) => s.actions.list[idx].steps[step].1.clone(),
+        Some(v @ Value::Object(_)) => v.clone(),
+        Some(_) => return Err(bad(cmd, "`params` must be an object")),
+    };
+    if id == "actions.play" {
+        let target = params.get("action");
+        let is_self = target.and_then(Value::as_str) == Some(s.actions.list[idx].name.as_str()) || target.and_then(Value::as_u64) == Some(idx as u64);
+        if is_self {
+            return Err(bad(cmd, "an action cannot play itself"));
+        }
+    }
+    let action = &mut s.actions.list[idx];
+    action.steps[step] = (id.clone(), params.clone());
+    let result = json!({"action": action.name, "step": step, "id": id, "params": params});
+    s.actions.touch();
+    Ok(result)
+}
+
 /// The panel's dialog toggle column. With `step`, switch one step's dialog on or off; without
 /// it, every step (all on unless all already are, like clicking the action's own toggle).
 fn dialog(s: &mut Session, p: &Value) -> Result<Value> {
@@ -256,6 +298,16 @@ pub fn specs() -> Vec<CommandSpec> {
             journal: false,
         },
         CommandSpec {
+            id: "actions.setStep",
+            label: "Edit Step",
+            menu: &[],
+            shortcut: None,
+            params: r##"{"action":name|index, "step":index, "id":command id?, "params":{}?} → {action, step, id, params}. The Actions panel's step editor: replaces the step's command and/or parameters in place; its position, check and dialog flag stay."##,
+            enabled: always,
+            run: set_step,
+            journal: false,
+        },
+        CommandSpec {
             id: "actions.dialog",
             label: "Toggle Step Dialog",
             menu: &[],
@@ -290,6 +342,36 @@ pub fn specs() -> Vec<CommandSpec> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn set_step_replaces_a_steps_command_or_params_in_place() {
+        use serde_json::json;
+        let mut s = crate::Session::new();
+        s.execute("actions.record", json!({"name": "A"})).unwrap();
+        s.execute("file.new", json!({"width": 8, "height": 8})).unwrap();
+        s.execute("layer.new.layer", json!({"name": "one"})).unwrap();
+        s.execute("actions.stop", json!({})).unwrap();
+        s.execute("actions.dialog", json!({"action": "A", "step": 1, "enabled": true})).unwrap();
+        let before = s.execute("actions.get", json!({"action": "A"})).unwrap();
+        assert_eq!(before["steps"].as_array().map(Vec::len), Some(2), "{before}");
+        let r = s.execute("actions.setStep", json!({"action": "A", "step": 1, "params": {"name": "two"}})).unwrap();
+        assert_eq!((r["id"].as_str(), r["params"]["name"].as_str()), (Some("layer.new.layer"), Some("two")));
+        let after = s.execute("actions.get", json!({"action": "A"})).unwrap();
+        assert_eq!(after["steps"][1][1]["name"], "two", "{after}");
+        assert_eq!(after["dialogs"], json!([1]), "the dialog flag stays: {after}");
+        let r = s.execute("actions.setStep", json!({"action": 0, "step": 0, "id": "file.new", "params": {"width": 16, "height": 16}})).unwrap();
+        assert_eq!(r["params"]["width"], 16);
+        assert!(s.execute("actions.setStep", json!({"action": "A", "step": 9})).is_err(), "out of range");
+        assert!(s.execute("actions.setStep", json!({"action": "A", "step": 0, "id": "no.such"})).is_err());
+        assert!(s.execute("actions.setStep", json!({"action": "A", "step": 0, "params": 3})).is_err());
+        assert!(s.execute("actions.setStep", json!({"action": "A", "step": 0, "id": "actions.play", "params": {"action": "A"}})).is_err(), "no self-play");
+        assert!(s.execute("actions.setStep", json!({"action": "A"})).is_err(), "needs a step");
+        // The edited step plays with its new parameters.
+        s.execute("file.close", json!({"force": true})).unwrap();
+        s.execute("actions.play", json!({"action": "A"})).unwrap();
+        let d = &s.active().unwrap().doc;
+        assert_eq!((d.size.width, d.layers.last().unwrap().name.as_str()), (16, "two"));
+    }
+
     use super::*;
     use crate::actions_cmds::Action;
 

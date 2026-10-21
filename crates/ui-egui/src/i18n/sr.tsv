@@ -4349,3 +4349,10 @@ shape	Appearance	Izgled
 	Slow commands	Spore komande
 	None yet: every command finished within a frame.	Još nema: svaka komanda je završila u okviru jedne sličice.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Čuva dnevnik kao JSON za prijavu greške; ostaje na ovom uređaju dok ga ne podelite.
+
+# Actions panel: step editor
+	Edit Step	Uredi korak
+	Parameters (JSON)	Parametri (JSON)
+	Unknown command id	Nepoznat id komande
+	Not valid JSON	Nevažeći JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Parametri moraju biti JSON objekat, npr. {"radius": 4}.

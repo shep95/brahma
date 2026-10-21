@@ -3954,3 +3954,10 @@ curves	Smooth	スムーズ
 	Slow commands	遅いコマンド
 	None yet: every command finished within a frame.	まだありません。すべてのコマンドが 1 フレーム内に終わりました。
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	ログを JSON で保存してバグ報告に添付できます。共有するまでこのデバイスに残ります。
+
+# Actions panel: step editor
+	Edit Step	ステップを編集
+	Parameters (JSON)	パラメーター (JSON)
+	Unknown command id	不明なコマンド ID
+	Not valid JSON	有効な JSON ではありません
+	The parameters must be a JSON object, like {"radius": 4}.	パラメーターは {"radius": 4} のような JSON オブジェクトである必要があります。

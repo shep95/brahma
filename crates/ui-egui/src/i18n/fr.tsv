@@ -3282,3 +3282,10 @@ curves	Smooth	Lisser
 	Slow commands	Commandes lentes
 	None yet: every command finished within a frame.	Aucune pour l'instant : chaque commande a fini en une image.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Enregistre le journal en JSON pour un rapport de bogue ; il reste sur cet appareil tant que vous ne le partagez pas.
+
+# Actions panel: step editor
+	Edit Step	Modifier l'étape
+	Parameters (JSON)	Paramètres (JSON)
+	Unknown command id	Identifiant de commande inconnu
+	Not valid JSON	JSON non valide
+	The parameters must be a JSON object, like {"radius": 4}.	Les paramètres doivent être un objet JSON, comme {"radius": 4}.

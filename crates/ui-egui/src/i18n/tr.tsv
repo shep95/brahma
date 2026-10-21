@@ -4006,3 +4006,10 @@ cameraData	Lens	Lens
 	Slow commands	Yavaş komutlar
 	None yet: every command finished within a frame.	Henüz yok: her komut bir kare içinde bitti.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Günlüğü hata raporuna eklemek için JSON olarak kaydeder; paylaşana dek bu cihazda kalır.
+
+# Actions panel: step editor
+	Edit Step	Adımı Düzenle
+	Parameters (JSON)	Parametreler (JSON)
+	Unknown command id	Bilinmeyen komut kimliği
+	Not valid JSON	Geçerli JSON değil
+	The parameters must be a JSON object, like {"radius": 4}.	Parametreler {"radius": 4} gibi bir JSON nesnesi olmalı.

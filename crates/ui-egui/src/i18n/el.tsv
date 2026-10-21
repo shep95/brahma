@@ -3976,3 +3976,10 @@ curves	Smooth	Εξομάλυνση
 	Slow commands	Αργές εντολές
 	None yet: every command finished within a frame.	Καμία ακόμη: κάθε εντολή ολοκληρώθηκε μέσα σε ένα καρέ.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Αποθηκεύει το αρχείο καταγραφής ως JSON για αναφορά σφάλματος· μένει σε αυτή τη συσκευή μέχρι να το μοιραστείτε.
+
+# Actions panel: step editor
+	Edit Step	Επεξεργασία βήματος
+	Parameters (JSON)	Παράμετροι (JSON)
+	Unknown command id	Άγνωστο id εντολής
+	Not valid JSON	Μη έγκυρο JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Οι παράμετροι πρέπει να είναι αντικείμενο JSON, όπως {"radius": 4}.

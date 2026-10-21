@@ -3281,3 +3281,10 @@ curves	Smooth	Glätten
 	Slow commands	Langsame Befehle
 	None yet: every command finished within a frame.	Noch keine: jeder Befehl war innerhalb eines Bildes fertig.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Speichert das Protokoll als JSON für einen Fehlerbericht; es bleibt auf diesem Gerät, bis Sie es weitergeben.
+
+# Actions panel: step editor
+	Edit Step	Schritt bearbeiten
+	Parameters (JSON)	Parameter (JSON)
+	Unknown command id	Unbekannte Befehls-ID
+	Not valid JSON	Kein gültiges JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Die Parameter müssen ein JSON-Objekt sein, etwa {"radius": 4}.

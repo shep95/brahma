@@ -3269,3 +3269,10 @@ curves	Smooth	Haluskan
 	Slow commands	Perintah lambat
 	None yet: every command finished within a frame.	Belum ada: setiap perintah selesai dalam satu bingkai.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Menyimpan log sebagai JSON untuk dilampirkan pada laporan bug; tetap di perangkat ini sampai Anda membagikannya.
+
+# Actions panel: step editor
+	Edit Step	Sunting Langkah
+	Parameters (JSON)	Parameter (JSON)
+	Unknown command id	Id perintah tidak dikenal
+	Not valid JSON	JSON tidak valid
+	The parameters must be a JSON object, like {"radius": 4}.	Parameter harus berupa objek JSON, seperti {"radius": 4}.

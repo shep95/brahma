@@ -3765,3 +3765,10 @@ curves	Smooth	Làm mượt
 	Slow commands	Lệnh chậm
 	None yet: every command finished within a frame.	Chưa có: mọi lệnh đều xong trong một khung hình.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Lưu nhật ký dạng JSON để đính kèm báo cáo lỗi; nó ở lại thiết bị này cho đến khi bạn chia sẻ.
+
+# Actions panel: step editor
+	Edit Step	Sửa bước
+	Parameters (JSON)	Tham số (JSON)
+	Unknown command id	Id lệnh không xác định
+	Not valid JSON	JSON không hợp lệ
+	The parameters must be a JSON object, like {"radius": 4}.	Tham số phải là một đối tượng JSON, như {"radius": 4}.

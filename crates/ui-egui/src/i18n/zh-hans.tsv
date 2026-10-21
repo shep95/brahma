@@ -2894,3 +2894,10 @@ curves	Smooth	平滑
 	Slow commands	慢命令
 	None yet: every command finished within a frame.	暂无:每条命令都在一帧内完成。
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	将日志保存为 JSON 以附在错误报告中;在你分享之前它只留在此设备上。
+
+# Actions panel: step editor
+	Edit Step	编辑步骤
+	Parameters (JSON)	参数 (JSON)
+	Unknown command id	未知的命令 id
+	Not valid JSON	无效的 JSON
+	The parameters must be a JSON object, like {"radius": 4}.	参数必须是 JSON 对象,例如 {"radius": 4}。

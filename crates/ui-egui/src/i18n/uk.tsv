@@ -3977,3 +3977,10 @@ curves	Smooth	Згладити
 	Slow commands	Повільні команди
 	None yet: every command finished within a frame.	Поки немає: кожна команда вклалася в кадр.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Зберігає журнал у JSON для звіту про помилку; він залишається на цьому пристрої, доки ви ним не поділитеся.
+
+# Actions panel: step editor
+	Edit Step	Змінити крок
+	Parameters (JSON)	Параметри (JSON)
+	Unknown command id	Невідомий id команди
+	Not valid JSON	Недійсний JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Параметри мають бути об'єктом JSON, наприклад {"radius": 4}.

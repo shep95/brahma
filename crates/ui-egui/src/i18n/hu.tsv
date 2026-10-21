@@ -4195,3 +4195,10 @@ cameraRaw	Yellow	Sárga
 	Slow commands	Lassú parancsok
 	None yet: every command finished within a frame.	Még nincs: minden parancs egy képkockán belül végzett.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	JSON-ként menti a naplót hibajelentéshez; ezen az eszközön marad, amíg meg nem osztod.
+
+# Actions panel: step editor
+	Edit Step	Lépés szerkesztése
+	Parameters (JSON)	Paraméterek (JSON)
+	Unknown command id	Ismeretlen parancsazonosító
+	Not valid JSON	Érvénytelen JSON
+	The parameters must be a JSON object, like {"radius": 4}.	A paramétereknek JSON-objektumnak kell lenniük, például {"radius": 4}.

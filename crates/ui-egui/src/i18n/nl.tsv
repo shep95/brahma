@@ -4036,3 +4036,10 @@ curves	Smooth	Vloeiend maken
 	Slow commands	Trage opdrachten
 	None yet: every command finished within a frame.	Nog geen: elke opdracht was binnen één beeld klaar.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Bewaart het logboek als JSON voor een foutrapport; het blijft op dit apparaat tot je het deelt.
+
+# Actions panel: step editor
+	Edit Step	Stap bewerken
+	Parameters (JSON)	Parameters (JSON)
+	Unknown command id	Onbekend opdracht-id
+	Not valid JSON	Geen geldige JSON
+	The parameters must be a JSON object, like {"radius": 4}.	De parameters moeten een JSON-object zijn, zoals {"radius": 4}.

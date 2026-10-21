@@ -3885,3 +3885,10 @@ navigator	Zoom	Zvětšení
 	Slow commands	Pomalé příkazy
 	None yet: every command finished within a frame.	Zatím žádné: každý příkaz skončil do jednoho snímku.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Uloží záznam jako JSON k přiložení k hlášení chyby; zůstává na tomto zařízení, dokud ho nesdílíte.
+
+# Actions panel: step editor
+	Edit Step	Upravit krok
+	Parameters (JSON)	Parametry (JSON)
+	Unknown command id	Neznámé id příkazu
+	Not valid JSON	Neplatný JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Parametry musí být objekt JSON, například {"radius": 4}.

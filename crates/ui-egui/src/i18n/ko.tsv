@@ -3457,3 +3457,10 @@ curves	Smooth	매끄럽게
 	Slow commands	느린 명령
 	None yet: every command finished within a frame.	아직 없음: 모든 명령이 한 프레임 안에 끝났습니다.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	로그를 JSON으로 저장해 버그 보고에 첨부하세요. 공유하기 전까지 이 기기에만 남습니다.
+
+# Actions panel: step editor
+	Edit Step	단계 편집
+	Parameters (JSON)	매개변수 (JSON)
+	Unknown command id	알 수 없는 명령 id
+	Not valid JSON	올바른 JSON이 아닙니다
+	The parameters must be a JSON object, like {"radius": 4}.	매개변수는 {"radius": 4} 같은 JSON 객체여야 합니다.

@@ -2879,3 +2879,10 @@ curves	Smooth	平滑
 	Slow commands	慢指令
 	None yet: every command finished within a frame.	暫無:每條指令都在一個影格內完成。
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	將記錄儲存為 JSON 以附在錯誤回報中;在你分享之前它只留在此裝置上。
+
+# Actions panel: step editor
+	Edit Step	編輯步驟
+	Parameters (JSON)	參數 (JSON)
+	Unknown command id	未知的指令 id
+	Not valid JSON	無效的 JSON
+	The parameters must be a JSON object, like {"radius": 4}.	參數必須是 JSON 物件,例如 {"radius": 4}。

@@ -4238,3 +4238,10 @@ navigator	Zoom	Zoom
 	Slow commands	Comandos lentos
 	None yet: every command finished within a frame.	Ninguno aún: todos los comandos terminaron dentro de un fotograma.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Guarda el registro como JSON para adjuntarlo a un informe de error; se queda en este dispositivo hasta que lo compartas.
+
+# Actions panel: step editor
+	Edit Step	Editar paso
+	Parameters (JSON)	Parámetros (JSON)
+	Unknown command id	Id de comando desconocido
+	Not valid JSON	JSON no válido
+	The parameters must be a JSON object, like {"radius": 4}.	Los parámetros deben ser un objeto JSON, como {"radius": 4}.

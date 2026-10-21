@@ -3247,3 +3247,11 @@ curves	Smooth	Сгладить
 	Slow commands	Медленные команды
 	None yet: every command finished within a frame.	Пока нет: каждая команда уложилась в кадр.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Сохраняет журнал в JSON для отчёта об ошибке; он остаётся на этом устройстве, пока вы его не отправите.
+
+# Actions panel: step editor
+	Edit Step	Изменить шаг
+	Parameters (JSON)	Параметры (JSON)
+	Unknown command id	Неизвестный id команды
+	Not valid JSON	Недопустимый JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Параметры должны быть объектом JSON, например {"radius": 4}.
+	Command	Команда

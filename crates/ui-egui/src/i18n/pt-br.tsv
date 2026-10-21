@@ -4066,3 +4066,10 @@ layerLabel	No Color	Sem cor
 	Slow commands	Comandos lentos
 	None yet: every command finished within a frame.	Nenhum ainda: todo comando terminou dentro de um quadro.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Salva o registro como JSON para anexar a um relatório de erro; fica neste dispositivo até você compartilhá-lo.
+
+# Actions panel: step editor
+	Edit Step	Editar etapa
+	Parameters (JSON)	Parâmetros (JSON)
+	Unknown command id	Id de comando desconhecido
+	Not valid JSON	JSON inválido
+	The parameters must be a JSON object, like {"radius": 4}.	Os parâmetros devem ser um objeto JSON, como {"radius": 4}.

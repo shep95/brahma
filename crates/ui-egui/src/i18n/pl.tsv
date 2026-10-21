@@ -3876,3 +3876,10 @@ curves	Smooth	Wygładź
 	Slow commands	Wolne polecenia
 	None yet: every command finished within a frame.	Jeszcze żadnych: każde polecenie skończyło się w jednej klatce.
 	Save the log as JSON to attach to a bug report; it stays on this device until you share it.	Zapisuje dziennik jako JSON do zgłoszenia błędu; zostaje na tym urządzeniu, dopóki go nie udostępnisz.
+
+# Actions panel: step editor
+	Edit Step	Edytuj krok
+	Parameters (JSON)	Parametry (JSON)
+	Unknown command id	Nieznany identyfikator polecenia
+	Not valid JSON	Nieprawidłowy JSON
+	The parameters must be a JSON object, like {"radius": 4}.	Parametry muszą być obiektem JSON, np. {"radius": 4}.
